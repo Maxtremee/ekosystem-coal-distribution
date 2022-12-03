@@ -8,52 +8,42 @@ datasource db {
   relationMode = "prisma"
 }
 
-// NextAuth
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@index([userId])
+model Invoice {
+  id                 String       @id @default(cuid())
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  createdBy          String //email
+  updatedBy          String? //email
+  name               String
+  issueDate          DateTime
+  applicationId      String
+  declaredNutCoal    Decimal?
+  declaredEcoPeaCoal Decimal?
+  nutCoalLeft        Decimal?
+  EcoPeaCoalLeft     Decimal?
+  stockIssues        StockIssue[]
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
+model DistributionCenter {
+  id         String       @id @default(cuid())
+  name       String
+  address    String       @db.Text
+  email      String
+  StockIssue StockIssue[]
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
+model StockIssue {
+  id               String             @id @default(cuid())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  issuedBy         DistributionCenter @relation(fields: [distributionCenterId], references: [id])
+  nutCoalIssued    Decimal?
+  ecoPeaCoalIssued Decimal?
+
+  Invoice              Invoice? @relation(fields: [invoiceId], references: [id])
+  invoiceId            String?
+  distributionCenterId String
+
+  @@index([invoiceId])
+  @@index([distributionCenterId])
 }
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-// NextAuth

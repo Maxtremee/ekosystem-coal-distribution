@@ -1,6 +1,7 @@
+import { useUser } from "@auth0/nextjs-auth0/client";
 import type { NextPage } from "next";
 import Head from "next/head";
-import { signIn, signOut } from "next-auth/react";
+
 import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
@@ -26,6 +27,7 @@ const Home: NextPage = () => {
 export default Home;
 
 const AuthShowcase: React.FC = () => {
+  const { user } = useUser();
   const { data: session } = trpc.auth.getSession.useQuery();
 
   const { data: secretMessage } = trpc.auth.getSecretMessage.useQuery(
@@ -33,6 +35,7 @@ const AuthShowcase: React.FC = () => {
     { enabled: !!session?.user },
   );
 
+  console.log(session, user);
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       {session?.user && (
@@ -42,14 +45,12 @@ const AuthShowcase: React.FC = () => {
         </p>
       )}
       {session?.user && <p>{JSON.stringify(session.user)}</p>}
-      <button
+      <a
+        href="/api/auth/login"
         className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={session ? () => signOut({
-          callbackUrl: "/logout"
-        }) : () => signIn("auth0")}
       >
         {session ? "Sign out" : "Sign in"}
-      </button>
+      </a>
     </div>
   );
 };
