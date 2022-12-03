@@ -1,6 +1,4 @@
 packages:
-  - apps/nextjs
-  - packages/api
-  - packages/auth
+  - apps/employees
   - packages/db
   - packages/config/*
