@@ -1,5 +1,6 @@
 packages:
   - apps/employees
+  - apps/distributors
   - packages/db
   - packages/tailwind
   - packages/ui

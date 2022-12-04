@@ -1,3 +1,4 @@
+import { LandingPageLayout } from "@acme/ui";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { Button } from "flowbite-react";
 import type { NextPage } from "next";
@@ -10,15 +11,11 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (user?.email) {
-      router.push("/invoices");
+      router.push("/dashboard")
     }
   }, [user]);
 
-  return (
-    <Button href="/api/auth/login?returnTo=/invoices" color="success">
-      Zaloguj się
-    </Button>
-  );
+  return <Button href="/api/auth/login" color="success">Zaloguj się</Button>;
 };
 
 export default Home;
