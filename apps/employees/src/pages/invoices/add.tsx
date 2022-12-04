@@ -1,7 +1,7 @@
 import { Text } from "@acme/ui";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0/client";
 import { Card } from "flowbite-react";
-import AddInvoiceForm from "../../modules/components/AddInvoiceForm";
+import AddInvoiceForm from "../../modules/AddInvoice/components/AddInvoiceForm";
 
 function AddInvoicePage() {
   return (

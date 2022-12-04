@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
 }
 
 datasource db {
@@ -14,13 +14,13 @@ model Invoice {
   updatedAt          DateTime     @updatedAt
   createdBy          String //email
   updatedBy          String? //email
+  applicationId      String       @unique
   name               String
   issueDate          DateTime
-  applicationId      String
   declaredNutCoal    Decimal?
   declaredEcoPeaCoal Decimal?
   nutCoalLeft        Decimal?
-  EcoPeaCoalLeft     Decimal?
+  ecoPeaCoalLeft     Decimal?
   stockIssues        StockIssue[]
 }
 
