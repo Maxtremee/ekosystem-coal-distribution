@@ -5,7 +5,7 @@ import { RouterOutputs } from "../../../utils/trpc";
 export default function ApplicationsTableRow({
   application,
 }: {
-  application: RouterOutputs["applications"]["getFiltered"][number];
+  application: RouterOutputs["applications"]["getFiltered"]["applications"][number];
 }) {
   return (
     <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
