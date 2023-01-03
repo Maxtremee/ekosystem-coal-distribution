@@ -5,12 +5,16 @@
       "inputs": ["prisma/schema.prisma"],
       "cache": false
     },
-    "db-push": {
+    "db-migrate-dev": {
+      "dependsOn": ["db-generate"],
+      "inputs": ["prisma/schema.prisma"],
+      "cache": false
+    },
+    "db-migrate": {
       "inputs": ["prisma/schema.prisma"],
       "cache": false
     },
     "dev": {
-      "dependsOn": ["^db-generate"],
       "cache": false
     },
     "build": {
@@ -21,9 +25,6 @@
       "outputs": []
     },
     "clean": {
-      "cache": false
-    },
-    "//#clean": {
       "cache": false
     },
     "type-check": {

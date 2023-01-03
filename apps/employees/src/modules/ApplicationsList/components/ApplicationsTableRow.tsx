@@ -1,33 +1,39 @@
-import { Invoice } from "@acme/db";
 import { Table } from "flowbite-react";
-import { Decimal } from "decimal.js";
+import { Fragment } from "react";
+import { RouterOutputs } from "../../../utils/trpc";
 
-export default function InvoicesTableRow({ invoice }: { invoice: Invoice }) {
+export default function ApplicationsTableRow({
+  application,
+}: {
+  application: RouterOutputs["applications"]["getFiltered"][number];
+}) {
   return (
     <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.applicationId}
+        {application.name}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.issueDate.toLocaleDateString()}
+        {application.issueDate.toLocaleDateString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.name}
+        {application.invoices?.map(({ name }) => (
+          <Fragment key={name}>
+            {name} <br />
+          </Fragment>
+        ))}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.declaredNutCoal &&
-          new Decimal(invoice.declaredNutCoal).toString()}
+        {application.declaredNutCoal && application.declaredNutCoal.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.nutCoalLeft && new Decimal(invoice.nutCoalLeft).toString()}
+        {application.nutCoalInInvoices}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.declaredEcoPeaCoal &&
-          new Decimal(invoice.declaredEcoPeaCoal).toString()}
+        {application.declaredEcoPeaCoal &&
+          application.declaredEcoPeaCoal.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.ecoPeaCoalLeft &&
-          new Decimal(invoice.ecoPeaCoalLeft).toString()}
+        {application.ecoPealCoalInInvoices}
       </Table.Cell>
     </Table.Row>
   );

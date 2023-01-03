@@ -1,30 +1,37 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Label, Spinner, TextInput } from "flowbite-react";
+import { Label, Pagination, Spinner, TextInput } from "flowbite-react";
 import { FormEvent, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useDebounce } from "react-use";
-import filterInvoicesListSchema, {
-  FilterInvoicesListSchemaType,
-} from "../../../schemas/filterInvoicesListSchema";
+import filterApplicationsListSchema, {
+  FilterApplicationsListSchemaType,
+} from "../../../schemas/filterApplicationsListSchema";
 import { trpc } from "../../../utils/trpc";
-import InvoicesTable from "./InvoicesTable";
+import ApplicationsTable from "./ApplicationsTable";
 
-export default function InvoicesList() {
-  const form = useForm<FilterInvoicesListSchemaType>({
+const pageSize = 20;
+
+export default function ApplicationsList() {
+  const form = useForm<FilterApplicationsListSchemaType>({
     mode: "onTouched",
-    resolver: zodResolver(filterInvoicesListSchema),
+    resolver: zodResolver(filterApplicationsListSchema),
     defaultValues: {
       sortDir: "desc",
     },
   });
   const { register, watch } = form;
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState(search);
 
-  const { data, isLoading, error } = trpc.invoices.getFiltered.useQuery({
+  const { data, isLoading, error } = trpc.applications.getFiltered.useQuery({
     ...watch(),
     search: debouncedSearch,
+    skip: (page - 1) * pageSize,
+    take: pageSize,
   });
+
+  const totalPages = (data?.total || 0) / pageSize;
 
   const searchChangeHandler = (
     event: FormEvent<HTMLInputElement> | undefined,
@@ -35,6 +42,7 @@ export default function InvoicesList() {
   useDebounce(
     () => {
       setDebouncedSearch(search);
+      setPage(1);
     },
     600,
     [search],
@@ -54,13 +62,16 @@ export default function InvoicesList() {
             onChange={searchChangeHandler}
           />
         </div>
-        <div>
-          {isLoading && (
-            <Spinner color="success" size="xl" />
-          )}
-        </div>
+        <div>{isLoading && <Spinner color="success" size="xl" />}</div>
       </div>
-      <InvoicesTable invoices={data || []} isError={!!error} />
+      <ApplicationsTable applications={data?.applications} isError={!!error} />
+      <Pagination
+        currentPage={page}
+        onPageChange={(page) => page < totalPages && setPage(page)}
+        totalPages={totalPages}
+        previousLabel="Wstecz"
+        nextLabel="Dalej"
+      />
     </FormProvider>
   );
 }

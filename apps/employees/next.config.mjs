@@ -9,9 +9,7 @@
 const config = {
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    transpilePackages: ["@acme/db"],
-  },
+  transpilePackages: ["@acme/db", "@acme/ui"],
   images: {
     remotePatterns: [
       {

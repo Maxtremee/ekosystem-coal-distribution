@@ -1,62 +1,58 @@
 import { z } from "zod";
-import addInvoiceSchema from "../../../schemas/addInvoiceSchema";
-import filterInvoicesListSchema from "../../../schemas/filterInvoicesListSchema";
+import { backendAddInvoiceSchema } from "../../../schemas/invoiceSchema";
 import { router, protectedProcedure } from "../trpc";
 
 export const invoicesRouter = router({
   add: protectedProcedure
-    .input(addInvoiceSchema)
+    .input(backendAddInvoiceSchema)
     .mutation(async ({ input, ctx }) => {
-      const data = await ctx.prisma.invoice.create({
-        data: {
-          ...input,
-          nutCoalLeft: input?.declaredNutCoal,
-          ecoPeaCoalLeft: input?.declaredEcoPeaCoal,
-        },
+      return await ctx.prisma.invoice.create({
+        data: input,
       });
-      return data;
     }),
-  checkApplicationIdUnique: protectedProcedure
+  checkIfUnique: protectedProcedure
     .input(
       z.object({
-        applicationId: z.string(),
+        name: z.string(),
       }),
     )
     .query(async ({ input, ctx }) => {
-      const data = await ctx.prisma.invoice.findUnique({
+      return await ctx.prisma.application.findUnique({
         where: {
-          applicationId: input.applicationId,
+          name: input.name,
         },
       });
-      return data;
     }),
-  getFiltered: protectedProcedure
-    .input(filterInvoicesListSchema)
+  checkIfApplicationExists: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+      }),
+    )
     .query(async ({ input, ctx }) => {
-      const data = await ctx.prisma.invoice.findMany({
-        orderBy: {
-          [input.sortBy || "createdAt"]: input.sortDir,
-        },
+      const application = await ctx.prisma.application.findUnique({
         where: {
-          OR: [
-            {
-              applicationId: {
-                contains: input?.search,
-              },
-            },
-            {
-              name: {
-                contains: input?.search,
-              },
-            },
-            {
-              createdBy: {
-                contains: input?.search,
-              },
-            },
-          ],
+          name: input.name,
+        },
+        include: {
+          invoices: true,
         },
       });
-      return data;
+      return (
+        application && {
+          ...application,
+          ecoPeaCoalInInvoices:
+            application.invoices.reduce(
+              (acc, { declaredEcoPeaCoal }) =>
+                declaredEcoPeaCoal ? acc + declaredEcoPeaCoal.toNumber() : acc,
+              0,
+            ) || 0,
+          nutCoalInInvoices: application.invoices.reduce(
+            (acc, { declaredNutCoal }) =>
+              declaredNutCoal ? acc + declaredNutCoal.toNumber() : acc,
+            0,
+          ),
+        }
+      );
     }),
 });

@@ -8,15 +8,16 @@
     "clean": "rm -rf .turbo node_modules",
     "with-env": "dotenv -e ../../.env --",
     "dev": "pnpm with-env prisma studio --port 5556",
-    "db-push": "pnpm with-env prisma db push",
-    "db-generate": "pnpm with-env prisma generate"
+    "db-generate": "pnpm with-env prisma generate",
+    "db-migrate-dev": "pnpm with-env prisma migrate dev",
+    "db-migrate": "pnpm with-env prisma migrate deploy",
+    "start": "pnpm with-env prisma migrate deploy"
   },
   "dependencies": {
     "@prisma/client": "^4.6.1"
   },
   "devDependencies": {
-    "dotenv-cli": "^6.0.0",
-    "prisma": "^4.6.1",
-    "typescript": "^4.9.3"
+    "dotenv-cli": "6.0.0",
+    "prisma": "^4.6.1"
   }
 }
