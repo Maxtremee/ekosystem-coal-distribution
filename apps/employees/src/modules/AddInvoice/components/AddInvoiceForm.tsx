@@ -87,9 +87,7 @@ export default function AddInvoiceForm({
 
   return (
     <form
-      className={`flex w-full flex-col gap-4 ${
-        !application && "pointer-events-none opacity-50"
-      }`}
+      className="flex w-full flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div>

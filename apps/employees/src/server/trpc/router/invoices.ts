@@ -17,7 +17,7 @@ export const invoicesRouter = router({
       }),
     )
     .query(async ({ input, ctx }) => {
-      return await ctx.prisma.application.findUnique({
+      return await ctx.prisma.invoice.findUnique({
         where: {
           name: input.name,
         },
@@ -30,9 +30,9 @@ export const invoicesRouter = router({
       }),
     )
     .query(async ({ input, ctx }) => {
-      const application = await ctx.prisma.application.findUnique({
+      const application = await ctx.prisma.application.findFirst({
         where: {
-          name: input.name,
+          applicantName: input.name,
         },
         include: {
           invoices: true,

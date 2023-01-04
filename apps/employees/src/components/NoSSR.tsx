@@ -1,9 +1,9 @@
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-type Props = {
-  children: ReactNode; // React.ReactNode
-  fallback: JSX.Element | null; // JSX.Element
-};
+interface Props {
+  children: any; // React.ReactNode
+  fallback?: any; // JSX.Element
+}
 
 const NoSSR = ({ children, fallback = null }: Props) => {
   const [mounted, setMounted] = useState(false);
