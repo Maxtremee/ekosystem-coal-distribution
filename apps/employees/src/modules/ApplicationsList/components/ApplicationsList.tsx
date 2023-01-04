@@ -1,5 +1,6 @@
+import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Label, Pagination, Spinner, TextInput } from "flowbite-react";
+import { Alert, Label, Pagination, Spinner, TextInput } from "flowbite-react";
 import { FormEvent, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useDebounce } from "react-use";
@@ -62,9 +63,18 @@ export default function ApplicationsList() {
             onChange={searchChangeHandler}
           />
         </div>
-        <div>{isLoading && <Spinner color="success" size="xl" />}</div>
       </div>
       <ApplicationsTable applications={data?.applications} isError={!!error} />
+      {isLoading && (
+        <div>
+          <Spinner color="success" size="xl" />
+        </div>
+      )}
+      {data?.applications && data?.applications?.length < 1 && (
+        <Alert color="info" icon={InformationCircleIcon}>
+          Brak wyników
+        </Alert>
+      )}
       <Pagination
         currentPage={page}
         onPageChange={(page) => page < totalPages && setPage(page)}

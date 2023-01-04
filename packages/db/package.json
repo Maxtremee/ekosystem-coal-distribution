@@ -10,6 +10,7 @@
     "dev": "pnpm with-env prisma studio --port 5556",
     "db-generate": "pnpm with-env prisma generate",
     "db-migrate-dev": "pnpm with-env prisma migrate dev",
+    "db-migrate-dev-reset": "pnpm with-env prisma migrate reset",
     "db-migrate": "pnpm with-env prisma migrate deploy",
     "start": "pnpm with-env prisma migrate deploy"
   },

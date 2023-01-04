@@ -2,6 +2,7 @@ import { z } from "zod";
 import { backendAddApplicationSchema } from "../../../schemas/applicationSchema";
 import filterApplicationsListSchema from "../../../schemas/filterApplicationsListSchema";
 import { router, protectedProcedure } from "../trpc";
+import { Prisma } from "@acme/db";
 
 export const applicationsRouter = router({
   add: protectedProcedure
@@ -11,27 +12,15 @@ export const applicationsRouter = router({
         data: input,
       });
     }),
-  checkIfUnique: protectedProcedure
-    .input(
-      z.object({
-        name: z.string(),
-      }),
-    )
-    .query(async ({ input, ctx }) => {
-      return await ctx.prisma.application.findUnique({
-        where: {
-          name: input.name,
-        },
-      });
-    }),
   getFiltered: protectedProcedure
     .input(filterApplicationsListSchema)
     .query(async ({ input, ctx }) => {
-      const filters = {
+      const filters: Prisma.ApplicationWhereInput = {
         OR: [
           {
-            name: {
+            applicantName: {
               contains: input?.search,
+              mode: "insensitive",
             },
           },
           {
@@ -39,13 +28,9 @@ export const applicationsRouter = router({
               some: {
                 name: {
                   contains: input?.search,
+                  mode: "insensitive",
                 },
               },
-            },
-          },
-          {
-            createdBy: {
-              contains: input?.search,
             },
           },
         ],

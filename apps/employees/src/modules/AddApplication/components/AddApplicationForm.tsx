@@ -1,24 +1,19 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { trpc } from "../../../utils/trpc";
-import { Button, Label, Spinner, TextInput } from "flowbite-react";
+import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
 import { InputError } from "@acme/ui";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { useState } from "react";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
-import { useDebounce } from "react-use";
 import frontendAddApplicationSchema, {
   FrontendAddApplicationSchemaType,
 } from "../../../schemas/applicationSchema";
 
 export default function AddApplicationForm() {
-  const [debouncedApplicationName, setDebouncedApplicationName] = useState("");
   const {
     register,
     handleSubmit,
-    watch,
-    setError,
     formState: { isValid, errors },
   } = useForm<FrontendAddApplicationSchemaType>({
     mode: "onTouched",
@@ -28,20 +23,6 @@ export default function AddApplicationForm() {
   const router = useRouter();
   const { user } = useUser();
   const { mutate, isLoading } = trpc.applications.add.useMutation();
-
-  trpc.applications.checkIfUnique.useQuery(
-    { name: debouncedApplicationName },
-    {
-      enabled: !!debouncedApplicationName,
-      onSuccess: (data) => {
-        if (data) {
-          setError("name", {
-            message: "Taki wniosek już istnieje",
-          });
-        }
-      },
-    },
-  );
 
   const onSubmit = (data: FrontendAddApplicationSchemaType) =>
     mutate(
@@ -57,28 +38,29 @@ export default function AddApplicationForm() {
       },
     );
 
-  const applicationNameWatch = watch("name");
-  useDebounce(
-    () => {
-      setDebouncedApplicationName(applicationNameWatch);
-    },
-    600,
-    [applicationNameWatch],
-  );
-
   return (
     <form
       className="flex w-full flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div>
-        <Label htmlFor="applicationName">Numer wniosku</Label>
+        <Label htmlFor="applicantName">Imię i nazwisko</Label>
         <TextInput
-          {...register("name")}
-          id="applicationName"
-          placeholder="Numer wniosku"
+          {...register("applicantName")}
+          id="applicantName"
+          placeholder="Imię i nazwisko"
         />
-        <InputError error={errors?.name?.message} />
+        <InputError error={errors?.applicantName?.message} />
+      </div>
+      <div>
+        <Label htmlFor="additionalInformation">Dodatkowe informacje</Label>
+        <Textarea
+          {...register("additionalInformation")}
+          id="additionalInformation"
+          placeholder="Dodatkowe informacje"
+          rows={3}
+        />
+        <InputError error={errors?.applicantName?.message} />
       </div>
       <div>
         <Label htmlFor="issueDate">Data wystawienia</Label>

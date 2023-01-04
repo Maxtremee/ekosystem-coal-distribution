@@ -22,10 +22,11 @@ model Application {
   createdBy String //email
   updatedBy String? //email
 
-  name               String   @unique
-  issueDate          DateTime
-  declaredNutCoal    Decimal?
-  declaredEcoPeaCoal Decimal?
+  applicantName         String
+  additionalInformation String?
+  issueDate             DateTime
+  declaredNutCoal       Decimal?
+  declaredEcoPeaCoal    Decimal?
 
   invoices Invoice[]
 }

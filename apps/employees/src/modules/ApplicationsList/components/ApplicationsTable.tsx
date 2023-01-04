@@ -48,11 +48,11 @@ export default function ApplicationsTable({
       <Table.Head>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => onHeaderClick("name")}
+          onClick={() => onHeaderClick("applicantName")}
         >
           <div className="flex">
-            Numer wniosku
-            {showChevron("name")}
+            Imię i nazwisko
+            {showChevron("applicantName")}
           </div>
         </Table.HeadCell>
         <Table.HeadCell

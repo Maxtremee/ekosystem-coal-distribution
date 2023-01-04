@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 const baseAddApplicationSchema = z.object({
-  name: z.string(),
+  applicantName: z.string(),
+  additionalInformation: z.string().optional(),
   issueDate: z.string().or(z.date()),
   declaredNutCoal: z.coerce.number().nonnegative().optional(),
   declaredEcoPeaCoal: z.coerce.number().nonnegative().optional(),

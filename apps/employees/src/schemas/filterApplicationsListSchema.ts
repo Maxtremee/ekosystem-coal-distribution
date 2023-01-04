@@ -6,7 +6,14 @@ const filterApplicationsListSchema = z.object({
   search: z.string().optional(),
   sortDir: z.enum(["asc", "desc"]).optional(),
   sortBy: z
-    .enum(["id", "issueDate", "name", "declaredEcoPeaCoal", "declaredNutCoal"])
+    .enum([
+      "id",
+      "issueDate",
+      "applicantName",
+      "additionalDetails",
+      "declaredEcoPeaCoal",
+      "declaredNutCoal",
+    ])
     .optional(),
 });
 
