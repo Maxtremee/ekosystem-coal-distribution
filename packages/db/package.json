@@ -14,10 +14,10 @@
     "start": "pnpm with-env prisma migrate deploy"
   },
   "dependencies": {
-    "@prisma/client": "^4.6.1"
+    "@prisma/client": "4.8.0"
   },
   "devDependencies": {
     "dotenv-cli": "6.0.0",
-    "prisma": "^4.6.1"
+    "prisma": "4.8.0"
   }
 }

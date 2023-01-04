@@ -1,4 +1,3 @@
-import { Application } from "@acme/db";
 import { z } from "zod";
 import { backendAddApplicationSchema } from "../../../schemas/applicationSchema";
 import filterApplicationsListSchema from "../../../schemas/filterApplicationsListSchema";

@@ -6,7 +6,7 @@ export default function LogoutPage() {
 
   useEffect(() => {
     router.push("/");
-  }, []);
+  }, [router]);
 
   return <div />;
 }

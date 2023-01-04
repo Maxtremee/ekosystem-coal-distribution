@@ -12,7 +12,7 @@ const Home: NextPage = () => {
     if (user?.email) {
       router.push("/applications");
     }
-  }, [user]);
+  }, [user, router]);
 
   return (
     <Button href="/api/auth/login?returnTo=/applications" color="success">

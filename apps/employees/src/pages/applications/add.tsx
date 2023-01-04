@@ -6,7 +6,7 @@ import AddApplicationForm from "../../modules/AddApplication/components/AddAppli
 function AddInvoicePage() {
   return (
     <Card className="w-full">
-      <Text as="h5">Dodaj nową fakturę</Text>
+      <Text as="h5">Dodaj nowy wniosek</Text>
       <AddApplicationForm />
     </Card>
   );
