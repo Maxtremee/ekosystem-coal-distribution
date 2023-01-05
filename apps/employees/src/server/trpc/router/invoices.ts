@@ -26,13 +26,13 @@ export const invoicesRouter = router({
   checkIfApplicationExists: protectedProcedure
     .input(
       z.object({
-        name: z.string(),
+        id: z.string(),
       }),
     )
     .query(async ({ input, ctx }) => {
-      const application = await ctx.prisma.application.findFirst({
+      const application = await ctx.prisma.application.findUnique({
         where: {
-          applicantName: input.name,
+          id: input.id,
         },
         include: {
           invoices: true,

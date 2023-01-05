@@ -5,13 +5,10 @@ export default function Dropdown() {
   return (
     <FlowbiteDropdown label="Opcje">
       <Link href="/applications">
-        <FlowbiteDropdown.Item>Lista faktur</FlowbiteDropdown.Item>
+        <FlowbiteDropdown.Item>Lista wniosków</FlowbiteDropdown.Item>
       </Link>
       <Link href="/applications/add">
         <FlowbiteDropdown.Item>Dodaj wniosek</FlowbiteDropdown.Item>
-      </Link>
-      <Link href="/invoices/add">
-        <FlowbiteDropdown.Item>Dodaj fakturę</FlowbiteDropdown.Item>
       </Link>
     </FlowbiteDropdown>
   );

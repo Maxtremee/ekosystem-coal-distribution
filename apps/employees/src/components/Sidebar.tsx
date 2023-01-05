@@ -17,11 +17,6 @@ export default function Sidebar() {
               Dodaj wniosek
             </FlowbiteSidebar.Item>
           </Link>
-          <Link href="/invoices/add" passHref>
-            <FlowbiteSidebar.Item icon={PlusIcon}>
-              Dodaj fakturę
-            </FlowbiteSidebar.Item>
-          </Link>
         </FlowbiteSidebar.ItemGroup>
       </FlowbiteSidebar.Items>
     </FlowbiteSidebar>

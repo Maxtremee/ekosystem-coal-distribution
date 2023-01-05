@@ -12,6 +12,35 @@ export const applicationsRouter = router({
         data: input,
       });
     }),
+  getDetails: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const application = await ctx.prisma.application.findUnique({
+        where: {
+          id: input.id,
+        },
+        include: {
+          invoices: true,
+        },
+      });
+      return {
+        ...application,
+        ecoPeaCoalInInvoices: application?.invoices.reduce(
+          (acc, { declaredEcoPeaCoal }) =>
+            declaredEcoPeaCoal ? acc + declaredEcoPeaCoal.toNumber() : acc,
+          0,
+        ),
+        nutCoalInInvoices: application?.invoices.reduce(
+          (acc, { declaredNutCoal }) =>
+            declaredNutCoal ? acc + declaredNutCoal.toNumber() : acc,
+          0,
+        ),
+      };
+    }),
   getFiltered: protectedProcedure
     .input(filterApplicationsListSchema)
     .query(async ({ input, ctx }) => {
