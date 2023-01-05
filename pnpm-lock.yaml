@@ -99,11 +99,13 @@ importers:
       eslint: 8.31.0
       eslint-config-next: 13.1.1
       next: 13.1.1
+      next-query-params: ^4.1.0
       react: 18.2.0
       react-dom: 18.2.0
       react-hook-form: 7.41.5
       react-use: 17.4.0
       superjson: 1.12.1
+      use-query-params: ^2.1.2
       zod: 3.20.2
     dependencies:
       '@acme/db': link:../../packages/db
@@ -120,11 +122,13 @@ importers:
       dayjs: 1.11.7
       decimal.js: 10.4.3
       next: 13.1.1_biqbaboplfbrettd7655fr4n2y
+      next-query-params: 4.1.0_ntivn4suwvjp473kkfy3tj6sri
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-hook-form: 7.41.5_react@18.2.0
       react-use: 17.4.0_biqbaboplfbrettd7655fr4n2y
       superjson: 1.12.1
+      use-query-params: 2.1.2_biqbaboplfbrettd7655fr4n2y
       zod: 3.20.2
     devDependencies:
       '@types/node': 18.11.18
@@ -2986,6 +2990,19 @@ packages:
   /natural-compare/1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
+  /next-query-params/4.1.0_ntivn4suwvjp473kkfy3tj6sri:
+    resolution: {integrity: sha512-jjoQByM9s2d4wCUBUazhgHNVztm18meCtVoDj6v45+LZIQfxAF5QYVFKCbDYarI3iXD4xcZprztqLtALiiV8nQ==}
+    peerDependencies:
+      next: ^10.0.0 || ^11.0.0 || ^12.0.0 || ^13.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      use-query-params: ^2.0.0
+    dependencies:
+      next: 13.1.1_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
+      tslib: 2.4.1
+      use-query-params: 2.1.2_biqbaboplfbrettd7655fr4n2y
+    dev: false
+
   /next/13.1.1_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-R5eBAaIa3X7LJeYvv1bMdGnAVF4fVToEjim7MkflceFPuANY3YyvFxXee/A+acrSYwYPvOvf7f6v/BM/48ea5w==}
     engines: {node: '>=14.6.0'}
@@ -3732,6 +3749,10 @@ packages:
     dependencies:
       lru-cache: 6.0.0
 
+  /serialize-query-params/2.0.2:
+    resolution: {integrity: sha512-1chMo1dST4pFA9RDXAtF0Rbjaut4is7bzFbI1Z26IuMub68pNCILku85aYmeFhvnY//BXUPUhoRMjYcsT93J/Q==}
+    dev: false
+
   /set-harmonic-interval/1.0.1:
     resolution: {integrity: sha512-AhICkFV84tBP1aWqPwLZqFvAwqEoVA9kxNMniGEUvzOlm4vLmOFLiTT3UZ6bziJTy4bOVpzWGTfSCbmaayGx8g==}
     engines: {node: '>=6.9'}
@@ -4232,6 +4253,17 @@ packages:
     engines: {node: '>=4'}
     dependencies:
       prepend-http: 2.0.0
+    dev: false
+
+  /use-query-params/2.1.2_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-evg64srKaILvKyRQ1zpXvekTC7rktAT7OAekU7x6naHrOMqLHtq0MHR/PtKIQAP4d7HrkYNVOS8exHhiWy7m3A==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      serialize-query-params: 2.0.2
     dev: false
 
   /use-sync-external-store/1.2.0_react@18.2.0:

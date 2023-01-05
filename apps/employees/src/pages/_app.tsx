@@ -1,7 +1,8 @@
-// src/pages/_app.tsx
 import "../styles/globals.css";
 import type { AppType } from "next/app";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
+import { NextAdapter } from "next-query-params";
+import { QueryParamProvider } from "use-query-params";
 
 import { trpc } from "../utils/trpc";
 import RenderLayout from "../components/RenderLayout";
@@ -14,11 +15,13 @@ const App: AppType = ({ Component, pageProps: { ...pageProps } }) => {
         <title>EkoSystem Coal Distribution Employees</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <UserProvider>
-        <RenderLayout>
-          <Component {...pageProps} />
-        </RenderLayout>
-      </UserProvider>
+      <QueryParamProvider adapter={NextAdapter}>
+        <UserProvider>
+          <RenderLayout>
+            <Component {...pageProps} />
+          </RenderLayout>
+        </UserProvider>
+      </QueryParamProvider>
     </>
   );
 };

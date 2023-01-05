@@ -1,4 +1,6 @@
+import { Prisma } from "@acme/db";
 import { z } from "zod";
+import filterApplicationsListSchema from "../../../schemas/filterApplicationsListSchema";
 import { backendAddInvoiceSchema } from "../../../schemas/invoiceSchema";
 import { router, protectedProcedure } from "../trpc";
 
@@ -54,5 +56,53 @@ export const invoicesRouter = router({
           ),
         }
       );
+    }),
+  getFilteredWithApplicationId: protectedProcedure
+    .input(
+      filterApplicationsListSchema.extend({
+        applicationId: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const filters: Prisma.InvoiceWhereInput = {
+        applicationId: input.applicationId,
+        OR: [
+          {
+            name: {
+              contains: input?.search,
+              mode: "insensitive",
+            },
+          },
+          {
+            Application: {
+              applicantName: {
+                contains: input?.search,
+                mode: "insensitive",
+              },
+            },
+          },
+        ],
+      };
+      const data = await ctx.prisma.$transaction([
+        ctx.prisma.invoice.count({
+          where: filters,
+        }),
+        ctx.prisma.invoice.findMany({
+          where: filters,
+          skip: input?.skip,
+          take: input?.take,
+          include: {
+            stockIssues: true,
+            Application: true,
+          },
+          orderBy: {
+            [input.sortBy || "createdAt"]: input.sortDir,
+          },
+        }),
+      ]);
+      return {
+        total: data[0],
+        invoices: data[1],
+      };
     }),
 });

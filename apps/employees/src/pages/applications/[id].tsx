@@ -3,6 +3,7 @@ import { Alert, Button, Spinner } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import ApplicationDetails from "../../modules/ApplicationDetails";
+import InvoiceList from "../../modules/InvoiceList";
 import { trpc } from "../../utils/trpc";
 
 function ApplicationDetailsPage() {
@@ -44,6 +45,7 @@ function ApplicationDetailsPage() {
         </Link>
       </div>
       <ApplicationDetails application={data} />
+      <InvoiceList applicationId={data.id} />
     </div>
   );
 }
