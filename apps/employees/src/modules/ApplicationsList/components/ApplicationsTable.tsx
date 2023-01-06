@@ -1,67 +1,46 @@
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import { Alert, Table } from "flowbite-react";
-import { useFormContext } from "react-hook-form";
-import { FilterApplicationsListSchemaType } from "../../../schemas/filterApplicationsListSchema";
+import { useFilteringContext } from "../../../components/FilteringContext";
 import { RouterOutputs } from "../../../utils/trpc";
 import ApplicationsTableRow from "./ApplicationsTableRow";
+
+type ApplicationsType =
+  RouterOutputs["applications"]["getFiltered"]["applications"];
 
 export default function ApplicationsTable({
   applications,
   isError,
 }: {
-  applications:
-    | RouterOutputs["applications"]["getFiltered"]["applications"]
-    | undefined;
+  applications: ApplicationsType | undefined;
   isError: boolean;
 }) {
-  const { setValue, getValues, watch } =
-    useFormContext<FilterApplicationsListSchemaType>();
+  const { onHeaderClick, showChevron } = useFilteringContext();
 
   if (isError) {
     return <Alert color="failure">Błąd ładowania listy wniosków</Alert>;
   }
-
-  const onHeaderClick = (id: FilterApplicationsListSchemaType["sortBy"]) => {
-    if (getValues("sortBy") !== id) {
-      setValue("sortBy", id);
-      setValue("sortDir", "desc");
-    } else {
-      if (getValues("sortDir") === "desc") {
-        setValue("sortDir", "asc");
-      } else {
-        setValue("sortDir", "desc");
-      }
-    }
-  };
-
-  const showChevron = (id: FilterApplicationsListSchemaType["sortBy"]) => {
-    if (getValues("sortBy") === id) {
-      if (getValues("sortDir") === "asc") {
-        return <ChevronUpIcon width={30} height={30} />;
-      }
-      return <ChevronDownIcon width={30} height={30} />;
-    }
-  };
+  
+  const headerClickHandler = onHeaderClick<keyof ApplicationsType[number]>();
+  const showChevronHandler = showChevron<keyof ApplicationsType[number]>();
 
   return (
     <Table hoverable>
       <Table.Head>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => onHeaderClick("applicantName")}
+          onClick={() => headerClickHandler("applicantName")}
         >
           <div className="flex">
             Imię i nazwisko
-            {showChevron("applicantName")}
+            {showChevronHandler("applicantName")}
           </div>
         </Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => onHeaderClick("issueDate")}
+          onClick={() => headerClickHandler("issueDate")}
         >
           <div className="flex">
             Data złożenia
-            {showChevron("issueDate")}
+            {showChevronHandler("issueDate")}
           </div>
         </Table.HeadCell>
         <Table.HeadCell>
@@ -69,21 +48,21 @@ export default function ApplicationsTable({
         </Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => onHeaderClick("declaredNutCoal")}
+          onClick={() => headerClickHandler("declaredNutCoal")}
         >
           <div className="flex">
             Zadeklarowana ilość węgla - orzech
-            {showChevron("declaredNutCoal")}
+            {showChevronHandler("declaredNutCoal")}
           </div>
         </Table.HeadCell>
         <Table.HeadCell>Ilość węgla wydana w fakturach - orzech</Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => onHeaderClick("declaredEcoPeaCoal")}
+          onClick={() => headerClickHandler("declaredEcoPeaCoal")}
         >
           <div className="flex">
             Zadeklarowana ilość węgla - groszek
-            {showChevron("declaredEcoPeaCoal")}
+            {showChevronHandler("declaredEcoPeaCoal")}
           </div>
         </Table.HeadCell>
         <Table.HeadCell>

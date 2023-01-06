@@ -1,3 +1,4 @@
+import { ChevronUpIcon } from "@heroicons/react/24/solid";
 import { FormEvent, useState } from "react";
 import { useDebounce } from "react-use";
 import {
@@ -14,17 +15,26 @@ const defaultFilters = {
   pageSize: 20,
   page: 1,
   search: "",
+  sortBy: "createdAt",
 };
 
 type FilteringValues<T extends QueryParamConfigMap> = {
   skip: number;
   take: number;
   sortDir: "asc" | "desc";
+  sortBy: string;
   page: number;
   search: string;
 } & Record<keyof T, string>;
 
 export type UseFilteringReturn<T extends QueryParamConfigMap> = {
+  pageSize: number;
+  values: FilteringValues<T>;
+  getTotalPages: (length?: number) => number;
+  onHeaderClick: <T extends string | number | symbol>() => (id: T) => void;
+  showChevron: <T extends string | number | symbol>() => (
+    id: T,
+  ) => null | JSX.Element;
   setValue: (
     filter: keyof typeof defaultFilters | keyof T,
     value: unknown,
@@ -34,17 +44,16 @@ export type UseFilteringReturn<T extends QueryParamConfigMap> = {
     value: string | number | undefined;
     name: string;
   };
-  pageSize: number;
-  values: FilteringValues<T>;
 };
 
 export const useFiltering = <T extends QueryParamConfigMap>(
-  filters: QueryParamConfigMap,
+  filters?: QueryParamConfigMap,
 ): UseFilteringReturn<T> => {
   const [query, setQuery] = useQueryParams({
     page: withDefault(NumberParam, defaultFilters.page),
     pageSize: withDefault(NumberParam, defaultFilters.pageSize),
     search: withDefault(StringParam, defaultFilters.search),
+    sortBy: withDefault(StringParam, "createdAt"),
     sortDir: withDefault(
       createEnumParam(["asc", "desc"]),
       defaultFilters.sortDir,
@@ -86,17 +95,60 @@ export const useFiltering = <T extends QueryParamConfigMap>(
     };
   };
 
+  const getTotalPages = (length?: number) => {
+    if (length) {
+      return length / query.pageSize;
+    }
+    return 0;
+  };
+
+  const onHeaderClick =
+    <T extends string | number | symbol>() =>
+    (id: T) => {
+      if (query.sortBy !== id) {
+        setQuery({
+          sortBy: id as string,
+          sortDir: "desc",
+        });
+      } else {
+        setQuery({
+          sortDir: query.sortDir === "desc" ? "asc" : "desc",
+        });
+      }
+    };
+
+  const showChevron =
+    <T extends string | number | symbol>() =>
+    // eslint-disable-next-line react/display-name
+    (id: T) => {
+      if (query.sortBy === id) {
+        return (
+          <ChevronUpIcon
+            width={30}
+            height={30}
+            className={`transition-transform ${
+              query.sortDir === "asc" ? "rotate-0" : "rotate-180"
+            }`}
+          />
+        );
+      }
+      return null;
+    };
+
   return {
     setValue,
     register,
+    getTotalPages,
+    onHeaderClick,
+    showChevron,
     pageSize: query.pageSize,
     values: {
       ...query,
-      sortDir: query?.sortDir === "asc" ? "asc" : "desc",
       search: debouncedSearch,
       skip: (query.page - 1) * query.pageSize,
       take: query.pageSize,
     } as FilteringValues<T>,
   };
 };
+
 export default useFiltering;

@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { backendAddApplicationSchema } from "../../../schemas/applicationSchema";
-import filterApplicationsListSchema from "../../../schemas/filterApplicationsListSchema";
 import { router, protectedProcedure } from "../trpc";
 import { Prisma } from "@acme/db";
+import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
 
 export const applicationsRouter = router({
   add: protectedProcedure
@@ -42,7 +42,7 @@ export const applicationsRouter = router({
       };
     }),
   getFiltered: protectedProcedure
-    .input(filterApplicationsListSchema)
+    .input(defaultFilteringSchema)
     .query(async ({ input, ctx }) => {
       const filters: Prisma.ApplicationWhereInput = {
         OR: [
@@ -75,7 +75,7 @@ export const applicationsRouter = router({
             invoices: true,
           },
           orderBy: {
-            [input.sortBy || "createdAt"]: input.sortDir,
+            [input.sortBy]: input.sortDir,
           },
           where: filters,
         }),

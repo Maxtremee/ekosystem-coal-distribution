@@ -1,12 +1,9 @@
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import { Alert, Table } from "flowbite-react";
 import { useFilteringContext } from "../../../components/FilteringContext";
 import { RouterOutputs } from "../../../utils/trpc";
-import { InvoiceAdditionalParamsType } from "./InvoiceList";
 import InvoiceTableRow from "./InvoiceTableRow";
 
-type InvoicesType =
-  RouterOutputs["invoices"]["getFilteredWithApplicationId"]["invoices"];
+type InvoicesType = RouterOutputs["invoices"]["getFiltered"]["invoices"];
 
 export default function InvoiceTable({
   invoices,
@@ -15,53 +12,34 @@ export default function InvoiceTable({
   invoices: InvoicesType | undefined;
   isError: boolean;
 }) {
-  const { values, setValue } =
-    useFilteringContext<InvoiceAdditionalParamsType>();
+  const { onHeaderClick, showChevron } = useFilteringContext();
 
   if (isError) {
     return <Alert color="failure">Błąd ładowania listy faktur</Alert>;
   }
-  const onHeaderClick = (id: keyof InvoicesType[number]) => {
-    if (values.sortBy !== id) {
-      setValue("sortBy", id);
-      setValue("sortDir", "desc");
-    } else {
-      if (values.sortDir === "desc") {
-        setValue("sortDir", "asc");
-      } else {
-        setValue("sortDir", "desc");
-      }
-    }
-  };
 
-  const showChevron = (id: keyof InvoicesType[number]) => {
-    if (values.sortBy === id) {
-      if (values.sortDir === "asc") {
-        return <ChevronUpIcon width={30} height={30} />;
-      }
-      return <ChevronDownIcon width={30} height={30} />;
-    }
-  };
+  const headerClickHandler = onHeaderClick<keyof InvoicesType[number]>();
+  const showChevronHandler = showChevron<keyof InvoicesType[number]>();
 
   return (
     <Table hoverable>
       <Table.Head>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => onHeaderClick("id")}
+          onClick={() => headerClickHandler("name")}
         >
           <div className="flex">
             Numer faktury
-            {showChevron("id")}
+            {showChevronHandler("name")}
           </div>
         </Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => onHeaderClick("issueDate")}
+          onClick={() => headerClickHandler("issueDate")}
         >
           <div className="flex">
             Data złożenia
-            {showChevron("issueDate")}
+            {showChevronHandler("issueDate")}
           </div>
         </Table.HeadCell>
         <Table.HeadCell>
@@ -69,20 +47,20 @@ export default function InvoiceTable({
         </Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => onHeaderClick("declaredNutCoal")}
+          onClick={() => headerClickHandler("declaredNutCoal")}
         >
           <div className="flex">
             Zadeklarowana ilość węgla - orzech
-            {showChevron("declaredNutCoal")}
+            {showChevronHandler("declaredNutCoal")}
           </div>
         </Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => onHeaderClick("declaredEcoPeaCoal")}
+          onClick={() => headerClickHandler("declaredEcoPeaCoal")}
         >
           <div className="flex">
             Zadeklarowana ilość węgla - groszek
-            {showChevron("declaredEcoPeaCoal")}
+            {showChevronHandler("declaredEcoPeaCoal")}
           </div>
         </Table.HeadCell>
       </Table.Head>

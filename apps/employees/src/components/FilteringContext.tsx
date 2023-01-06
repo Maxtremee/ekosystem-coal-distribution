@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { ReactNode } from "react";
 import { createContext } from "react";
 import { QueryParamConfigMap } from "use-query-params";
-import useFiltering, { UseFilteringReturn } from "../hooks/useFiltering";
+import { UseFilteringReturn } from "../hooks/useFiltering";
 
 const FilteringContext = createContext({});
 

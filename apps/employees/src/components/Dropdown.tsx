@@ -10,6 +10,9 @@ export default function Dropdown() {
       <Link href="/applications/add">
         <FlowbiteDropdown.Item>Dodaj wniosek</FlowbiteDropdown.Item>
       </Link>
+      <Link href="/invoices" passHref>
+        <FlowbiteDropdown.Item>Lista faktur</FlowbiteDropdown.Item>
+      </Link>
     </FlowbiteDropdown>
   );
 }

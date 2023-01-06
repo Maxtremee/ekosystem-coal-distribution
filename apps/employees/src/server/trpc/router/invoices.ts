@@ -1,6 +1,6 @@
 import { Prisma } from "@acme/db";
 import { z } from "zod";
-import filterApplicationsListSchema from "../../../schemas/filterApplicationsListSchema";
+import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
 import { backendAddInvoiceSchema } from "../../../schemas/invoiceSchema";
 import { router, protectedProcedure } from "../trpc";
 
@@ -57,15 +57,15 @@ export const invoicesRouter = router({
         }
       );
     }),
-  getFilteredWithApplicationId: protectedProcedure
+  getFiltered: protectedProcedure
     .input(
-      filterApplicationsListSchema.extend({
-        applicationId: z.string(),
+      defaultFilteringSchema.extend({
+        applicationId: z.string().optional(),
       }),
     )
     .query(async ({ input, ctx }) => {
       const filters: Prisma.InvoiceWhereInput = {
-        applicationId: input.applicationId,
+        applicationId: input?.applicationId,
         OR: [
           {
             name: {
@@ -96,7 +96,7 @@ export const invoicesRouter = router({
             Application: true,
           },
           orderBy: {
-            [input.sortBy || "createdAt"]: input.sortDir,
+            [input.sortBy]: input.sortDir,
           },
         }),
       ]);
