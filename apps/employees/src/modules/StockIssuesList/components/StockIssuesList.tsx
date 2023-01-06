@@ -1,8 +1,6 @@
-import { Text } from "@acme/ui";
+import { FilteringProvider, Text, useFiltering } from "@acme/ui";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { Alert, Label, Pagination, Spinner, TextInput } from "flowbite-react";
-import FilteringProvider from "../../../components/FilteringContext";
-import useFiltering from "../../../hooks/useFiltering";
 import { trpc } from "../../../utils/trpc";
 import StockIssuesTable from "./StockIssuesTable";
 

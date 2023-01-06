@@ -1,5 +1,5 @@
+import { useFilteringContext } from "@acme/ui";
 import { Alert, Table } from "flowbite-react";
-import { useFilteringContext } from "../../../components/FilteringContext";
 import { RouterOutputs } from "../../../utils/trpc";
 import StockIssuesTableRow from "./StockIssuesTableRow";
 

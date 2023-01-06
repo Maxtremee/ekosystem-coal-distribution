@@ -11,7 +11,7 @@ export const useFilteringContext = <T extends QueryParamConfigMap>() => {
   return { ...context } as UseFilteringReturn<T>;
 };
 
-const FilteringProvider = <T extends QueryParamConfigMap>({
+export const FilteringProvider = <T extends QueryParamConfigMap>({
   children,
   ...rest
 }: { children: ReactNode } & UseFilteringReturn<T>) => {
