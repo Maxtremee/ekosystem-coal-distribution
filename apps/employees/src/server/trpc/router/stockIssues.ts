@@ -16,8 +16,24 @@ export const stockIssuesRouter = router({
           id: input.id,
         },
         include: {
-          DistributionCenter: true,
-          Invoice: true,
+          DistributionCenter: {
+            select: {
+              name: true,
+              id: true,
+            },
+          },
+          Invoice: {
+            select: {
+              name: true,
+              id: true,
+              Application: {
+                select: {
+                  id: true,
+                  applicantName: true,
+                },
+              },
+            },
+          },
         },
       });
     }),

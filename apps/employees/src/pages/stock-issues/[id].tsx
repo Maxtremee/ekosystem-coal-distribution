@@ -1,8 +1,7 @@
 import { withPageAuthRequired } from "@auth0/nextjs-auth0/client";
-import { Alert, Button, Spinner } from "flowbite-react";
-import Link from "next/link";
+import { Alert, Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
-import InvoiceDetails from "../../modules/InvoiceDetails";
+import StockIssueDetails from "../../modules/StockIssueDetails";
 import { trpc } from "../../utils/trpc";
 
 function StockIssueDetailsPage() {
@@ -22,9 +21,7 @@ function StockIssueDetailsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* <div className="flex gap-3"></div> */}
-      {/* <StockIssueDetails invoice={data} /> */}
-      {JSON.stringify(data, undefined, 2)}
+      <StockIssueDetails stockIssue={data} />
     </div>
   );
 }
