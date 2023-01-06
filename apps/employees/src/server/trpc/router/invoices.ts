@@ -2,7 +2,7 @@ import { z } from "zod";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
 import { backendAddInvoiceSchema } from "../../../schemas/invoiceSchema";
 import { router, protectedProcedure } from "../trpc";
-import { Prisma } from "@acme/db";
+import { Prisma } from "@ekosystem/db";
 
 export const invoicesRouter = router({
   add: protectedProcedure

@@ -11,9 +11,9 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@acme/db": "*",
-    "@acme/tailwind": "*",
-    "@acme/ui": "*",
+    "@ekosystem/db": "*",
+    "@ekosystem/tailwind": "*",
+    "@ekosystem/ui": "*",
     "@auth0/nextjs-auth0": "2.0.1",
     "@heroicons/react": "2.0.13",
     "@hookform/resolvers": "2.9.10",

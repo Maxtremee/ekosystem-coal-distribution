@@ -1,4 +1,4 @@
-import { Prisma } from "@acme/db";
+import { Prisma } from "@ekosystem/db";
 import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";

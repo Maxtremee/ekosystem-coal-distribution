@@ -1,4 +1,4 @@
-import { useFilteringContext } from "@acme/ui";
+import { useFilteringContext } from "@ekosystem/ui";
 import { Alert, Table } from "flowbite-react";
 import { RouterOutputs } from "../../../utils/trpc";
 import InvoicesTableRow from "./InvoicesTableRow";

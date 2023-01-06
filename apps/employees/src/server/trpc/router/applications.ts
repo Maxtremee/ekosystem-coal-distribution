@@ -1,4 +1,4 @@
-import { Prisma } from "@acme/db";
+import { Prisma } from "@ekosystem/db";
 import { z } from "zod";
 import { backendAddApplicationSchema } from "../../../schemas/applicationSchema";
 import { router, protectedProcedure } from "../trpc";

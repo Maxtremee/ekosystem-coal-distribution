@@ -49,13 +49,14 @@ model Invoice {
 }
 
 model StockIssue {
-  id               String   @id @default(cuid())
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  createdBy        String //email
-  updatedBy        String? //email
-  nutCoalIssued    Decimal?
-  ecoPeaCoalIssued Decimal?
+  id                    String   @id @default(cuid())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  createdBy             String //email
+  updatedBy             String? //email
+  nutCoalIssued         Decimal?
+  ecoPeaCoalIssued      Decimal?
+  additionalInformation String?
 
   Invoice              Invoice?            @relation(fields: [invoiceId], references: [id])
   invoiceId            String?

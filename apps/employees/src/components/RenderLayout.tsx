@@ -1,4 +1,4 @@
-import { DashboardLayout, LandingPageLayout } from "@acme/ui";
+import { DashboardLayout, LandingPageLayout } from "@ekosystem/ui";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";

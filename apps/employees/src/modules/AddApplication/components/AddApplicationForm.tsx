@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { trpc } from "../../../utils/trpc";
 import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
-import { InputError } from "@acme/ui";
+import { InputError } from "@ekosystem/ui";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";

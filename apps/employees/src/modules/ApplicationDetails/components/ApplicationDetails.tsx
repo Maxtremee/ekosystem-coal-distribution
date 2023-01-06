@@ -1,4 +1,4 @@
-import { Text } from "@acme/ui";
+import { Text } from "@ekosystem/ui";
 import { Card } from "flowbite-react";
 import { RouterOutputs } from "../../../utils/trpc";
 

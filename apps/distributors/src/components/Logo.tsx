@@ -7,6 +7,7 @@ export default function Logo() {
       height={83}
       width={300}
       alt="EkoSystem logo"
+      priority
       className="h-full w-full"
     />
   );

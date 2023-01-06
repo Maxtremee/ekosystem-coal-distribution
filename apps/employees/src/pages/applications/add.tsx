@@ -1,4 +1,4 @@
-import { Text } from "@acme/ui";
+import { Text } from "@ekosystem/ui";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0/client";
 import { Card } from "flowbite-react";
 import AddApplicationForm from "../../modules/AddApplication/components/AddApplicationForm";

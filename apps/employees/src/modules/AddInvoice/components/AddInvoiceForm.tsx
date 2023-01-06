@@ -5,7 +5,7 @@ import frontendAddInvoiceSchema, {
   FrontendAddInvoiceSchemaType,
 } from "../../../schemas/invoiceSchema";
 import { Button, Label, Spinner, TextInput } from "flowbite-react";
-import { InputError } from "@acme/ui";
+import { InputError } from "@ekosystem/ui";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useState } from "react";
 import { useRouter } from "next/router";

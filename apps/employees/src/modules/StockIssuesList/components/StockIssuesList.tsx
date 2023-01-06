@@ -1,4 +1,4 @@
-import { FilteringProvider, Text, useFiltering } from "@acme/ui";
+import { FilteringProvider, Text, useFiltering } from "@ekosystem/ui";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { Alert, Label, Pagination, Spinner, TextInput } from "flowbite-react";
 import { trpc } from "../../../utils/trpc";

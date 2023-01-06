@@ -1,7 +1,7 @@
 import { type inferAsyncReturnType } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getSession, type Session } from "@auth0/nextjs-auth0";
-import { prisma } from "@acme/db";
+import { prisma } from "@ekosystem/db";
 
 type CreateContextOptions = {
   session: Session | null | undefined;
