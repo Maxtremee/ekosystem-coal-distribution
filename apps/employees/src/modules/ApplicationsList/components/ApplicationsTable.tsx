@@ -18,7 +18,7 @@ export default function ApplicationsTable({
   if (isError) {
     return <Alert color="failure">Błąd ładowania listy wniosków</Alert>;
   }
-  
+
   const headerClickHandler = onHeaderClick<keyof ApplicationsType[number]>();
   const showChevronHandler = showChevron<keyof ApplicationsType[number]>();
 
@@ -29,7 +29,7 @@ export default function ApplicationsTable({
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("applicantName")}
         >
-          <div className="flex">
+          <div className="flex align-middle">
             Imię i nazwisko
             {showChevronHandler("applicantName")}
           </div>
@@ -38,19 +38,19 @@ export default function ApplicationsTable({
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("issueDate")}
         >
-          <div className="flex">
+          <div className="flex items-center">
             Data złożenia
             {showChevronHandler("issueDate")}
           </div>
         </Table.HeadCell>
         <Table.HeadCell>
-          <div className="flex">Numery faktur</div>
+          <div className="flex items-center">Numery faktur</div>
         </Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("declaredNutCoal")}
         >
-          <div className="flex">
+          <div className="flex items-center">
             Zadeklarowana ilość węgla - orzech
             {showChevronHandler("declaredNutCoal")}
           </div>
@@ -60,7 +60,7 @@ export default function ApplicationsTable({
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("declaredEcoPeaCoal")}
         >
-          <div className="flex">
+          <div className="flex items-center">
             Zadeklarowana ilość węgla - groszek
             {showChevronHandler("declaredEcoPeaCoal")}
           </div>

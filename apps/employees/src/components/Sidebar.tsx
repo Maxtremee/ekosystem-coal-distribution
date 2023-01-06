@@ -17,6 +17,11 @@ export default function Sidebar() {
               Lista faktur
             </FlowbiteSidebar.Item>
           </Link>
+          <Link href="/stock-issues" passHref>
+            <FlowbiteSidebar.Item icon={ListBulletIcon}>
+              Lista wydań towaru
+            </FlowbiteSidebar.Item>
+          </Link>
           <Link href="/applications/add" passHref>
             <FlowbiteSidebar.Item icon={PlusIcon}>
               Dodaj wniosek

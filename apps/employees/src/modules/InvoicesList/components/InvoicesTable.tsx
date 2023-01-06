@@ -28,7 +28,7 @@ export default function InvoicesTable({
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("name")}
         >
-          <div className="flex">
+          <div className="flex items-center">
             Numer faktury
             {showChevronHandler("name")}
           </div>
@@ -37,19 +37,19 @@ export default function InvoicesTable({
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("issueDate")}
         >
-          <div className="flex">
+          <div className="flex items-center">
             Data złożenia
             {showChevronHandler("issueDate")}
           </div>
         </Table.HeadCell>
         <Table.HeadCell>
-          <div className="flex">Osoba składająca wniosek</div>
+          <div className="flex items-center">Osoba składająca wniosek</div>
         </Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("declaredNutCoal")}
         >
-          <div className="flex">
+          <div className="flex items-center">
             Zadeklarowana ilość węgla - orzech
             {showChevronHandler("declaredNutCoal")}
           </div>
@@ -60,7 +60,7 @@ export default function InvoicesTable({
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("declaredEcoPeaCoal")}
         >
-          <div className="flex">
+          <div className="flex items-center">
             Zadeklarowana ilość węgla - groszek
             {showChevronHandler("declaredEcoPeaCoal")}
           </div>

@@ -11,7 +11,7 @@ export default function ApplicationsTableRow({
   const router = useRouter();
   return (
     <Table.Row
-      className="bg-white dark:border-gray-700 dark:bg-gray-800 hover:cursor-pointer"
+      className="bg-white hover:cursor-pointer dark:border-gray-700 dark:bg-gray-800"
       onClick={() => router.push(`/applications/${application.id}`)}
     >
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
@@ -28,13 +28,13 @@ export default function ApplicationsTableRow({
         ))}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {application.declaredNutCoal && application.declaredNutCoal.toString()}
+        {application?.declaredNutCoal && application.declaredNutCoal.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {application.nutCoalInInvoices}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {application.declaredEcoPeaCoal &&
+        {application?.declaredEcoPeaCoal &&
           application.declaredEcoPeaCoal.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">

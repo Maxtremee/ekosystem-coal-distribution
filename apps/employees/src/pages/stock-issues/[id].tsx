@@ -3,13 +3,12 @@ import { Alert, Button, Spinner } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import InvoiceDetails from "../../modules/InvoiceDetails";
-import StockIssuesList from "../../modules/StockIssuesList";
 import { trpc } from "../../utils/trpc";
 
-function InvoiceDetailsPage() {
+function StockIssueDetailsPage() {
   const router = useRouter();
 
-  const { data, isLoading, error } = trpc.invoices.getDetails.useQuery({
+  const { data, isLoading, error } = trpc.stockIssues.getDetails.useQuery({
     id: router.query.id as string,
   });
 
@@ -23,20 +22,11 @@ function InvoiceDetailsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-3">
-        <Link
-          href={{
-            pathname: `/invoices/${data.id}/edit`,
-          }}
-          passHref
-        >
-          <Button color="warning">Edytuj</Button>
-        </Link>
-      </div>
-      <InvoiceDetails invoice={data} />
-      <StockIssuesList invoiceId={data.id} />
+      {/* <div className="flex gap-3"></div> */}
+      {/* <StockIssueDetails invoice={data} /> */}
+      {JSON.stringify(data, undefined, 2)}
     </div>
   );
 }
 
-export default withPageAuthRequired(InvoiceDetailsPage);
+export default withPageAuthRequired(StockIssueDetailsPage);

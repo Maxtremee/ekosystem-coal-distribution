@@ -49,14 +49,16 @@ model Invoice {
 }
 
 model StockIssue {
-  id               String             @id @default(cuid())
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  createdBy        DistributionCenter @relation(fields: [distributionCenterId], references: [id])
+  id               String   @id @default(cuid())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  createdBy        String //email
+  updatedBy        String? //email
   nutCoalIssued    Decimal?
   ecoPeaCoalIssued Decimal?
 
-  Invoice              Invoice? @relation(fields: [invoiceId], references: [id])
+  Invoice              Invoice?            @relation(fields: [invoiceId], references: [id])
   invoiceId            String?
-  distributionCenterId String
+  DistributionCenter   DistributionCenter? @relation(fields: [distributionCenterId], references: [id])
+  distributionCenterId String?
 }
