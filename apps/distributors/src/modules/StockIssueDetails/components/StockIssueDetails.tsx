@@ -1,6 +1,5 @@
 import { Text } from "@ekosystem/ui";
 import { Card } from "flowbite-react";
-import Link from "next/link";
 import { RouterOutputs } from "../../../utils/trpc";
 
 export default function StockIssueDetails({

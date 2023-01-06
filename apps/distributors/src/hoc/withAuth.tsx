@@ -15,7 +15,7 @@ const useDistributorRegistered = () => {
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
     });
-console.log("withAuth")
+
   if (!isLoading) {
     if (!data) {
       router.replace("/register");

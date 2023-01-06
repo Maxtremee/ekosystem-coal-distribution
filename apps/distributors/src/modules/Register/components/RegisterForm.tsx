@@ -1,5 +1,6 @@
 import { InputError } from "@ekosystem/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useIsFetching } from "@tanstack/react-query";
 import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
@@ -10,6 +11,8 @@ import { trpc } from "../../../utils/trpc";
 
 export default function RegisterForm() {
   const router = useRouter();
+  const utils = trpc.useContext();
+
   const {
     register,
     handleSubmit,
@@ -21,13 +24,19 @@ export default function RegisterForm() {
 
   const {
     mutate,
-    isLoading,
+    isLoading: mutationLoading,
     error: mutationError,
   } = trpc.distributionCenters.register.useMutation();
+  const isAuthRefetching = useIsFetching({
+    queryKey: trpc.distributionCenters.checkIfRegistered.getQueryKey(),
+    exact: true,
+  });
+  const isLoading = mutationLoading || isAuthRefetching > 0;
 
   const onSubmit = (data: RegisterDistributionCenterSchemaType) =>
     mutate(data, {
-      onSuccess: () => {
+      onSuccess: async () => {
+        await utils.distributionCenters.checkIfRegistered.refetch();
         router.replace(`/`);
       },
     });
