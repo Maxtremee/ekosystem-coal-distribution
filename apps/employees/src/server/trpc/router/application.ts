@@ -1,7 +1,7 @@
+import { Prisma } from "@acme/db";
 import { z } from "zod";
 import { backendAddApplicationSchema } from "../../../schemas/applicationSchema";
 import { router, protectedProcedure } from "../trpc";
-import { Prisma } from "@acme/db";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
 
 export const applicationsRouter = router({

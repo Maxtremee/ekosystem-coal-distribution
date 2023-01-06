@@ -1,11 +1,11 @@
 import { Alert, Table } from "flowbite-react";
 import { useFilteringContext } from "../../../components/FilteringContext";
 import { RouterOutputs } from "../../../utils/trpc";
-import InvoiceTableRow from "./InvoiceTableRow";
+import InvoicesTableRow from "./InvoicesTableRow";
 
 type InvoicesType = RouterOutputs["invoices"]["getFiltered"]["invoices"];
 
-export default function InvoiceTable({
+export default function InvoicesTable({
   invoices,
   isError,
 }: {
@@ -54,6 +54,8 @@ export default function InvoiceTable({
             {showChevronHandler("declaredNutCoal")}
           </div>
         </Table.HeadCell>
+        <Table.HeadCell>Ilość węgla wydana - orzech</Table.HeadCell>
+
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("declaredEcoPeaCoal")}
@@ -63,10 +65,11 @@ export default function InvoiceTable({
             {showChevronHandler("declaredEcoPeaCoal")}
           </div>
         </Table.HeadCell>
+        <Table.HeadCell>Ilość węgla wydana - groszek</Table.HeadCell>
       </Table.Head>
       <Table.Body className="divide-y">
         {invoices?.map((invoice) => (
-          <InvoiceTableRow key={invoice.id} invoice={invoice} />
+          <InvoicesTableRow key={invoice.id} invoice={invoice} />
         ))}
       </Table.Body>
     </Table>

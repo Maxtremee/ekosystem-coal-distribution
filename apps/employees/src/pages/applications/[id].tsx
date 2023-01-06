@@ -3,7 +3,7 @@ import { Alert, Button, Spinner } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import ApplicationDetails from "../../modules/ApplicationDetails";
-import InvoiceList from "../../modules/InvoiceList";
+import InvoiceList from "../../modules/InvoicesList";
 import { trpc } from "../../utils/trpc";
 
 function ApplicationDetailsPage() {

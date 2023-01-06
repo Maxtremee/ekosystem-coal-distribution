@@ -12,14 +12,14 @@ export default function Sidebar() {
               Lista wniosków
             </FlowbiteSidebar.Item>
           </Link>
-          <Link href="/applications/add" passHref>
-            <FlowbiteSidebar.Item icon={PlusIcon}>
-              Dodaj wniosek
-            </FlowbiteSidebar.Item>
-          </Link>
           <Link href="/invoices" passHref>
             <FlowbiteSidebar.Item icon={ListBulletIcon}>
               Lista faktur
+            </FlowbiteSidebar.Item>
+          </Link>
+          <Link href="/applications/add" passHref>
+            <FlowbiteSidebar.Item icon={PlusIcon}>
+              Dodaj wniosek
             </FlowbiteSidebar.Item>
           </Link>
         </FlowbiteSidebar.ItemGroup>

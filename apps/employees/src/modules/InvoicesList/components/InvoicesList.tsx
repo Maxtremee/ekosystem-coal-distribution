@@ -4,9 +4,9 @@ import { Alert, Label, Pagination, Spinner, TextInput } from "flowbite-react";
 import FilteringProvider from "../../../components/FilteringContext";
 import useFiltering from "../../../hooks/useFiltering";
 import { trpc } from "../../../utils/trpc";
-import InvoiceTable from "./InvoiceTable";
+import InvoicesTable from "./InvoicesTable";
 
-export default function InvoiceList({
+export default function InvoicesList({
   applicationId,
 }: {
   applicationId?: string;
@@ -38,7 +38,7 @@ export default function InvoiceList({
             />
           </div>
         </div>
-        <InvoiceTable invoices={data?.invoices} isError={isError} />
+        <InvoicesTable invoices={data?.invoices} isError={isError} />
         {isLoading && (
           <div>
             <Spinner color="success" size="xl" />

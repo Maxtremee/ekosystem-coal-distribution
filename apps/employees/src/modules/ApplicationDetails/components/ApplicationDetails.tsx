@@ -22,9 +22,9 @@ export default function ApplicationDetails({
         <p className="text-gray-500">Liczba faktur</p>
         <Text>{application.invoices?.length}</Text>
         <p className="text-gray-500">Ilość w fakturach: ekogroszek</p>
-        <Text>{application.ecoPeaCoalInInvoices || 0}</Text>
+        <Text>{application.ecoPeaCoalInInvoices || 0} kg</Text>
         <p className="text-gray-500">Ilość w fakturach: orzech</p>
-        <Text>{application.nutCoalInInvoices || 0}</Text>
+        <Text>{application.nutCoalInInvoices || 0} kg</Text>
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Dodano dnia</p>

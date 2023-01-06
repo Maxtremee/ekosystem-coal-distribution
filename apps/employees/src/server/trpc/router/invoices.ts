@@ -1,8 +1,8 @@
-import { Prisma } from "@acme/db";
 import { z } from "zod";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
 import { backendAddInvoiceSchema } from "../../../schemas/invoiceSchema";
 import { router, protectedProcedure } from "../trpc";
+import { Prisma } from "@acme/db";
 
 export const invoicesRouter = router({
   add: protectedProcedure
@@ -57,6 +57,36 @@ export const invoicesRouter = router({
         }
       );
     }),
+  getDetails: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const invoice = await ctx.prisma.invoice.findUnique({
+        where: {
+          id: input.id,
+        },
+        include: {
+          stockIssues: true,
+          Application: true,
+        },
+      });
+      return {
+        ...invoice,
+        ecoPeaCoalWithdrawn: invoice?.stockIssues.reduce(
+          (acc, { ecoPeaCoalIssued }) =>
+            ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
+          0,
+        ),
+        nutCoalWithdrawn: invoice?.stockIssues.reduce(
+          (acc, { nutCoalIssued }) =>
+            nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
+          0,
+        ),
+      };
+    }),
   getFiltered: protectedProcedure
     .input(
       defaultFilteringSchema.extend({
@@ -102,7 +132,19 @@ export const invoicesRouter = router({
       ]);
       return {
         total: data[0],
-        invoices: data[1],
+        invoices: data[1].map((invoice) => ({
+          ...invoice,
+          ecoPeaCoalWithdrawn: invoice?.stockIssues.reduce(
+            (acc, { ecoPeaCoalIssued }) =>
+              ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
+            0,
+          ),
+          nutCoalWithdrawn: invoice?.stockIssues.reduce(
+            (acc, { nutCoalIssued }) =>
+              nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
+            0,
+          ),
+        })),
       };
     }),
 });
