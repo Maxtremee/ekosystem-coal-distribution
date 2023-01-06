@@ -19,6 +19,10 @@ export default function ApplicationDetails({
         <div className="h-6" />
         <p className="text-gray-500">Data wydania</p>
         <Text>{application.issueDate?.toLocaleDateString()}</Text>
+        <p className="text-gray-500">Zadeklarowano: ekogroszek</p>
+        <Text>{application.declaredEcoPeaCoal?.toString() || 0} kg</Text>
+        <p className="text-gray-500">Zadeklarowano: orzech</p>
+        <Text>{application.declaredNutCoal?.toString() || 0} kg</Text>
         <p className="text-gray-500">Liczba faktur</p>
         <Text>{application.invoices?.length}</Text>
         <p className="text-gray-500">Ilość w fakturach: ekogroszek</p>
