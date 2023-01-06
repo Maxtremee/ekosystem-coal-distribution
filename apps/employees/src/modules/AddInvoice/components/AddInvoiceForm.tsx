@@ -70,8 +70,8 @@ export default function AddInvoiceForm({
         createdBy: user?.email as string,
       },
       {
-        onSuccess: () => {
-          router.push("/applications");
+        onSuccess: (res) => {
+          router.replace(`/invoices/${res.id}`);
         },
       },
     );

@@ -32,8 +32,8 @@ export default function AddApplicationForm() {
         createdBy: user?.email as string,
       },
       {
-        onSuccess: () => {
-          router.push("/applications");
+        onSuccess: (res) => {
+          router.replace(`/applications/${res.id}`);
         },
       },
     );

@@ -26,13 +26,13 @@ export default function InvoicesTableRow({
         {invoice?.declaredNutCoal && invoice.declaredNutCoal.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.nutCoalWitdhrawn}
+        {invoice.nutCoalWithdrawn}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {invoice?.declaredEcoPeaCoal && invoice.declaredEcoPeaCoal.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.ecoPeaCoalWitdhrawn}
+        {invoice.ecoPeaCoalWithdrawn}
       </Table.Cell>
     </Table.Row>
   );

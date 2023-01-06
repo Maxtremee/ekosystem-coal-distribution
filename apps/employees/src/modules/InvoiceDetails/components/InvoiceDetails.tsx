@@ -20,10 +20,10 @@ export default function InvoiceDetails({
             {invoice?.Application?.id} ({invoice?.Application?.applicantName})
           </Text>
         </Link>
-        <div className="h-6" />
-        <div className="h-6" />
         <p className="text-gray-500">Data wydania</p>
         <Text>{invoice.issueDate?.toLocaleDateString()}</Text>
+        <div className="h-6" />
+        <div className="h-6" />
         <p className="text-gray-500">Liczba wydań towaru</p>
         <Text>{invoice.stockIssues?.length}</Text>
         <p className="text-gray-500">Odebrano: ekogroszek</p>

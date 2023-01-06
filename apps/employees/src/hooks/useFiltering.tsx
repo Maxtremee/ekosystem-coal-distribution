@@ -124,9 +124,9 @@ export const useFiltering = <T extends QueryParamConfigMap>(
       if (query.sortBy === id) {
         return (
           <ChevronUpIcon
-            width={30}
-            height={30}
-            className={`transition-transform ${
+            width={20}
+            height={20}
+            className={`ml-1 transition-transform ${
               query.sortDir === "asc" ? "rotate-0" : "rotate-180"
             }`}
           />
