@@ -1,4 +1,4 @@
-import { useFilteringContext } from "@ekosystem/ui";
+import { FilteringChevron, useFilteringContext } from "@ekosystem/ui";
 import { Alert, Table } from "flowbite-react";
 import { RouterOutputs } from "../../../utils/trpc";
 import StockIssuesTableRow from "./StockIssuesTableRow";
@@ -13,14 +13,14 @@ export default function StockIssuesTable({
   stockIssues: StockIssuesType | undefined;
   isError: boolean;
 }) {
-  const { onHeaderClick, showChevron } = useFilteringContext();
+  const { onHeaderClick } = useFilteringContext();
 
   if (isError) {
     return <Alert color="failure">Błąd ładowania listy wydań towaru</Alert>;
   }
 
   const headerClickHandler = onHeaderClick<keyof StockIssuesType[number]>();
-  const showChevronHandler = showChevron<keyof StockIssuesType[number]>();
+  const ShowChevron = FilteringChevron<keyof StockIssuesType[number]>;
 
   return (
     <Table hoverable>
@@ -34,7 +34,7 @@ export default function StockIssuesTable({
         >
           <div className="flex items-center">
             Data wydania
-            {showChevronHandler("createdAt")}
+            <ShowChevron id="createdAt" />
           </div>
         </Table.HeadCell>
         <Table.HeadCell>
@@ -46,7 +46,7 @@ export default function StockIssuesTable({
         >
           <div className="flex items-center">
             Ilość węgla wydana - orzech
-            {showChevronHandler("nutCoalIssued")}
+            <ShowChevron id="nutCoalIssued" />
           </div>
         </Table.HeadCell>
         <Table.HeadCell
@@ -55,7 +55,7 @@ export default function StockIssuesTable({
         >
           <div className="flex items-center">
             Ilość węgla wydana - groszek
-            {showChevronHandler("ecoPeaCoalIssued")}
+            <ShowChevron id="ecoPeaCoalIssued" />
           </div>
         </Table.HeadCell>
       </Table.Head>

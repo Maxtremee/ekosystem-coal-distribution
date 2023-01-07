@@ -10,7 +10,7 @@ export default function InvoicesList({
   applicationId?: string;
 }) {
   const filtering = useFiltering();
-  const { values, register, setValue, getTotalPages } = filtering;
+  const { values, register, getTotalPages, setPage } = filtering;
 
   const { data, isLoading, isError } = trpc.invoices.getFiltered.useQuery({
     ...values,
@@ -49,8 +49,8 @@ export default function InvoicesList({
         )}
         <Pagination
           currentPage={values.page}
-          onPageChange={(page) => page < totalPages && setValue("page", page)}
           totalPages={totalPages}
+          onPageChange={setPage}
           previousLabel="Wstecz"
           nextLabel="Dalej"
         />

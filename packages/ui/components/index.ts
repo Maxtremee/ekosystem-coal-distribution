@@ -1,3 +1,3 @@
 export { default as Text } from "./Text";
 export { default as InputError } from "./InputError";
-export * from "./FilteringContext";
+export * from "./filtering";

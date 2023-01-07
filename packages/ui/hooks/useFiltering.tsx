@@ -18,7 +18,7 @@ const defaultFilters = {
   sortBy: "createdAt",
 };
 
-type FilteringValues<T extends QueryParamConfigMap> = {
+type FilteringValues<T extends QueryParamConfigMap = QueryParamConfigMap> = {
   skip: number;
   take: number;
   sortDir: "asc" | "desc";
@@ -27,14 +27,14 @@ type FilteringValues<T extends QueryParamConfigMap> = {
   search: string;
 } & Record<keyof T, string>;
 
-export type UseFilteringReturn<T extends QueryParamConfigMap> = {
+export type UseFilteringReturn<
+  T extends QueryParamConfigMap = QueryParamConfigMap,
+> = {
   pageSize: number;
   values: FilteringValues<T>;
   getTotalPages: (length?: number) => number;
   onHeaderClick: <T extends string | number | symbol>() => (id: T) => void;
-  showChevron: <T extends string | number | symbol>() => (
-    id: T,
-  ) => null | JSX.Element;
+  setPage: (page: number) => void;
   setValue: (
     filter: keyof typeof defaultFilters | keyof T,
     value: unknown,
@@ -46,7 +46,9 @@ export type UseFilteringReturn<T extends QueryParamConfigMap> = {
   };
 };
 
-export const useFiltering = <T extends QueryParamConfigMap>(
+export const useFiltering = <
+  T extends QueryParamConfigMap = QueryParamConfigMap,
+>(
   filters?: QueryParamConfigMap,
 ): UseFilteringReturn<T> => {
   const [query, setQuery] = useQueryParams({
@@ -60,14 +62,14 @@ export const useFiltering = <T extends QueryParamConfigMap>(
     ),
     ...filters,
   });
-
-  const [search, setSearch] = useState(query?.search || "");
-  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [search, setSearch] = useState(query?.search || defaultFilters.search);
+  const [resultsLength, setResultsLength] = useState(0);
 
   useDebounce(
     () => {
-      setDebouncedSearch(search);
-      setQuery({ page: 1 });
+      if (search !== query.search) {
+        setQuery({ page: 1, search });
+      }
     },
     600,
     [search],
@@ -96,10 +98,13 @@ export const useFiltering = <T extends QueryParamConfigMap>(
   };
 
   const getTotalPages = (length?: number) => {
-    if (length) {
-      return length / query.pageSize;
+    if (length && resultsLength !== length) {
+      setResultsLength(length);
     }
-    return 0;
+    if (resultsLength > 1) {
+      return Math.ceil(resultsLength / query.pageSize);
+    }
+    return 1;
   };
 
   const onHeaderClick =
@@ -117,34 +122,21 @@ export const useFiltering = <T extends QueryParamConfigMap>(
       }
     };
 
-  const showChevron =
-    <T extends string | number | symbol>() =>
-    // eslint-disable-next-line react/display-name
-    (id: T) => {
-      if (query.sortBy === id) {
-        return (
-          <ChevronUpIcon
-            width={20}
-            height={20}
-            className={`ml-1 transition-transform ${
-              query.sortDir === "asc" ? "rotate-0" : "rotate-180"
-            }`}
-          />
-        );
-      }
-      return null;
-    };
+  const setPage = (page: number) => {
+    setQuery({
+      page,
+    });
+  };
 
   return {
     setValue,
     register,
     getTotalPages,
     onHeaderClick,
-    showChevron,
+    setPage,
     pageSize: query.pageSize,
     values: {
       ...query,
-      search: debouncedSearch,
       skip: (query.page - 1) * query.pageSize,
       take: query.pageSize,
     } as FilteringValues<T>,

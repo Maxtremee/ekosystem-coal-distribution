@@ -1,4 +1,4 @@
-import { useFilteringContext } from "@ekosystem/ui";
+import { useFilteringContext, FilteringChevron } from "@ekosystem/ui";
 import { Alert, Table } from "flowbite-react";
 import { RouterOutputs } from "../../../utils/trpc";
 import ApplicationsTableRow from "./ApplicationsTableRow";
@@ -13,14 +13,14 @@ export default function ApplicationsTable({
   applications: ApplicationsType | undefined;
   isError: boolean;
 }) {
-  const { onHeaderClick, showChevron } = useFilteringContext();
+  const { onHeaderClick } = useFilteringContext();
 
   if (isError) {
     return <Alert color="failure">Błąd ładowania listy wniosków</Alert>;
   }
 
   const headerClickHandler = onHeaderClick<keyof ApplicationsType[number]>();
-  const showChevronHandler = showChevron<keyof ApplicationsType[number]>();
+  const ShowChevron = FilteringChevron<keyof ApplicationsType[number]>;
 
   return (
     <Table hoverable>
@@ -31,7 +31,7 @@ export default function ApplicationsTable({
         >
           <div className="flex align-middle">
             Imię i nazwisko
-            {showChevronHandler("applicantName")}
+            <ShowChevron id="applicantName" />
           </div>
         </Table.HeadCell>
         <Table.HeadCell
@@ -40,7 +40,7 @@ export default function ApplicationsTable({
         >
           <div className="flex items-center">
             Data złożenia
-            {showChevronHandler("issueDate")}
+            <ShowChevron id="issueDate" />
           </div>
         </Table.HeadCell>
         <Table.HeadCell>
@@ -52,7 +52,7 @@ export default function ApplicationsTable({
         >
           <div className="flex items-center">
             Zadeklarowana ilość węgla - orzech
-            {showChevronHandler("declaredNutCoal")}
+            <ShowChevron id="declaredNutCoal" />
           </div>
         </Table.HeadCell>
         <Table.HeadCell>Ilość węgla wydana w fakturach - orzech</Table.HeadCell>
@@ -62,7 +62,7 @@ export default function ApplicationsTable({
         >
           <div className="flex items-center">
             Zadeklarowana ilość węgla - groszek
-            {showChevronHandler("declaredEcoPeaCoal")}
+            <ShowChevron id="declaredEcoPeaCoal" />
           </div>
         </Table.HeadCell>
         <Table.HeadCell>

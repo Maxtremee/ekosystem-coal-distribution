@@ -6,7 +6,7 @@ import StockIssuesTable from "./StockIssuesTable";
 
 export default function InvoicesList() {
   const filtering = useFiltering();
-  const { values, register, setValue, getTotalPages } = filtering;
+  const { values, register, getTotalPages, setPage } = filtering;
 
   const { data, isLoading, isError } = trpc.stockIssues.getFiltered.useQuery({
     ...values,
@@ -42,7 +42,7 @@ export default function InvoicesList() {
         )}
         <Pagination
           currentPage={values.page}
-          onPageChange={(page) => page < totalPages && setValue("page", page)}
+          onPageChange={setPage}
           totalPages={totalPages}
           previousLabel="Wstecz"
           nextLabel="Dalej"
