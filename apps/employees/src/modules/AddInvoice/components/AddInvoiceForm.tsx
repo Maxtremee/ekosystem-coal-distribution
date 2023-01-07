@@ -6,7 +6,6 @@ import frontendAddInvoiceSchema, {
 } from "../../../schemas/invoiceSchema";
 import { Button, Label, Spinner, TextInput } from "flowbite-react";
 import { InputError } from "@ekosystem/ui";
-import { useUser } from "@auth0/nextjs-auth0/client";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
@@ -19,7 +18,6 @@ export default function AddInvoiceForm({
   application?: RouterOutputs["invoices"]["checkIfApplicationExists"];
 }) {
   const router = useRouter();
-  const { user } = useUser();
   const { mutate, isLoading } = trpc.invoices.add.useMutation();
   const [debounceInvoiceName, setDebouncedInvoiceName] = useState("");
 
@@ -67,7 +65,6 @@ export default function AddInvoiceForm({
         ...data,
         issueDate: dayjs(data.issueDate).set("hour", dayjs().hour()).toDate(),
         applicationId: application?.id as string,
-        createdBy: user?.email as string,
       },
       {
         onSuccess: (res) => {

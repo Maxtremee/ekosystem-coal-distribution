@@ -9,7 +9,6 @@ export const baseAddInvoiceSchema = z.object({
 
 export const backendAddInvoiceSchema = baseAddInvoiceSchema.extend({
   applicationId: z.string(),
-  createdBy: z.string().email(),
 });
 
 export const frontendAddInvoiceSchema = baseAddInvoiceSchema.refine(

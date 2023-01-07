@@ -3,7 +3,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { trpc } from "../../../utils/trpc";
 import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
 import { InputError } from "@ekosystem/ui";
-import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
 import frontendAddApplicationSchema, {
@@ -21,7 +20,6 @@ export default function AddApplicationForm() {
   });
 
   const router = useRouter();
-  const { user } = useUser();
   const { mutate, isLoading } = trpc.applications.add.useMutation();
 
   const onSubmit = (data: FrontendAddApplicationSchemaType) =>
@@ -29,7 +27,6 @@ export default function AddApplicationForm() {
       {
         ...data,
         issueDate: dayjs(data.issueDate).set("hour", dayjs().hour()).toDate(),
-        createdBy: user?.email as string,
       },
       {
         onSuccess: (res) => {

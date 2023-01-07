@@ -1,15 +1,20 @@
 import { Prisma } from "@ekosystem/db";
 import { z } from "zod";
-import { backendAddApplicationSchema } from "../../../schemas/applicationSchema";
+import {
+  baseAddApplicationSchema,
+} from "../../../schemas/applicationSchema";
 import { router, protectedProcedure } from "../trpc";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
 
 export const applicationsRouter = router({
   add: protectedProcedure
-    .input(backendAddApplicationSchema)
+    .input(baseAddApplicationSchema)
     .mutation(async ({ input, ctx }) => {
       return await ctx.prisma.application.create({
-        data: input,
+        data: {
+          ...input,
+          createdBy: ctx.session.user.email,
+        },
       });
     }),
   getDetails: protectedProcedure

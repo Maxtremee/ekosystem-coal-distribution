@@ -9,7 +9,7 @@ export const invoicesRouter = router({
     .input(backendAddInvoiceSchema)
     .mutation(async ({ input, ctx }) => {
       return await ctx.prisma.invoice.create({
-        data: input,
+        data: { ...input, createdBy: ctx.session.user.email },
       });
     }),
   checkIfUnique: protectedProcedure
