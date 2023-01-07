@@ -1,4 +1,4 @@
-import { ChevronUpIcon } from "@heroicons/react/24/solid";
+import { useCallback } from "react";
 import { FormEvent, useState } from "react";
 import { useDebounce } from "react-use";
 import {
@@ -63,70 +63,85 @@ export const useFiltering = <
     ...filters,
   });
   const [search, setSearch] = useState(query?.search || defaultFilters.search);
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [resultsLength, setResultsLength] = useState(0);
 
   useDebounce(
     () => {
-      if (search !== query.search) {
-        setQuery({ page: 1, search });
+      if (debouncedSearch !== search) {
+        setDebouncedSearch(search);
+        setQuery({
+          page: 1,
+        });
       }
     },
     600,
-    [search],
+    [search, debouncedSearch],
   );
 
-  const setValue = (filter: keyof typeof query | keyof T, value: unknown) => {
-    if (filter === "search") {
-      setSearch(value as string);
-    } else {
-      setQuery({
-        page: 1,
-        [filter]: value,
-      });
-    }
-  };
-
-  const register = (filter: keyof typeof query | keyof T) => {
-    const onChange = (ev: FormEvent<HTMLInputElement> | undefined) => {
-      setValue(filter, ev?.currentTarget?.value);
-    };
-    return {
-      onChange,
-      value: filter === "search" ? search : query[filter as keyof typeof query],
-      name: filter as string,
-    };
-  };
-
-  const getTotalPages = (length?: number) => {
-    if (length && resultsLength !== length) {
-      setResultsLength(length);
-    }
-    if (resultsLength > 1) {
-      return Math.ceil(resultsLength / query.pageSize);
-    }
-    return 1;
-  };
-
-  const onHeaderClick =
-    <T extends string | number | symbol>() =>
-    (id: T) => {
-      if (query.sortBy !== id) {
-        setQuery({
-          sortBy: id as string,
-          sortDir: "desc",
-        });
+  const setValue = useCallback(
+    (filter: keyof typeof query | keyof T, value: unknown) => {
+      if (filter === "search") {
+        setSearch(value as string);
       } else {
         setQuery({
-          sortDir: query.sortDir === "desc" ? "asc" : "desc",
+          page: 1,
+          [filter]: value,
         });
       }
-    };
+    },
+    [setSearch, setQuery],
+  );
 
-  const setPage = (page: number) => {
-    setQuery({
-      page,
-    });
-  };
+  const register = (filter: keyof typeof query | keyof T) => ({
+    value: filter === "search" ? search : query[filter as keyof typeof query],
+    name: filter as string,
+    onChange: (ev: FormEvent<HTMLInputElement> | undefined) => {
+      setValue(filter, ev?.currentTarget?.value);
+    },
+  });
+
+  const getTotalPages = useCallback(
+    (length?: number) => {
+      if (length && resultsLength !== length) {
+        setResultsLength(length);
+      }
+      if (resultsLength > 1) {
+        return Math.ceil(resultsLength / query.pageSize);
+      }
+      return 1;
+    },
+    [resultsLength, setResultsLength],
+  );
+
+  const onHeaderClick = useCallback(
+    <T extends string | number | symbol>() =>
+      (id: T) => {
+        if (query.sortBy !== id) {
+          setQuery({
+            sortBy: id as string,
+            sortDir: "desc",
+          });
+        } else {
+          setQuery({
+            sortDir: query.sortDir === "desc" ? "asc" : "desc",
+          });
+        }
+      },
+    [query.sortBy, query.sortDir, setQuery],
+  );
+
+  const setPage = useCallback(
+    (page: number) => {
+      console.log(query.page !== page);
+      if (query.page !== page) {
+        setQuery({
+          page,
+        });
+      }
+    },
+    [query.page, setQuery],
+  );
 
   return {
     setValue,
@@ -137,6 +152,7 @@ export const useFiltering = <
     pageSize: query.pageSize,
     values: {
       ...query,
+      search: debouncedSearch,
       skip: (query.page - 1) * query.pageSize,
       take: query.pageSize,
     } as FilteringValues<T>,

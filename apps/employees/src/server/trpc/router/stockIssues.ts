@@ -105,7 +105,7 @@ export const stockIssuesRouter = router({
         stockIssues: data[1].map((stockIssue) => ({
           ...stockIssue,
           distributionCenterName: stockIssue.DistributionCenter?.name,
-          invoiceName: stockIssue.DistributionCenter?.name,
+          invoiceName: stockIssue.Invoice?.name,
         })),
       };
     }),
