@@ -28,6 +28,8 @@ export default function InvoiceDetails({
         <Text>{invoice.declaredEcoPeaCoal?.toString() || 0} kg</Text>
         <p className="text-gray-500">Opłacono: orzech</p>
         <Text>{invoice.declaredNutCoal?.toString() || 0} kg</Text>
+        <div className="h-6" />
+        <div className="h-6" />
         <p className="text-gray-500">Liczba wydań towaru</p>
         <Text>{invoice.stockIssues?.length}</Text>
         <p className="text-gray-500">Odebrano: ekogroszek</p>

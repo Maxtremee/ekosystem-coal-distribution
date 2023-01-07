@@ -1,8 +1,6 @@
 import { Prisma } from "@ekosystem/db";
 import { z } from "zod";
-import {
-  baseAddApplicationSchema,
-} from "../../../schemas/applicationSchema";
+import { baseAddApplicationSchema } from "../../../schemas/applicationSchema";
 import { router, protectedProcedure } from "../trpc";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
 
@@ -29,7 +27,11 @@ export const applicationsRouter = router({
           id: input.id,
         },
         include: {
-          invoices: true,
+          invoices: {
+            include: {
+              stockIssues: true,
+            },
+          },
         },
       });
       return {
@@ -42,6 +44,31 @@ export const applicationsRouter = router({
         nutCoalInInvoices: application?.invoices.reduce(
           (acc, { declaredNutCoal }) =>
             declaredNutCoal ? acc + declaredNutCoal.toNumber() : acc,
+          0,
+        ),
+        stockIssuesTotal: application?.invoices?.reduce(
+          (invoiceAcc, { stockIssues }) => invoiceAcc + stockIssues?.length,
+          0,
+        ),
+        ecoPeaCoalWithdrawn: application?.invoices?.reduce(
+          (invoiceAcc, { stockIssues }) =>
+            invoiceAcc +
+            stockIssues?.reduce(
+              (acc, { ecoPeaCoalIssued }) =>
+                ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
+              0,
+            ),
+
+          0,
+        ),
+        nutCoalWithdrawn: application?.invoices?.reduce(
+          (invoiceAcc, { stockIssues }) =>
+            invoiceAcc +
+            stockIssues?.reduce(
+              (acc, { nutCoalIssued }) =>
+                nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
+              0,
+            ),
           0,
         ),
       };
