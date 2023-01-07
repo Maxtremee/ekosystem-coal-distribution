@@ -62,6 +62,8 @@ export default function AddApplicationForm() {
         <InputError error={errors?.applicantName?.message} />
       </div>
       <ToggleSwitch
+        // @ts-ignore
+        color="success"
         onChange={showApplicationIdHandler}
         label="Wniosek posiada numer"
         checked={showApplicationIdValue}
