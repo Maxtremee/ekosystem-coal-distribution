@@ -18,16 +18,23 @@ export default function DashboardLayout({
 }: DashboardLayoutProps) {
   return (
     <div className="h-screen">
-      <Navbar fluid className="bg-white drop-shadow-lg dark:bg-gray-800">
-        <div className="flex items-center gap-2">
-          {logo}
+      <Navbar
+        fluid
+        className="w-full  bg-white drop-shadow-lg dark:bg-gray-800"
+      >
+        <div className="flex w-full items-center justify-between gap-2">
+          <div>{logo}</div>
           <div className="md:hidden">{dropdown}</div>
+          <div className="flex hidden gap-2 md:block">{navbarItems}</div>
         </div>
-        <div className="flex gap-2">{navbarItems}</div>
       </Navbar>
-      <main className="flex h-[calc(100vh-76px)] w-full overflow-y-auto bg-white dark:bg-gray-800 ">
-        <div className="hidden md:block md:w-1/4">{sidebar}</div>
-        <div className="flex w-full flex-col gap-4 p-4">{children}</div>
+      <main className="flex h-[calc(100vh-76px)] w-full bg-white dark:bg-gray-800 ">
+        <div className="hidden md:block md:w-1/4 md:overflow-y-auto">
+          {sidebar}
+        </div>
+        <div className="flex w-full flex-col gap-4 overflow-y-auto p-4">
+          {children}
+        </div>
       </main>
     </div>
   );

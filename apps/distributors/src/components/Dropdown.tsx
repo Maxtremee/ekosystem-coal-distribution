@@ -10,6 +10,9 @@ export default function Dropdown() {
       <Link href="/stock-issues/add">
         <FlowbiteDropdown.Item>Wydaj towar</FlowbiteDropdown.Item>
       </Link>
+      <Link href="/api/auth/logout">
+        <FlowbiteDropdown.Item>Wyloguj się</FlowbiteDropdown.Item>
+      </Link>
     </FlowbiteDropdown>
   );
 }

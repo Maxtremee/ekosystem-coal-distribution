@@ -30,6 +30,7 @@ export const stockIssuesRouter = router({
                 select: {
                   id: true,
                   applicantName: true,
+                  applicationId: true,
                 },
               },
             },

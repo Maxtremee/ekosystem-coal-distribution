@@ -13,8 +13,11 @@ export default function Dropdown() {
       <Link href="/stock-issues" passHref>
         <FlowbiteDropdown.Item>Wydania towaru</FlowbiteDropdown.Item>
       </Link>
-      <Link href="/applications/add">
+      <Link href="/applications/add" passHref>
         <FlowbiteDropdown.Item>Dodaj wniosek</FlowbiteDropdown.Item>
+      </Link>
+      <Link href="/api/auth/logout" passHref>
+        <FlowbiteDropdown.Item>Wyloguj się</FlowbiteDropdown.Item>
       </Link>
     </FlowbiteDropdown>
   );
