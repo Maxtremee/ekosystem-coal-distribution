@@ -25,7 +25,7 @@ export default function DashboardLayout({
         <div className="flex w-full items-center justify-between gap-2">
           <div>{logo}</div>
           <div className="md:hidden">{dropdown}</div>
-          <div className="flex hidden gap-2 md:block">{navbarItems}</div>
+          <div className="hidden gap-2 md:flex">{navbarItems}</div>
         </div>
       </Navbar>
       <main className="flex h-[calc(100vh-76px)] w-full bg-white dark:bg-gray-800 ">

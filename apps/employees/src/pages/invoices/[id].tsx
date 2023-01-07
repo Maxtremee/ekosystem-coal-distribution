@@ -22,7 +22,7 @@ function InvoiceDetailsPage() {
   }
 
   if (isLoading) {
-    return <Spinner size="xl" />;
+    return <Spinner size="xl" color="success" />;
   }
 
   return (
