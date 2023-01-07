@@ -1,6 +1,7 @@
+import { MouseEventHandler } from "react";
 import { Table } from "flowbite-react";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { Fragment } from "react";
 import { RouterOutputs } from "../../../utils/trpc";
 
 export default function ApplicationsTableRow({
@@ -9,6 +10,10 @@ export default function ApplicationsTableRow({
   application: RouterOutputs["applications"]["getFiltered"]["applications"][number];
 }) {
   const router = useRouter();
+  const stopPropagation: MouseEventHandler<HTMLAnchorElement> = (e) => {
+    e.stopPropagation();
+  };
+
   return (
     <Table.Row
       className="bg-white hover:cursor-pointer dark:border-gray-700 dark:bg-gray-800"
@@ -24,10 +29,15 @@ export default function ApplicationsTableRow({
         {application.issueDate.toLocaleDateString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {application.invoices?.map(({ name }) => (
-          <Fragment key={name}>
+        {application.invoices?.map(({ name, id }) => (
+          <Link
+            key={name}
+            href={`/invoices/${id}`}
+            className="cursor-pointer underline"
+            onClick={stopPropagation}
+          >
             {name} <br />
-          </Fragment>
+          </Link>
         ))}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
