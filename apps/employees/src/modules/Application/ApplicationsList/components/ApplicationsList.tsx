@@ -16,7 +16,9 @@ export default function ApplicationsList() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Text>Lista wniosków</Text>
+      <Text as="h2" className="text-lg font-semibold">
+        Lista wniosków
+      </Text>
       <FilteringProvider {...filtering}>
         <div className="flex items-center justify-between">
           <div>

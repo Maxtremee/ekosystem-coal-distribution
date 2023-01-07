@@ -57,6 +57,38 @@ export const invoicesRouter = router({
         }
       );
     }),
+  getTimeline: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.invoice.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          stockIssues: {
+            orderBy: {
+              createdAt: "desc",
+            },
+            select: {
+              id: true,
+              createdAt: true,
+              distributionCenterId: true,
+              ecoPeaCoalIssued: true,
+              nutCoalIssued: true,
+              DistributionCenter: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
   getDetails: protectedProcedure
     .input(
       z.object({
@@ -69,8 +101,19 @@ export const invoicesRouter = router({
           id: input.id,
         },
         include: {
-          stockIssues: true,
-          Application: true,
+          stockIssues: {
+            select: {
+              ecoPeaCoalIssued: true,
+              nutCoalIssued: true,
+            },
+          },
+          Application: {
+            select: {
+              id: true,
+              applicationId: true,
+              applicantName: true,
+            },
+          },
         },
       });
       return {

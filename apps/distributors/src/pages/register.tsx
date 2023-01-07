@@ -6,7 +6,7 @@ import { withAuth } from "../hoc/withAuth";
 function RegisterPage() {
   return (
     <Card>
-      <Text>
+      <Text as="h2" className="text-lg font-semibold">
         Wygląda na to, że korzystasz z systemu pierwszy raz. Podaj dane Twojej
         firmy, aby przejść dalej
       </Text>

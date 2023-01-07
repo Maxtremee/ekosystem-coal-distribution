@@ -1,16 +1,20 @@
 import { withPageAuthRequired } from "@auth0/nextjs-auth0/client";
+import { Text } from "@ekosystem/ui";
 import { Alert, Button, Spinner } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import InvoiceDetails from "../../modules/Invoice/InvoiceDetails";
-import StockIssuesList from "../../modules/StockIssue/StockIssuesList";
+import {
+  InvoiceDetails,
+  InvoiceTimeline,
+} from "../../modules/Invoice/InvoiceDetails";
 import { trpc } from "../../utils/trpc";
 
 function InvoiceDetailsPage() {
   const router = useRouter();
+  const id = router.query.id as string;
 
   const { data, isLoading, error } = trpc.invoices.getDetails.useQuery({
-    id: router.query.id as string,
+    id,
   });
 
   if (error) {
@@ -23,18 +27,23 @@ function InvoiceDetailsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-3">
-        <Link
-          href={{
-            pathname: `/invoices/${data.id}/edit`,
-          }}
-          passHref
-        >
-          <Button color="warning">Edytuj</Button>
-        </Link>
+      <div className="flex items-center justify-between">
+        <Text as="h1" className="text-2xl font-bold">
+          {data.name}
+        </Text>
+        <div className="flex gap-3">
+          <Link
+            href={{
+              pathname: `/invoices/${data.id}/edit`,
+            }}
+            passHref
+          >
+            <Button color="warning">Edytuj</Button>
+          </Link>
+        </div>
       </div>
       <InvoiceDetails invoice={data} />
-      <StockIssuesList invoiceId={data.id} />
+      <InvoiceTimeline id={id} />
     </div>
   );
 }

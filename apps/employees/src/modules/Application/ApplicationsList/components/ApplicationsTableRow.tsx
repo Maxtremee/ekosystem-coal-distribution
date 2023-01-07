@@ -26,7 +26,7 @@ export default function ApplicationsTableRow({
         {application.applicationId}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {application.issueDate.toLocaleDateString()}
+        {application.issueDate.toLocaleString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {application.invoices?.map(({ name, id }) => (

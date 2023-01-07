@@ -16,7 +16,9 @@ export default function InvoicesList() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Text>Lista wydań towaru</Text>
+      <Text as="h2" className="text-lg font-semibold">
+        Lista wydań towaru
+      </Text>
       <FilteringProvider {...filtering}>
         <div className="flex items-center justify-between">
           <div>

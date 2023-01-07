@@ -43,7 +43,9 @@ function AddStockIssuePage() {
 
   return (
     <Card className="w-full">
-      <Text as="h5">Wydaj towar</Text>
+      <Text as="h2" className="text-lg font-semibold">
+        Wydaj towar
+      </Text>
       {!data && (
         <Alert color="info" icon={QuestionMarkCircleIcon}>
           Podaj prawidłowe dane aby odblokować resztę formularza

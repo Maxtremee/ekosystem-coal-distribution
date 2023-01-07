@@ -10,7 +10,9 @@ export default function InvoiceDetails({
 }) {
   return (
     <Card className="flex flex-col gap-4">
-      <Text as="h5">Szczegóły faktury</Text>
+      <Text as="h2" className="text-lg font-semibold">
+        Szczegóły
+      </Text>
       <div className="grid grid-flow-row grid-cols-2">
         <p className="text-gray-500">Numer faktury</p>
         <Text>{invoice.name}</Text>
@@ -27,7 +29,7 @@ export default function InvoiceDetails({
           </Text>
         </Link>
         <p className="text-gray-500">Data wydania</p>
-        <Text>{invoice.issueDate?.toLocaleDateString()}</Text>
+        <Text>{invoice.issueDate?.toLocaleString()}</Text>
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Opłacono: ekogroszek</p>
@@ -45,11 +47,11 @@ export default function InvoiceDetails({
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Dodano dnia</p>
-        <Text>{invoice.createdAt?.toLocaleDateString()}</Text>
+        <Text>{invoice.createdAt?.toLocaleString()}</Text>
         <p className="text-gray-500">Dodano przez</p>
         <Text className="break-all">{invoice.createdBy}</Text>
         <p className="text-gray-500">Ostatnio aktualizowano dnia</p>
-        <Text>{invoice.updatedAt?.toLocaleDateString() || "-"}</Text>
+        <Text>{invoice.updatedAt?.toLocaleString() || "-"}</Text>
         <p className="text-gray-500">Ostatnio aktualizowano przez</p>
         <Text className="break-all">{invoice.updatedBy || "-"}</Text>
       </div>

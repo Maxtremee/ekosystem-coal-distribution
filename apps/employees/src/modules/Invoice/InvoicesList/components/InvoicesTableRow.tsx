@@ -17,7 +17,7 @@ export default function InvoicesTableRow({
         {invoice.name}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.issueDate.toLocaleDateString()}
+        {invoice.issueDate.toLocaleString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {invoice.Application?.applicantName}

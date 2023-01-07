@@ -10,7 +10,9 @@ export default function StockIssueDetails({
 }) {
   return (
     <Card className="flex flex-col gap-4">
-      <Text as="h5">Szczegóły wydania towaru</Text>
+      <Text as="h2" className="text-lg font-semibold">
+        Szczegóły wydania towaru
+      </Text>
       <div className="grid grid-flow-row grid-cols-2">
         <p className="text-gray-500">Numer faktury</p>
         <Link href={`/invoices/${stockIssue?.invoiceId}`} passHref>
@@ -38,8 +40,10 @@ export default function StockIssueDetails({
         </Link>
         <div className="h-6" />
         <div className="h-6" />
+        <p className="text-gray-500">Miejsce wydania</p>
+        <Text>{stockIssue?.DistributionCenter?.name}</Text>
         <p className="text-gray-500">Data wydania</p>
-        <Text>{stockIssue?.createdAt.toLocaleDateString()}</Text>
+        <Text>{stockIssue?.createdAt.toLocaleString()}</Text>
         <p className="text-gray-500">Wydano: ekogroszek</p>
         <Text>{stockIssue?.ecoPeaCoalIssued?.toString() || 0} kg</Text>
         <p className="text-gray-500">Wydano: orzech</p>
@@ -47,11 +51,11 @@ export default function StockIssueDetails({
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Dodano dnia</p>
-        <Text>{stockIssue?.createdAt.toLocaleDateString()}</Text>
+        <Text>{stockIssue?.createdAt.toLocaleString()}</Text>
         <p className="text-gray-500">Dodano przez</p>
         <Text className="break-all">{stockIssue?.createdBy}</Text>
         <p className="text-gray-500">Ostatnio aktualizowano dnia</p>
-        <Text>{stockIssue?.updatedAt?.toLocaleDateString() || "-"}</Text>
+        <Text>{stockIssue?.updatedAt?.toLocaleString() || "-"}</Text>
         <p className="text-gray-500">Ostatnio aktualizowano przez</p>
         <Text className="break-all">{stockIssue?.updatedBy || "-"}</Text>
       </div>

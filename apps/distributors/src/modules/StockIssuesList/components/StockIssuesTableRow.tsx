@@ -17,7 +17,7 @@ export default function StockIssuesTableRow({
         {stockIssue.invoiceName}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {stockIssue.createdAt.toLocaleDateString()}
+        {stockIssue.createdAt.toLocaleString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {stockIssue?.nutCoalIssued && stockIssue.nutCoalIssued.toString()}

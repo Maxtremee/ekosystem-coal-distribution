@@ -6,7 +6,9 @@ import AddApplicationForm from "../../modules/Application/AddApplication/compone
 function AddInvoicePage() {
   return (
     <Card className="w-full">
-      <Text as="h5">Dodaj nowy wniosek</Text>
+      <Text as="h2" className="text-lg font-semibold">
+        Dodaj nowy wniosek
+      </Text>
       <AddApplicationForm />
     </Card>
   );

@@ -73,6 +73,44 @@ export const applicationsRouter = router({
         ),
       };
     }),
+  getTimeline: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.application.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          invoices: {
+            select: {
+              id: true,
+              name: true,
+              issueDate: true,
+              declaredEcoPeaCoal: true,
+              declaredNutCoal: true,
+              stockIssues: {
+                select: {
+                  id: true,
+                  createdAt: true,
+                  distributionCenterId: true,
+                  ecoPeaCoalIssued: true,
+                  nutCoalIssued: true,
+                  DistributionCenter: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
   getFiltered: protectedProcedure
     .input(defaultFilteringSchema)
     .query(async ({ input, ctx }) => {
