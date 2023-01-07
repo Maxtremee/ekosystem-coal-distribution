@@ -1,7 +1,7 @@
 import { Text } from "@ekosystem/ui";
-import { withPageAuthRequired } from "@auth0/nextjs-auth0/client";
 import { Card } from "flowbite-react";
 import Register from "../modules/Register";
+import { withAuth } from "../hoc/withAuth";
 
 function RegisterPage() {
   return (
@@ -15,4 +15,4 @@ function RegisterPage() {
   );
 }
 
-export default withPageAuthRequired(RegisterPage);
+export default withAuth(RegisterPage);

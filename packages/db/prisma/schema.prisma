@@ -23,6 +23,8 @@ model Application {
   updatedBy String? //email
 
   applicantName         String
+  applicationId         String?  @unique
+  
   additionalInformation String?
   issueDate             DateTime
   declaredNutCoal       Decimal?

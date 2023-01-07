@@ -38,7 +38,7 @@ export default function InvoicesTable({
           onClick={() => headerClickHandler("issueDate")}
         >
           <div className="flex items-center">
-            Data złożenia
+            Data
             <ShowChevron id="issueDate" />
           </div>
         </Table.HeadCell>

@@ -18,6 +18,9 @@ export default function ApplicationsTableRow({
         {application.applicantName}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
+        {application.applicationId}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {application.issueDate.toLocaleDateString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">

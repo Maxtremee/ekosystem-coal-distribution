@@ -14,10 +14,16 @@ export default function InvoiceDetails({
       <div className="grid grid-flow-row grid-cols-2">
         <p className="text-gray-500">Numer faktury</p>
         <Text>{invoice.name}</Text>
-        <p className="text-gray-500">Identyfikator wniosku</p>
+        <p className="text-gray-500">Imię i nazwisko wnioskodawcy</p>
         <Link href={`/applications/${invoice?.Application?.id}`} passHref>
           <Text as="span" className="underline hover:cursor-pointer">
-            {invoice?.Application?.id} ({invoice?.Application?.applicantName})
+            {invoice?.Application?.applicantName}
+          </Text>
+        </Link>
+        <p className="text-gray-500">Numer wniosku</p>
+        <Link href={`/applications/${invoice?.Application?.id}`} passHref>
+          <Text as="span" className="underline hover:cursor-pointer">
+            {invoice?.Application?.applicationId}
           </Text>
         </Link>
         <p className="text-gray-500">Data wydania</p>

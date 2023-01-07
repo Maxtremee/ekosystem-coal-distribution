@@ -12,7 +12,7 @@ import Decimal from "decimal.js";
 export default function AddApplicationForm({
   invoice,
 }: {
-  invoice: RouterOutputs["stockIssues"]["checkForInvoice"] | undefined;
+  invoice: RouterOutputs["stockIssues"]["checkInvoice"] | undefined;
 }) {
   const router = useRouter();
   const {
@@ -54,7 +54,7 @@ export default function AddApplicationForm({
 
   return (
     <form
-      className={`flex w-full flex-col gap-4 ${
+      className={`flex w-full flex-col gap-4 transition-opacity ${
         !invoice?.id && "pointer-events-none opacity-50"
       }`}
       onSubmit={handleSubmit(onSubmit)}
@@ -90,7 +90,7 @@ export default function AddApplicationForm({
           />
           <InputError error={errors?.ecoPeaCoalIssued?.message} />
         </div>
-        {mutationError && <InputError error={mutationError.message} />}
+        <InputError error={mutationError?.message} />
       </div>
       <Button color="success" type="submit" disabled={isLoading || !isValid}>
         {isLoading && <Spinner color="success" className="mr-2" />}

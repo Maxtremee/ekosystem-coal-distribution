@@ -36,6 +36,15 @@ export default function ApplicationsTable({
         </Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
+          onClick={() => headerClickHandler("applicationId")}
+        >
+          <div className="flex align-middle">
+            Numer wniosku
+            <ShowChevron id="applicationId" />
+          </div>
+        </Table.HeadCell>
+        <Table.HeadCell
+          className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("issueDate")}
         >
           <div className="flex items-center">

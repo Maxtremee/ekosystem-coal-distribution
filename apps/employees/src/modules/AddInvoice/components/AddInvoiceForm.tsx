@@ -5,7 +5,7 @@ import frontendAddInvoiceSchema, {
   FrontendAddInvoiceSchemaType,
 } from "../../../schemas/invoiceSchema";
 import { Button, Label, Spinner, TextInput } from "flowbite-react";
-import { InputError } from "@ekosystem/ui";
+import { InputError, Text } from "@ekosystem/ui";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
@@ -87,6 +87,9 @@ export default function AddInvoiceForm({
       className="flex w-full flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}
     >
+      <Text>
+        Dla wniosku: {application?.applicantName} {application?.applicationId}
+      </Text>
       <div>
         <Label htmlFor="invoiceName">Nazwa faktury </Label>
         <TextInput

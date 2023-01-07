@@ -85,6 +85,12 @@ export const applicationsRouter = router({
             },
           },
           {
+            applicationId: {
+              contains: input?.search,
+              mode: "insensitive",
+            },
+          },
+          {
             invoices: {
               some: {
                 name: {

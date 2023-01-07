@@ -37,9 +37,6 @@ export default function StockIssuesTable({
             <ShowChevron id="createdAt" />
           </div>
         </Table.HeadCell>
-        <Table.HeadCell>
-          <div className="flex">Wydane przez</div>
-        </Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("nutCoalIssued")}

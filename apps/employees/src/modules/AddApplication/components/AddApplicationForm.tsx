@@ -1,7 +1,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { trpc } from "../../../utils/trpc";
-import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
+import {
+  Button,
+  Label,
+  Spinner,
+  Textarea,
+  TextInput,
+  ToggleSwitch,
+} from "flowbite-react";
 import { InputError } from "@ekosystem/ui";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
@@ -11,6 +18,8 @@ import frontendAddApplicationSchema, {
 
 export default function AddApplicationForm() {
   const {
+    setValue,
+    watch,
     register,
     handleSubmit,
     formState: { isValid, errors },
@@ -18,6 +27,9 @@ export default function AddApplicationForm() {
     mode: "onTouched",
     resolver: zodResolver(frontendAddApplicationSchema),
   });
+  const showApplicationIdValue = watch("showApplicationIdField");
+  const showApplicationIdHandler = (checked: boolean) =>
+    setValue("showApplicationIdField", checked);
 
   const router = useRouter();
   const { mutate, isLoading } = trpc.applications.add.useMutation();
@@ -49,6 +61,22 @@ export default function AddApplicationForm() {
         />
         <InputError error={errors?.applicantName?.message} />
       </div>
+      <ToggleSwitch
+        onChange={showApplicationIdHandler}
+        label="Wniosek posiada numer"
+        checked={showApplicationIdValue}
+      />
+      {showApplicationIdValue && (
+        <div>
+          <Label htmlFor="app">Numer wniosku</Label>
+          <TextInput
+            {...register("applicationId")}
+            id="applicationId"
+            placeholder="Numer wniosku"
+          />
+          <InputError error={errors?.applicantName?.message} />
+        </div>
+      )}
       <div>
         <Label htmlFor="additionalInformation">Dodatkowe informacje</Label>
         <Textarea
@@ -69,7 +97,7 @@ export default function AddApplicationForm() {
         />
         <InputError error={errors?.issueDate?.message} />
       </div>
-      <div className="flex w-full flex-col justify-between gap-4 md:flex-row">
+      <div className="flex flex-col justify-between gap-4 md:flex-row">
         <div className="w-full">
           <Label htmlFor="declaredNutCoal">
             Zadeklarowana ilość węgla - orzech [Kg]

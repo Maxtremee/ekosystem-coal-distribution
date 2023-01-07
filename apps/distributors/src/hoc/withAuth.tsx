@@ -19,6 +19,10 @@ const useDistributorRegistered = () => {
   if (!isLoading) {
     if (!data) {
       router.replace("/register");
+    } else {
+      if (router.pathname === "/register") {
+        router.replace("/");
+      }
     }
   }
 };

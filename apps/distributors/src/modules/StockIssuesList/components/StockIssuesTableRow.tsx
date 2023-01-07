@@ -20,9 +20,6 @@ export default function StockIssuesTableRow({
         {stockIssue.createdAt.toLocaleDateString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {stockIssue.distributionCenterName}
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {stockIssue?.nutCoalIssued && stockIssue.nutCoalIssued.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">

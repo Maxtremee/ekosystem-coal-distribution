@@ -13,10 +13,14 @@ export default function ApplicationDetails({
       <div className="grid grid-flow-row grid-cols-2">
         <p className="text-gray-500">Imię i nazwisko</p>
         <Text>{application.applicantName}</Text>
-        <p className="text-gray-500">Dodatkowe informacje</p>
-        <Text className="break-all">{application.additionalInformation}</Text>
+        <p className="text-gray-500">Numer wniosku</p>
+        <Text>{application.applicationId || "-"}</Text>
         <p className="text-gray-500">Data wydania</p>
         <Text>{application.issueDate?.toLocaleDateString()}</Text>
+        <p className="text-gray-500">Dodatkowe informacje</p>
+        <Text className="break-all">
+          {application.additionalInformation || "-"}
+        </Text>
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Zadeklarowano: ekogroszek</p>
