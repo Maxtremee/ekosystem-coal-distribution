@@ -2,7 +2,7 @@ import { MouseEventHandler } from "react";
 import { Table } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { RouterOutputs } from "../../../utils/trpc";
+import { RouterOutputs } from "../../../../utils/trpc";
 
 export default function ApplicationsTableRow({
   application,

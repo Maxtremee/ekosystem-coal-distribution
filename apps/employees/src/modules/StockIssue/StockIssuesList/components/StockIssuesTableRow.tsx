@@ -1,38 +1,32 @@
 import { Table } from "flowbite-react";
 import { useRouter } from "next/router";
-import { RouterOutputs } from "../../../utils/trpc";
+import { RouterOutputs } from "../../../../utils/trpc";
 
-export default function InvoicesTableRow({
-  invoice,
+export default function StockIssuesTableRow({
+  stockIssue: stockIssue,
 }: {
-  invoice: RouterOutputs["invoices"]["getFiltered"]["invoices"][number];
+  stockIssue: RouterOutputs["stockIssues"]["getFiltered"]["stockIssues"][number];
 }) {
   const router = useRouter();
   return (
     <Table.Row
       className="bg-white hover:cursor-pointer dark:border-gray-700 dark:bg-gray-800"
-      onClick={() => router.push(`/invoices/${invoice.id}`)}
+      onClick={() => router.push(`/stock-issues/${stockIssue.id}`)}
     >
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.name}
+        {stockIssue.invoiceName}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.issueDate.toLocaleDateString()}
+        {stockIssue.createdAt.toLocaleDateString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.Application?.applicantName}
+        {stockIssue.distributionCenterName}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice?.declaredNutCoal && invoice.declaredNutCoal.toString()}
+        {stockIssue?.nutCoalIssued && stockIssue.nutCoalIssued.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.nutCoalWithdrawn}
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice?.declaredEcoPeaCoal && invoice.declaredEcoPeaCoal.toString()}
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.ecoPeaCoalWithdrawn}
+        {stockIssue?.ecoPeaCoalIssued && stockIssue.ecoPeaCoalIssued.toString()}
       </Table.Cell>
     </Table.Row>
   );

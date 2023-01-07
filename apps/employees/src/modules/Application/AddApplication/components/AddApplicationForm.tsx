@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { trpc } from "../../../utils/trpc";
+import { trpc } from "../../../../utils/trpc";
 import {
   Button,
   Label,
@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import dayjs from "dayjs";
 import frontendAddApplicationSchema, {
   FrontendAddApplicationSchemaType,
-} from "../../../schemas/applicationSchema";
+} from "../../../../schemas/applicationSchema";
 
 export default function AddApplicationForm() {
   const {

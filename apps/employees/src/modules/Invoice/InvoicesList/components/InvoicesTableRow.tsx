@@ -1,32 +1,38 @@
 import { Table } from "flowbite-react";
 import { useRouter } from "next/router";
-import { RouterOutputs } from "../../../utils/trpc";
+import { RouterOutputs } from "../../../../utils/trpc";
 
-export default function StockIssuesTableRow({
-  stockIssue: stockIssue,
+export default function InvoicesTableRow({
+  invoice,
 }: {
-  stockIssue: RouterOutputs["stockIssues"]["getFiltered"]["stockIssues"][number];
+  invoice: RouterOutputs["invoices"]["getFiltered"]["invoices"][number];
 }) {
   const router = useRouter();
   return (
     <Table.Row
       className="bg-white hover:cursor-pointer dark:border-gray-700 dark:bg-gray-800"
-      onClick={() => router.push(`/stock-issues/${stockIssue.id}`)}
+      onClick={() => router.push(`/invoices/${invoice.id}`)}
     >
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {stockIssue.invoiceName}
+        {invoice.name}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {stockIssue.createdAt.toLocaleDateString()}
+        {invoice.issueDate.toLocaleDateString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {stockIssue.distributionCenterName}
+        {invoice.Application?.applicantName}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {stockIssue?.nutCoalIssued && stockIssue.nutCoalIssued.toString()}
+        {invoice?.declaredNutCoal && invoice.declaredNutCoal.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {stockIssue?.ecoPeaCoalIssued && stockIssue.ecoPeaCoalIssued.toString()}
+        {invoice.nutCoalWithdrawn}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
+        {invoice?.declaredEcoPeaCoal && invoice.declaredEcoPeaCoal.toString()}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
+        {invoice.ecoPeaCoalWithdrawn}
       </Table.Cell>
     </Table.Row>
   );

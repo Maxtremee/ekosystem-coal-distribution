@@ -2,8 +2,8 @@ import { withPageAuthRequired } from "@auth0/nextjs-auth0/client";
 import { Alert, Button, Spinner } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import ApplicationDetails from "../../modules/ApplicationDetails";
-import InvoiceList from "../../modules/InvoicesList";
+import ApplicationDetails from "../../modules/Application/ApplicationDetails";
+import InvoiceList from "../../modules/Invoice/InvoicesList";
 import { trpc } from "../../utils/trpc";
 
 function ApplicationDetailsPage() {

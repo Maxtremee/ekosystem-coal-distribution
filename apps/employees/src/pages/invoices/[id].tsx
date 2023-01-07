@@ -2,8 +2,8 @@ import { withPageAuthRequired } from "@auth0/nextjs-auth0/client";
 import { Alert, Button, Spinner } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import InvoiceDetails from "../../modules/InvoiceDetails";
-import StockIssuesList from "../../modules/StockIssuesList";
+import InvoiceDetails from "../../modules/Invoice/InvoiceDetails";
+import StockIssuesList from "../../modules/StockIssue/StockIssuesList";
 import { trpc } from "../../utils/trpc";
 
 function InvoiceDetailsPage() {

@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RouterOutputs, trpc } from "../../../utils/trpc";
+import { RouterOutputs, trpc } from "../../../../utils/trpc";
 import frontendAddInvoiceSchema, {
   FrontendAddInvoiceSchemaType,
-} from "../../../schemas/invoiceSchema";
+} from "../../../../schemas/invoiceSchema";
 import { Button, Label, Spinner, TextInput } from "flowbite-react";
 import { InputError, Text } from "@ekosystem/ui";
 import { useState } from "react";

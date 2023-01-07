@@ -1,6 +1,6 @@
 import { FilteringChevron, useFilteringContext } from "@ekosystem/ui";
 import { Alert, Table } from "flowbite-react";
-import { RouterOutputs } from "../../../utils/trpc";
+import { RouterOutputs } from "../../../../utils/trpc";
 import StockIssuesTableRow from "./StockIssuesTableRow";
 
 type StockIssuesType =

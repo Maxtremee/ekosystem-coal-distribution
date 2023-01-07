@@ -1,46 +1,36 @@
 import { useFilteringContext, FilteringChevron } from "@ekosystem/ui";
 import { Alert, Table } from "flowbite-react";
-import { RouterOutputs } from "../../../utils/trpc";
-import ApplicationsTableRow from "./ApplicationsTableRow";
+import { RouterOutputs } from "../../../../utils/trpc";
+import InvoicesTableRow from "./InvoicesTableRow";
 
-type ApplicationsType =
-  RouterOutputs["applications"]["getFiltered"]["applications"];
+type InvoicesType = RouterOutputs["invoices"]["getFiltered"]["invoices"];
 
-export default function ApplicationsTable({
-  applications,
+export default function InvoicesTable({
+  invoices,
   isError,
 }: {
-  applications: ApplicationsType | undefined;
+  invoices: InvoicesType | undefined;
   isError: boolean;
 }) {
   const { onHeaderClick } = useFilteringContext();
 
   if (isError) {
-    return <Alert color="failure">Błąd ładowania listy wniosków</Alert>;
+    return <Alert color="failure">Błąd ładowania listy faktur</Alert>;
   }
 
-  const headerClickHandler = onHeaderClick<keyof ApplicationsType[number]>();
-  const ShowChevron = FilteringChevron<keyof ApplicationsType[number]>;
+  const headerClickHandler = onHeaderClick<keyof InvoicesType[number]>();
+  const ShowChevron = FilteringChevron<keyof InvoicesType[number]>;
 
   return (
     <Table hoverable>
       <Table.Head>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => headerClickHandler("applicantName")}
+          onClick={() => headerClickHandler("name")}
         >
-          <div className="flex align-middle">
-            Imię i nazwisko
-            <ShowChevron id="applicantName" />
-          </div>
-        </Table.HeadCell>
-        <Table.HeadCell
-          className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => headerClickHandler("applicationId")}
-        >
-          <div className="flex align-middle">
-            Numer wniosku
-            <ShowChevron id="applicationId" />
+          <div className="flex items-center">
+            Numer faktury
+            <ShowChevron id="name" />
           </div>
         </Table.HeadCell>
         <Table.HeadCell
@@ -48,12 +38,12 @@ export default function ApplicationsTable({
           onClick={() => headerClickHandler("issueDate")}
         >
           <div className="flex items-center">
-            Data złożenia
+            Data
             <ShowChevron id="issueDate" />
           </div>
         </Table.HeadCell>
         <Table.HeadCell>
-          <div className="flex items-center">Numery faktur</div>
+          <div className="flex items-center">Osoba składająca wniosek</div>
         </Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
@@ -64,7 +54,8 @@ export default function ApplicationsTable({
             <ShowChevron id="declaredNutCoal" />
           </div>
         </Table.HeadCell>
-        <Table.HeadCell>Ilość węgla wydana w fakturach - orzech</Table.HeadCell>
+        <Table.HeadCell>Ilość węgla wydana - orzech</Table.HeadCell>
+
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("declaredEcoPeaCoal")}
@@ -74,16 +65,11 @@ export default function ApplicationsTable({
             <ShowChevron id="declaredEcoPeaCoal" />
           </div>
         </Table.HeadCell>
-        <Table.HeadCell>
-          Ilość węgla wydana w fakturach - groszek
-        </Table.HeadCell>
+        <Table.HeadCell>Ilość węgla wydana - groszek</Table.HeadCell>
       </Table.Head>
-      <Table.Body className={`divide-y`}>
-        {applications?.map((application) => (
-          <ApplicationsTableRow
-            key={application.id}
-            application={application}
-          />
+      <Table.Body className="divide-y">
+        {invoices?.map((invoice) => (
+          <InvoicesTableRow key={invoice.id} invoice={invoice} />
         ))}
       </Table.Body>
     </Table>
