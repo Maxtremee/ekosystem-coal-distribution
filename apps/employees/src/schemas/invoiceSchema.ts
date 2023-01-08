@@ -8,11 +8,8 @@ export const baseAddInvoiceSchema = z.object({
 });
 
 export const frontendAddInvoiceSchema = baseAddInvoiceSchema.refine(
-  ({ declaredEcoPeaCoal, declaredNutCoal, ...rest }) =>
-    (declaredEcoPeaCoal || declaredNutCoal) &&
-    Object.values(rest).every((val) =>
-      typeof val !== undefined ? !!val : true,
-    ),
+  ({ declaredEcoPeaCoal, declaredNutCoal }) =>
+    declaredEcoPeaCoal || declaredNutCoal,
   {
     message: "Przynajmniej jedna wartość musi być wypełniona",
     path: ["declaredEcoPeaCoal", "declaredNutCoal"],

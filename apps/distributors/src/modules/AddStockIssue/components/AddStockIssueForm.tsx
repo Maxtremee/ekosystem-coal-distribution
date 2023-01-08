@@ -61,7 +61,7 @@ export default function AddApplicationForm({
     >
       <div className="flex w-full flex-col justify-between gap-4 md:flex-row">
         <div className="w-full">
-          <Label htmlFor="declaredNutCoal">Ilość węgla - orzech [Kg]</Label>
+          <Label htmlFor="nutCoalIssued">Ilość węgla - orzech [Kg]</Label>
           <TextInput
             {...register("nutCoalIssued", {
               max: nutCoalLeft,
@@ -76,7 +76,7 @@ export default function AddApplicationForm({
           <InputError error={errors?.nutCoalIssued?.message} />
         </div>
         <div className="w-full">
-          <Label htmlFor="declaredEcoPeaCoal">Ilość węgla - groszek [Kg]</Label>
+          <Label htmlFor="ecoPeaCoalIssued">Ilość węgla - groszek [Kg]</Label>
           <TextInput
             {...register("ecoPeaCoalIssued", {
               max: ecoPeaCoalLeft,
@@ -93,12 +93,12 @@ export default function AddApplicationForm({
         <InputError error={mutationError?.message} />
       </div>
       <div className="w-full">
-        <Label htmlFor="declaredEcoPeaCoal">
+        <Label htmlFor="additionalInformation">
           Dodatkowe informacje (opcjonalnie)
         </Label>
         <Textarea
           {...register("additionalInformation")}
-          id="ecoPeaCoalIssued"
+          id="additionalInformation"
           placeholder="Dodatkowe informacje"
           rows={3}
         />
