@@ -80,7 +80,7 @@ export default function AddApplicationForm() {
         </div>
       )}
       <div>
-        <Label htmlFor="additionalInformation">Dodatkowe informacje</Label>
+        <Label htmlFor="additionalInformation">Dodatkowe informacje (opcjonalnie)</Label>
         <Textarea
           {...register("additionalInformation")}
           id="additionalInformation"

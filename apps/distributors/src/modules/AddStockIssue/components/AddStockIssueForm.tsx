@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { Button, Label, Spinner, TextInput } from "flowbite-react";
+import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputError } from "@ekosystem/ui";
@@ -92,6 +92,19 @@ export default function AddApplicationForm({
         </div>
         <InputError error={mutationError?.message} />
       </div>
+      <div className="w-full">
+        <Label htmlFor="declaredEcoPeaCoal">
+          Dodatkowe informacje (opcjonalnie)
+        </Label>
+        <Textarea
+          {...register("additionalInformation")}
+          id="ecoPeaCoalIssued"
+          placeholder="Dodatkowe informacje"
+          rows={3}
+        />
+        <InputError error={errors?.ecoPeaCoalIssued?.message} />
+      </div>
+      <InputError error={mutationError?.message} />
       <Button color="success" type="submit" disabled={isLoading || !isValid}>
         {isLoading && <Spinner color="success" className="mr-2" />}
         Akceptuj

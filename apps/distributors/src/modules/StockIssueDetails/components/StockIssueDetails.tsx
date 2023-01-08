@@ -23,6 +23,10 @@ export default function StockIssueDetails({
         <Text>{stockIssue?.ecoPeaCoalIssued?.toString() || 0} kg</Text>
         <p className="text-gray-500">Wydano: orzech</p>
         <Text>{stockIssue?.nutCoalIssued?.toString() || 0} kg</Text>
+        <p className="text-gray-500">Dodatkowe informacje</p>
+        <Text className="break-all">
+          {stockIssue?.additionalInformation || "-"}
+        </Text>
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Dodano dnia</p>
