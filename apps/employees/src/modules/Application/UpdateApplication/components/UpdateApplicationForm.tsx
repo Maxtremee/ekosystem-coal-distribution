@@ -15,8 +15,16 @@ import dayjs from "dayjs";
 import frontendAddApplicationSchema, {
   FrontendAddApplicationSchemaType,
 } from "../../../../schemas/applicationSchema";
+import { Application } from "@ekosystem/db";
+import Decimal from "decimal.js";
 
-export default function AddApplicationForm() {
+export default function UpsertApplicationForm({
+  application,
+}: {
+  application: Application;
+}) {
+  const router = useRouter();
+  const { mutate, isLoading } = trpc.applications.update.useMutation();
   const {
     setValue,
     watch,
@@ -26,6 +34,19 @@ export default function AddApplicationForm() {
   } = useForm<FrontendAddApplicationSchemaType>({
     mode: "onTouched",
     resolver: zodResolver(frontendAddApplicationSchema),
+    defaultValues: {
+      additionalInformation: application?.additionalInformation || undefined,
+      applicantName: application?.applicantName,
+      applicationId: application?.applicationId || undefined,
+      declaredEcoPeaCoal: application?.declaredEcoPeaCoal
+        ? new Decimal(application.declaredEcoPeaCoal).toNumber()
+        : undefined,
+      declaredNutCoal: application?.declaredNutCoal
+        ? new Decimal(application.declaredNutCoal).toNumber()
+        : undefined,
+      issueDate: dayjs(application?.issueDate).format("YYYY-MM-DD"),
+      showApplicationIdField: !!application?.applicationId,
+    },
   });
   const showApplicationIdValue = watch("showApplicationIdField");
   const showApplicationIdHandler = (checked: boolean) => {
@@ -35,14 +56,14 @@ export default function AddApplicationForm() {
     }
   };
 
-  const router = useRouter();
-  const { mutate, isLoading } = trpc.applications.add.useMutation();
-
   const onSubmit = (data: FrontendAddApplicationSchemaType) =>
     mutate(
       {
         ...data,
-        issueDate: dayjs(data.issueDate).set("hour", dayjs().hour()).toDate(),
+        issueDate: dayjs(data.issueDate)
+          .set("hour", dayjs(application.issueDate).hour())
+          .toDate(),
+        id: application.id,
       },
       {
         onSuccess: (res) => {
@@ -135,7 +156,7 @@ export default function AddApplicationForm() {
       </div>
       <Button color="success" type="submit" disabled={isLoading || !isValid}>
         {isLoading && <Spinner color="success" className="mr-2" />}
-        Dodaj wniosek
+        Aktualizuj wniosek
       </Button>
     </form>
   );

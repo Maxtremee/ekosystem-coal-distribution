@@ -3,6 +3,7 @@ import { z } from "zod";
 import { baseAddApplicationSchema } from "../../../schemas/applicationSchema";
 import { router, protectedProcedure } from "../trpc";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
+import { TRPCError } from "@trpc/server";
 
 export const applicationsRouter = router({
   add: protectedProcedure
@@ -14,6 +15,43 @@ export const applicationsRouter = router({
           createdBy: ctx.session.user.email,
         },
       });
+    }),
+  update: protectedProcedure
+    .input(
+      baseAddApplicationSchema.extend({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.application.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          ...input,
+          updatedBy: ctx.session.user.email,
+        },
+      });
+    }),
+  get: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.application.findUniqueOrThrow({
+          where: {
+            id: input.id,
+          },
+        });
+      } catch {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Nie ma takiego wniosku",
+        });
+      }
     }),
   getDetails: protectedProcedure
     .input(

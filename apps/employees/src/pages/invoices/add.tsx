@@ -1,7 +1,7 @@
 import { withPageAuthRequired } from "@auth0/nextjs-auth0/client";
 import { Alert, Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
-import AddInvoiceForm from "../../modules/Invoice/AddInvoice/components/AddInvoiceForm";
+import AddInvoice from "../../modules/Invoice/AddInvoice";
 import { trpc } from "../../utils/trpc";
 
 function AddInvoicePage() {
@@ -18,15 +18,15 @@ function AddInvoicePage() {
       },
     );
 
-  if (isError) {
-    return <Alert color="error">Błąd dodawania faktury</Alert>;
-  }
-
   if (isInitialLoading) {
     return <Spinner size="xl" color="success" />;
   }
 
-  return <AddInvoiceForm application={data} />;
+  if (isError || !data) {
+    return <Alert color="failure">Błąd dodawania faktury</Alert>;
+  }
+
+  return <AddInvoice application={data} />;
 }
 
 export default withPageAuthRequired(AddInvoicePage);

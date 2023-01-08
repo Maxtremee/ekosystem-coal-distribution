@@ -6,8 +6,8 @@ import { useRouter } from "next/router";
 import {
   InvoiceDetails,
   InvoiceTimeline,
-} from "../../modules/Invoice/InvoiceDetails";
-import { trpc } from "../../utils/trpc";
+} from "../../../modules/Invoice/InvoiceDetails";
+import { trpc } from "../../../utils/trpc";
 
 function InvoiceDetailsPage() {
   const router = useRouter();
@@ -18,7 +18,7 @@ function InvoiceDetailsPage() {
   });
 
   if (error) {
-    return <Alert color="error">Błąd wczytywania faktury</Alert>;
+    return <Alert color="failure">Błąd wczytywania faktury</Alert>;
   }
 
   if (isLoading) {

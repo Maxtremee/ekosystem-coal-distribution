@@ -11,17 +11,17 @@ import { useRouter } from "next/router";
 import dayjs from "dayjs";
 import { useDebounce } from "react-use";
 import Decimal from "decimal.js";
+import { Invoice } from "@ekosystem/db";
 
-export default function AddInvoiceForm({
+export default function UpdateInvoiceForm({
   application,
+  invoice,
 }: {
-  application: Exclude<
-    RouterOutputs["invoices"]["checkIfApplicationExists"],
-    null
-  >;
+  application: RouterOutputs["invoices"]["checkIfApplicationExists"];
+  invoice: Invoice;
 }) {
   const router = useRouter();
-  const { mutate, isLoading } = trpc.invoices.add.useMutation();
+  const { mutate, isLoading } = trpc.invoices.update.useMutation();
   const [debounceInvoiceName, setDebouncedInvoiceName] = useState("");
 
   const {
@@ -33,26 +33,24 @@ export default function AddInvoiceForm({
   } = useForm<FrontendAddInvoiceSchemaType>({
     mode: "onTouched",
     resolver: zodResolver(frontendAddInvoiceSchema),
+    defaultValues: {
+      declaredEcoPeaCoal: invoice?.declaredEcoPeaCoal
+        ? new Decimal(invoice.declaredEcoPeaCoal).toNumber()
+        : undefined,
+      declaredNutCoal: invoice?.declaredNutCoal
+        ? new Decimal(invoice.declaredNutCoal).toNumber()
+        : undefined,
+      issueDate: dayjs(invoice?.issueDate).format("YYYY-MM-DD"),
+      name: invoice?.name,
+    },
   });
-
-  const nutCoalLeft = application?.declaredNutCoal
-    ? new Decimal(application?.declaredNutCoal)
-        .minus(application.nutCoalInInvoices)
-        .toNumber()
-    : 0;
-
-  const ecoPeaCoalLeft = application?.declaredEcoPeaCoal
-    ? new Decimal(application?.declaredEcoPeaCoal)
-        .minus(application.ecoPeaCoalInInvoices)
-        .toNumber()
-    : 0;
 
   trpc.invoices.checkIfUnique.useQuery(
     { name: debounceInvoiceName },
     {
-      enabled: !!debounceInvoiceName,
+      enabled: !!debounceInvoiceName && !invoice,
       onSuccess: (data) => {
-        if (data) {
+        if (data?.name !== invoice.name) {
           setError("name", {
             message: "Taki numer faktury już istnieje",
             type: "value",
@@ -71,12 +69,26 @@ export default function AddInvoiceForm({
     [invoiceNameWatch],
   );
 
+  const nutCoalLeft = application?.declaredNutCoal
+    ? new Decimal(application?.declaredNutCoal)
+        .minus(application.nutCoalInInvoices)
+        .toNumber()
+    : 0;
+
+  const ecoPeaCoalLeft = application?.declaredEcoPeaCoal
+    ? new Decimal(application?.declaredEcoPeaCoal)
+        .minus(application.ecoPeaCoalInInvoices)
+        .toNumber()
+    : 0;
+
   const onSubmit = (data: FrontendAddInvoiceSchemaType) =>
     mutate(
       {
         ...data,
-        issueDate: dayjs(data.issueDate).set("hour", dayjs().hour()).toDate(),
-        applicationId: application.id as string,
+        id: invoice.id,
+        issueDate: dayjs(data.issueDate)
+          .set("hour", dayjs(invoice.issueDate).hour())
+          .toDate(),
       },
       {
         onSuccess: (res) => {
@@ -90,9 +102,6 @@ export default function AddInvoiceForm({
       className="flex w-full flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <Text as="h2" className="text-lg font-semibold">
-        Dla wniosku: {application.applicantName} {application?.applicationId}
-      </Text>
       <div>
         <Label htmlFor="invoiceName">Nazwa faktury </Label>
         <TextInput
@@ -149,7 +158,7 @@ export default function AddInvoiceForm({
         disabled={isLoading || !isValid || !application}
       >
         {isLoading && <Spinner color="success" className="mr-2" />}
-        Dodaj fakturę
+        Aktualizuj fakturę
       </Button>
     </form>
   );

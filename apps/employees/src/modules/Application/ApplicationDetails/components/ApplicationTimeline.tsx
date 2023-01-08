@@ -44,7 +44,7 @@ export default function ApplicationTimeline({ id }: { id: string }) {
   }, [data]);
 
   if (isError) {
-    return <Alert color="error">Błąd wczytywania osi czasu</Alert>;
+    return <Alert color="failure">Błąd wczytywania osi czasu</Alert>;
   }
 
   if (isLoading) {

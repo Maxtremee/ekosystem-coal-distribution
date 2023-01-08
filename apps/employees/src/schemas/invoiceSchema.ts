@@ -7,10 +7,6 @@ export const baseAddInvoiceSchema = z.object({
   declaredEcoPeaCoal: z.coerce.number().nonnegative().optional(),
 });
 
-export const backendAddInvoiceSchema = baseAddInvoiceSchema.extend({
-  applicationId: z.string(),
-});
-
 export const frontendAddInvoiceSchema = baseAddInvoiceSchema.refine(
   ({ declaredEcoPeaCoal, declaredNutCoal, ...rest }) =>
     (declaredEcoPeaCoal || declaredNutCoal) &&

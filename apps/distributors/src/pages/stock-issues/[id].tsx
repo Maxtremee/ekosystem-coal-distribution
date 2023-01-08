@@ -12,7 +12,7 @@ function StockIssueDetailsPage() {
   });
 
   if (error) {
-    return <Alert color="error">Błąd wczytywania faktury</Alert>;
+    return <Alert color="failure">Błąd wczytywania faktury</Alert>;
   }
 
   if (isLoading) {

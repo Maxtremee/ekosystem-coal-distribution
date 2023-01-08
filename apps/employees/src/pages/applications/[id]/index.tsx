@@ -6,8 +6,8 @@ import { useRouter } from "next/router";
 import {
   ApplicationDetails,
   ApplicationTimeline,
-} from "../../modules/Application/ApplicationDetails";
-import { trpc } from "../../utils/trpc";
+} from "../../../modules/Application/ApplicationDetails";
+import { trpc } from "../../../utils/trpc";
 
 function ApplicationDetailsPage() {
   const router = useRouter();
@@ -17,7 +17,7 @@ function ApplicationDetailsPage() {
   });
 
   if (isError) {
-    return <Alert color="error">Błąd wczytywania wniosku</Alert>;
+    return <Alert color="failure">Błąd wczytywania wniosku</Alert>;
   }
 
   if (isLoading) {

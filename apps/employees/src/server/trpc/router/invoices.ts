@@ -1,16 +1,55 @@
 import { z } from "zod";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
-import { backendAddInvoiceSchema } from "../../../schemas/invoiceSchema";
+import { baseAddInvoiceSchema } from "../../../schemas/invoiceSchema";
 import { router, protectedProcedure } from "../trpc";
 import { Prisma } from "@ekosystem/db";
+import { TRPCError } from "@trpc/server";
 
 export const invoicesRouter = router({
   add: protectedProcedure
-    .input(backendAddInvoiceSchema)
+    .input(
+      baseAddInvoiceSchema.extend({
+        applicationId: z.string(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
       return await ctx.prisma.invoice.create({
         data: { ...input, createdBy: ctx.session.user.email },
       });
+    }),
+  update: protectedProcedure
+    .input(
+      baseAddInvoiceSchema.extend({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.prisma.invoice.update({
+        where: {
+          id: input.id,
+        },
+        data: { ...input, updatedBy: ctx.session.user.email },
+      });
+    }),
+  get: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.invoice.findUniqueOrThrow({
+          where: {
+            id: input.id,
+          },
+        });
+      } catch {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Nie ma takiej faktury",
+        });
+      }
     }),
   checkIfUnique: protectedProcedure
     .input(

@@ -4,7 +4,7 @@ export const baseAddApplicationSchema = z.object({
   applicantName: z.string(),
   applicationId: z.string().optional(),
   additionalInformation: z.string().optional(),
-  issueDate: z.coerce.date(),
+  issueDate: z.string().or(z.date()),
   declaredNutCoal: z.coerce.number().nonnegative().optional(),
   declaredEcoPeaCoal: z.coerce.number().nonnegative().optional(),
 });

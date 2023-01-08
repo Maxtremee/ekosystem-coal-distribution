@@ -9,7 +9,7 @@ export default function InvoiceTimeline({ id }: { id: string }) {
   });
 
   if (isError) {
-    return <Alert color="error">Błąd wczytywania osi czasu</Alert>;
+    return <Alert color="failure">Błąd wczytywania osi czasu</Alert>;
   }
 
   if (isLoading) {
