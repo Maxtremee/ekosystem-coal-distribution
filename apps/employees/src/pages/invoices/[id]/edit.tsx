@@ -1,5 +1,5 @@
 import { withPageAuthRequired } from "@auth0/nextjs-auth0/client";
-import { Application, Invoice } from "@ekosystem/db";
+import { Invoice } from "@ekosystem/db";
 import { Text } from "@ekosystem/ui";
 import { Alert, Card, Spinner } from "flowbite-react";
 import { useRouter } from "next/router";

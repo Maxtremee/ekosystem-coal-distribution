@@ -42,11 +42,18 @@ export const stockIssuesRouter = router({
     .input(
       defaultFilteringSchema.extend({
         invoiceId: z.string().optional(),
+        distributionCenter: z.string().optional(),
       }),
     )
     .query(async ({ input, ctx }) => {
       const filters: Prisma.StockIssueWhereInput = {
         invoiceId: input?.invoiceId,
+        DistributionCenter: {
+          id:
+            input?.distributionCenter === "all"
+              ? undefined
+              : input.distributionCenter,
+        },
         OR: [
           {
             DistributionCenter: {
@@ -61,16 +68,6 @@ export const stockIssuesRouter = router({
               name: {
                 contains: input?.search,
                 mode: "insensitive",
-              },
-            },
-          },
-          {
-            Invoice: {
-              Application: {
-                applicantName: {
-                  contains: input?.search,
-                  mode: "insensitive",
-                },
               },
             },
           },

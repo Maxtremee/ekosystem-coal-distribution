@@ -12,6 +12,8 @@ export default function Sidebar() {
               Wydania towaru
             </FlowbiteSidebar.Item>
           </Link>
+        </FlowbiteSidebar.ItemGroup>
+        <FlowbiteSidebar.ItemGroup>
           <Link href="/stock-issues/add" passHref>
             <FlowbiteSidebar.Item icon={DocumentPlusIcon}>
               Wydaj towar

@@ -25,9 +25,7 @@ export default function StockIssuesTable({
   return (
     <Table hoverable>
       <Table.Head>
-        <Table.HeadCell>
-          <div className="flex">Numer faktury</div>
-        </Table.HeadCell>
+
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("createdAt")}
@@ -39,6 +37,9 @@ export default function StockIssuesTable({
         </Table.HeadCell>
         <Table.HeadCell>
           <div className="flex">Wydane przez</div>
+        </Table.HeadCell>
+        <Table.HeadCell>
+          <div className="flex">Numer faktury</div>
         </Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
