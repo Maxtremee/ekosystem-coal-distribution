@@ -1,4 +1,9 @@
-import { Text, FilteringProvider, useFiltering } from "@ekosystem/ui";
+import {
+  Text,
+  FilteringProvider,
+  useFiltering,
+  SelectPageSize,
+} from "@ekosystem/ui";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { Alert, Label, Pagination, Spinner, TextInput } from "flowbite-react";
 import { trpc } from "../../../../utils/trpc";
@@ -6,7 +11,8 @@ import ApplicationsTable from "./ApplicationsTable";
 
 export default function ApplicationsList() {
   const filtering = useFiltering();
-  const { values, register, getTotalPages, setPage } = filtering;
+  const { values, register, getTotalPages, setPage, pageSize, setValue } =
+    filtering;
 
   const { data, isLoading, isError } = trpc.applications.getFiltered.useQuery({
     ...values,
@@ -20,7 +26,7 @@ export default function ApplicationsList() {
         Lista wniosków
       </Text>
       <FilteringProvider {...filtering}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
           <div>
             <Label htmlFor="search">Szukaj</Label>
             <TextInput
@@ -30,6 +36,7 @@ export default function ApplicationsList() {
               placeholder="Wpisz wybraną frazę"
             />
           </div>
+          <SelectPageSize value={pageSize} setValue={setValue} />
         </div>
         <ApplicationsTable
           applications={data?.applications}

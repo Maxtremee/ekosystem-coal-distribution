@@ -10,7 +10,7 @@ import {
   QueryParamConfigMap,
 } from "use-query-params";
 
-const defaultFilters = {
+export const defaultFilters = {
   sortDir: "desc",
   pageSize: 20,
   page: 1,

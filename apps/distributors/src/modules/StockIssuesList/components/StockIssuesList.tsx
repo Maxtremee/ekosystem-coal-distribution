@@ -1,4 +1,9 @@
-import { FilteringProvider, Text, useFiltering } from "@ekosystem/ui";
+import {
+  FilteringProvider,
+  SelectPageSize,
+  Text,
+  useFiltering,
+} from "@ekosystem/ui";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { Alert, Label, Pagination, Spinner, TextInput } from "flowbite-react";
 import { trpc } from "../../../utils/trpc";
@@ -6,7 +11,8 @@ import StockIssuesTable from "./StockIssuesTable";
 
 export default function InvoicesList() {
   const filtering = useFiltering();
-  const { values, register, getTotalPages, setPage } = filtering;
+  const { values, register, getTotalPages, setPage, pageSize, setValue } =
+    filtering;
 
   const { data, isLoading, isError } = trpc.stockIssues.getFiltered.useQuery({
     ...values,
@@ -20,7 +26,7 @@ export default function InvoicesList() {
         Lista wydań towaru
       </Text>
       <FilteringProvider {...filtering}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
           <div>
             <Label htmlFor="search">Szukaj</Label>
             <TextInput
@@ -30,6 +36,7 @@ export default function InvoicesList() {
               placeholder="Wpisz wybraną frazę"
             />
           </div>
+          <SelectPageSize value={pageSize} setValue={setValue} />
         </div>
         <StockIssuesTable stockIssues={data?.stockIssues} isError={isError} />
         {isLoading && (

@@ -1,4 +1,9 @@
-import { FilteringProvider, Text, useFiltering } from "@ekosystem/ui";
+import {
+  FilteringProvider,
+  SelectPageSize,
+  Text,
+  useFiltering,
+} from "@ekosystem/ui";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import {
   Alert,
@@ -20,7 +25,8 @@ type StockIssuesFiltersType = typeof stockIssuesFilters;
 
 export default function InvoicesList({ invoiceId }: { invoiceId?: string }) {
   const filtering = useFiltering<StockIssuesFiltersType>(stockIssuesFilters);
-  const { values, register, getTotalPages, setPage, setValue } = filtering;
+  const { values, register, getTotalPages, setPage, setValue, pageSize } =
+    filtering;
 
   const {
     data: centers,
@@ -86,6 +92,7 @@ export default function InvoicesList({ invoiceId }: { invoiceId?: string }) {
               ))}
             </Select>
           </div>
+          <SelectPageSize value={pageSize} setValue={setValue} />
         </div>
         <StockIssuesTable
           stockIssues={stockIssues?.stockIssues}
