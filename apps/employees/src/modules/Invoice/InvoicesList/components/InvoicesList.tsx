@@ -7,6 +7,7 @@ import {
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { Alert, Label, Pagination, Spinner, TextInput } from "flowbite-react";
 import { trpc } from "../../../../utils/trpc";
+import DownloadInvoicesButton from "./DownloadInvoicesButton";
 import InvoicesTable from "./InvoicesTable";
 
 export default function InvoicesList({
@@ -33,7 +34,7 @@ export default function InvoicesList({
         Lista faktur
       </Text>
       <FilteringProvider {...filtering}>
-        <div className="flex items-center gap-4">
+        <div className="flex items-end gap-4">
           <div>
             <Label htmlFor="search">Szukaj</Label>
             <TextInput
@@ -44,6 +45,7 @@ export default function InvoicesList({
             />
           </div>
           <SelectPageSize value={pageSize} setValue={setValue} />
+          <DownloadInvoicesButton />
         </div>
         <InvoicesTable invoices={data?.invoices} isError={isError} />
         {isLoading && (

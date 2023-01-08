@@ -9,7 +9,7 @@ import { Alert, Label, Pagination, Spinner, TextInput } from "flowbite-react";
 import { trpc } from "../../../utils/trpc";
 import StockIssuesTable from "./StockIssuesTable";
 
-export default function InvoicesList() {
+export default function StockIssuesList() {
   const filtering = useFiltering();
   const { values, register, getTotalPages, setPage, pageSize, setValue } =
     filtering;

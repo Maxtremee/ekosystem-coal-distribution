@@ -211,4 +211,92 @@ export const applicationsRouter = router({
         })),
       };
     }),
+  downloadFiltered: protectedProcedure
+    .input(defaultFilteringSchema)
+    .mutation(async ({ input, ctx }) => {
+      const filters: Prisma.ApplicationWhereInput = {
+        OR: [
+          {
+            applicantName: {
+              contains: input?.search,
+              mode: "insensitive",
+            },
+          },
+          {
+            applicationId: {
+              contains: input?.search,
+              mode: "insensitive",
+            },
+          },
+          {
+            invoices: {
+              some: {
+                name: {
+                  contains: input?.search,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+        ],
+      };
+      const applications = await ctx.prisma.application.findMany({
+        include: {
+          invoices: {
+            select: {
+              name: true,
+              declaredEcoPeaCoal: true,
+              declaredNutCoal: true,
+            },
+          },
+        },
+        orderBy: {
+          [input.sortBy]: input.sortDir,
+        },
+        where: filters,
+      });
+      const mappedApplications = applications.map((application) => ({
+        ...application,
+        ecoPeaCoalInInvoices: application.invoices.reduce(
+          (acc, { declaredEcoPeaCoal }) =>
+            declaredEcoPeaCoal ? acc + declaredEcoPeaCoal.toNumber() : acc,
+          0,
+        ),
+        nutCoalInInvoices: application.invoices.reduce(
+          (acc, { declaredNutCoal }) =>
+            declaredNutCoal ? acc + declaredNutCoal.toNumber() : acc,
+          0,
+        ),
+        invoicesNames: application.invoices
+          .reduce((acc, { name }) => `${acc}${name};`, "")
+          ?.slice(0, -1),
+      }));
+      const data = mappedApplications.map((application) => [
+        application.id,
+        application?.applicantName,
+        application?.applicationId,
+        application?.additionalInformation,
+        application.issueDate.toLocaleString("pl").replace(", ", " "),
+        application?.declaredNutCoal?.toString(),
+        application?.declaredEcoPeaCoal?.toString(),
+        application.invoices.length,
+        application.invoicesNames,
+        application?.nutCoalInInvoices,
+        application?.ecoPeaCoalInInvoices,
+      ]);
+      const header = [
+        "identyfikator",
+        "imię i nazwisko wnioskodawcy",
+        "numer wniosku",
+        "dodatkowe informacje",
+        "data",
+        "zadeklarowano: orzech [kg]",
+        "zadeklarowano: groszek [kg]",
+        "liczba faktur",
+        "numery faktur",
+        "opłacono: orzech [kg]",
+        "opłacono: groszek [kg]",
+      ];
+      return { data, header };
+    }),
 });

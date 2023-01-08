@@ -41,13 +41,11 @@ export const stockIssuesRouter = router({
   getFiltered: protectedProcedure
     .input(
       defaultFilteringSchema.extend({
-        invoiceId: z.string().optional(),
         distributionCenter: z.string().optional(),
       }),
     )
     .query(async ({ input, ctx }) => {
       const filters: Prisma.StockIssueWhereInput = {
-        invoiceId: input?.invoiceId,
         DistributionCenter: {
           id:
             input?.distributionCenter === "all"
@@ -106,5 +104,75 @@ export const stockIssuesRouter = router({
           invoiceName: stockIssue.Invoice?.name,
         })),
       };
+    }),
+  downloadFiltered: protectedProcedure
+    .input(
+      defaultFilteringSchema.extend({
+        distributionCenter: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const stockIssues = await ctx.prisma.stockIssue.findMany({
+        where: {
+          DistributionCenter: {
+            id:
+              input?.distributionCenter === "all"
+                ? undefined
+                : input.distributionCenter,
+          },
+          OR: [
+            {
+              DistributionCenter: {
+                name: {
+                  contains: input?.search,
+                  mode: "insensitive",
+                },
+              },
+            },
+            {
+              Invoice: {
+                name: {
+                  contains: input?.search,
+                  mode: "insensitive",
+                },
+              },
+            },
+          ],
+        },
+        orderBy: {
+          [input.sortBy]: input.sortDir,
+        },
+        include: {
+          Invoice: {
+            select: {
+              name: true,
+            },
+          },
+          DistributionCenter: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
+      const data = stockIssues?.map((stockIssue) => [
+        stockIssue.id,
+        stockIssue.createdAt.toLocaleString("pl").replace(", ", " "),
+        stockIssue.DistributionCenter?.name,
+        stockIssue.nutCoalIssued?.toString(),
+        stockIssue.nutCoalIssued?.toString(),
+        stockIssue.additionalInformation,
+        stockIssue.Invoice?.name,
+      ]);
+      const header = [
+        "identyfikator",
+        "data",
+        "nazwa składu",
+        "orzech [kg]",
+        "groszek [kg]",
+        "dodatkowe informacje",
+        "numer faktury",
+      ];
+      return { data, header };
     }),
 });

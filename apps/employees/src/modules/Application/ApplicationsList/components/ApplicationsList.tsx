@@ -8,6 +8,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { Alert, Label, Pagination, Spinner, TextInput } from "flowbite-react";
 import { trpc } from "../../../../utils/trpc";
 import ApplicationsTable from "./ApplicationsTable";
+import DownloadApplicationsButton from "./DownloadApplicationsButton";
 
 export default function ApplicationsList() {
   const filtering = useFiltering();
@@ -26,7 +27,7 @@ export default function ApplicationsList() {
         Lista wniosków
       </Text>
       <FilteringProvider {...filtering}>
-        <div className="flex items-center gap-4">
+        <div className="flex items-end gap-4">
           <div>
             <Label htmlFor="search">Szukaj</Label>
             <TextInput
@@ -37,6 +38,7 @@ export default function ApplicationsList() {
             />
           </div>
           <SelectPageSize value={pageSize} setValue={setValue} />
+          <DownloadApplicationsButton />
         </div>
         <ApplicationsTable
           applications={data?.applications}

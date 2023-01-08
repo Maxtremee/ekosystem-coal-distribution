@@ -170,14 +170,9 @@ export const invoicesRouter = router({
       };
     }),
   getFiltered: protectedProcedure
-    .input(
-      defaultFilteringSchema.extend({
-        applicationId: z.string().optional(),
-      }),
-    )
+    .input(defaultFilteringSchema)
     .query(async ({ input, ctx }) => {
       const filters: Prisma.InvoiceWhereInput = {
-        applicationId: input?.applicationId,
         OR: [
           {
             name: {
@@ -228,5 +223,92 @@ export const invoicesRouter = router({
           ),
         })),
       };
+    }),
+  downloadFiltered: protectedProcedure
+    .input(defaultFilteringSchema)
+    .mutation(async ({ ctx, input }) => {
+      const filters: Prisma.InvoiceWhereInput = {
+        OR: [
+          {
+            name: {
+              contains: input?.search,
+              mode: "insensitive",
+            },
+          },
+          {
+            Application: {
+              applicantName: {
+                contains: input?.search,
+                mode: "insensitive",
+              },
+            },
+          },
+        ],
+      };
+      const invoices = await ctx.prisma.invoice.findMany({
+        where: filters,
+        include: {
+          stockIssues: {
+            select: {
+              ecoPeaCoalIssued: true,
+              nutCoalIssued: true,
+              id: true,
+            },
+          },
+          Application: {
+            select: {
+              applicantName: true,
+              applicationId: true,
+            },
+          },
+        },
+        orderBy: {
+          [input.sortBy]: input.sortDir,
+        },
+      });
+
+      const mappedInvoices = invoices.map((invoice) => ({
+        ...invoice,
+        ecoPeaCoalWithdrawn: invoice?.stockIssues.reduce(
+          (acc, { ecoPeaCoalIssued }) =>
+            ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
+          0,
+        ),
+        nutCoalWithdrawn: invoice?.stockIssues.reduce(
+          (acc, { nutCoalIssued }) =>
+            nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
+          0,
+        ),
+        stockIssuesIds: invoice?.stockIssues
+          .reduce((acc, { id }) => `${acc}${id};`, "")
+          ?.slice(0, -1),
+      }));
+      const data = mappedInvoices.map((invoice) => [
+        invoice.id,
+        invoice.name,
+        invoice.issueDate.toLocaleString("pl").replace(", ", " "),
+        invoice.Application?.applicantName,
+        invoice.Application?.applicationId,
+        invoice?.declaredNutCoal?.toString(),
+        invoice?.declaredEcoPeaCoal?.toString(),
+        invoice.stockIssues.length,
+        invoice.stockIssuesIds,
+        invoice.nutCoalWithdrawn,
+        invoice.ecoPeaCoalWithdrawn,
+      ]);
+      const header = [
+        "identyfikator",
+        "numer faktury",
+        "data",
+        "imię i nazwisko wnioskodawcy",
+        "numer wniosku",
+        "opłacono: orzech [kg]",
+        "opłacono: groszek [kg]",
+        "liczba wydań",
+        "identyfikatory wydań",
+        "odebrano: orzech [kg]",
+        "odebrano: groszek [kg]",
+      ];
+      return { data, header };
     }),
 });

@@ -16,14 +16,15 @@ import {
 import { ChangeEvent, useMemo } from "react";
 import { StringParam } from "use-query-params";
 import { trpc } from "../../../../utils/trpc";
+import DownloadStockIssuesButton from "./DownloadStockIssuesButton";
 import StockIssuesTable from "./StockIssuesTable";
 
 const stockIssuesFilters = {
   distributionCenter: StringParam,
 };
-type StockIssuesFiltersType = typeof stockIssuesFilters;
+export type StockIssuesFiltersType = typeof stockIssuesFilters;
 
-export default function InvoicesList({ invoiceId }: { invoiceId?: string }) {
+export default function StockIssuesList() {
   const filtering = useFiltering<StockIssuesFiltersType>(stockIssuesFilters);
   const { values, register, getTotalPages, setPage, setValue, pageSize } =
     filtering;
@@ -50,9 +51,6 @@ export default function InvoicesList({ invoiceId }: { invoiceId?: string }) {
     isError,
   } = trpc.stockIssues.getFiltered.useQuery({
     ...values,
-    ...(!!invoiceId && {
-      invoiceId: invoiceId,
-    }),
   });
 
   const totalPages = getTotalPages(stockIssues?.total);
@@ -63,7 +61,7 @@ export default function InvoicesList({ invoiceId }: { invoiceId?: string }) {
         Lista wydań towaru
       </Text>
       <FilteringProvider {...filtering}>
-        <div className="flex items-center gap-4">
+        <div className="flex items-end gap-4">
           <div>
             <Label htmlFor="search">Szukaj</Label>
             <TextInput
@@ -93,6 +91,7 @@ export default function InvoicesList({ invoiceId }: { invoiceId?: string }) {
             </Select>
           </div>
           <SelectPageSize value={pageSize} setValue={setValue} />
+          <DownloadStockIssuesButton />
         </div>
         <StockIssuesTable
           stockIssues={stockIssues?.stockIssues}
