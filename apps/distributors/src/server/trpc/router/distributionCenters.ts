@@ -9,9 +9,9 @@ export const distributionCentersRouter = router({
           email: ctx.session.user?.email,
         },
       });
-      return true;
+      return { isRegistered: true };
     } catch {
-      return false;
+      return { isRegistered: false };
     }
   }),
   getDetails: protectedProcedure.query(async ({ ctx }) => {

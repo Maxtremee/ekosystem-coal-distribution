@@ -12,15 +12,15 @@ const useDistributorRegistered = () => {
   const { data, isLoading } =
     trpc.distributionCenters.checkIfRegistered.useQuery(undefined, {
       refetchOnMount: false,
-      refetchOnReconnect: false,
       refetchOnWindowFocus: false,
     });
 
   if (!isLoading) {
-    if (!data) {
-      router.replace("/register");
-    } else {
-      if (router.pathname === "/register") {
+    if (data) {
+      if (!data.isRegistered && !router.pathname.startsWith("/register")) {
+        router.replace("/register");
+      }
+      if (data.isRegistered && router.pathname.startsWith("/register")) {
         router.replace("/");
       }
     }
