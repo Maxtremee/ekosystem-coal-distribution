@@ -19,11 +19,7 @@ function StockIssueDetailsPage() {
     return <Spinner size="xl" color="success" />;
   }
 
-  return (
-    <div className="flex flex-col gap-4">
-      <StockIssueDetails stockIssue={data} />
-    </div>
-  );
+  return <StockIssueDetails stockIssue={data} />;
 }
 
 export default withPageAuthRequired(StockIssueDetailsPage);
