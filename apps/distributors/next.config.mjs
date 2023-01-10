@@ -22,13 +22,17 @@ const config = {
       },
     ],
   },
-  sentry: {
-    hideSourceMaps: true,
-  },
+  ...(process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT !== "local" && {
+    sentry: {
+      hideSourceMaps: true,
+    },
+  }),
 };
 
 const sentryWebpackPluginOptions = {
   silent: true,
 };
 
-export default withSentryConfig(config, sentryWebpackPluginOptions);
+export default process.env.SENTRY_ENVIRONMENT !== "local"
+  ? withSentryConfig(config, sentryWebpackPluginOptions)
+  : config;
