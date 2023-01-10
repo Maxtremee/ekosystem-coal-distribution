@@ -2,8 +2,72 @@ import { Prisma } from "@ekosystem/db";
 import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
+import { TRPCError } from "@trpc/server";
+import { baseStockIssueSchema } from "../../../schemas/stockIssueSchema";
 
 export const stockIssuesRouter = router({
+  checkInvoice: protectedProcedure
+    .input(
+      z.object({
+        invoiceName: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const invoice = await ctx.prisma.invoice.findFirstOrThrow({
+          where: {
+            AND: [
+              {
+                name: {
+                  equals: input.invoiceName,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          },
+          include: {
+            stockIssues: true,
+          },
+        });
+        return {
+          ...invoice,
+          stockIssues: undefined,
+          ecoPeaCoalWithdrawn: invoice?.stockIssues.reduce(
+            (acc, { ecoPeaCoalIssued }) =>
+              ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
+            0,
+          ),
+          nutCoalWithdrawn: invoice?.stockIssues.reduce(
+            (acc, { nutCoalIssued }) =>
+              nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
+            0,
+          ),
+        };
+      } catch {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Taka faktura nie istnieje",
+        });
+      }
+    }),
+  update: protectedProcedure
+    .input(
+      baseStockIssueSchema.extend({
+        id: z.string(),
+        invoiceId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.stockIssue.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          ...input,
+          updatedBy: ctx.session.user.email,
+        },
+      });
+    }),
   getDetails: protectedProcedure
     .input(
       z.object({
@@ -11,32 +75,39 @@ export const stockIssuesRouter = router({
       }),
     )
     .query(async ({ input, ctx }) => {
-      return await ctx.prisma.stockIssue.findUnique({
-        where: {
-          id: input.id,
-        },
-        include: {
-          DistributionCenter: {
-            select: {
-              name: true,
-              id: true,
-            },
+      try {
+        return await ctx.prisma.stockIssue.findUniqueOrThrow({
+          where: {
+            id: input.id,
           },
-          Invoice: {
-            select: {
-              name: true,
-              id: true,
-              Application: {
-                select: {
-                  id: true,
-                  applicantName: true,
-                  applicationId: true,
+          include: {
+            DistributionCenter: {
+              select: {
+                name: true,
+                id: true,
+              },
+            },
+            Invoice: {
+              select: {
+                name: true,
+                id: true,
+                Application: {
+                  select: {
+                    id: true,
+                    applicantName: true,
+                    applicationId: true,
+                  },
                 },
               },
             },
           },
-        },
-      });
+        });
+      } catch {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Takie wydanie nie istnieje",
+        });
+      }
     }),
   getFiltered: protectedProcedure
     .input(

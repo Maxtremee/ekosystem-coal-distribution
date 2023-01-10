@@ -60,56 +60,63 @@ export const applicationsRouter = router({
       }),
     )
     .query(async ({ input, ctx }) => {
-      const application = await ctx.prisma.application.findUnique({
-        where: {
-          id: input.id,
-        },
-        include: {
-          invoices: {
-            include: {
-              stockIssues: true,
+      try {
+        const application = await ctx.prisma.application.findUniqueOrThrow({
+          where: {
+            id: input.id,
+          },
+          include: {
+            invoices: {
+              include: {
+                stockIssues: true,
+              },
             },
           },
-        },
-      });
-      return {
-        ...application,
-        ecoPeaCoalInInvoices: application?.invoices.reduce(
-          (acc, { declaredEcoPeaCoal }) =>
-            declaredEcoPeaCoal ? acc + declaredEcoPeaCoal.toNumber() : acc,
-          0,
-        ),
-        nutCoalInInvoices: application?.invoices.reduce(
-          (acc, { declaredNutCoal }) =>
-            declaredNutCoal ? acc + declaredNutCoal.toNumber() : acc,
-          0,
-        ),
-        stockIssuesTotal: application?.invoices?.reduce(
-          (invoiceAcc, { stockIssues }) => invoiceAcc + stockIssues?.length,
-          0,
-        ),
-        ecoPeaCoalWithdrawn: application?.invoices?.reduce(
-          (invoiceAcc, { stockIssues }) =>
-            invoiceAcc +
-            stockIssues?.reduce(
-              (acc, { ecoPeaCoalIssued }) =>
-                ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
-              0,
-            ),
+        });
+        return {
+          ...application,
+          ecoPeaCoalInInvoices: application?.invoices.reduce(
+            (acc, { declaredEcoPeaCoal }) =>
+              declaredEcoPeaCoal ? acc + declaredEcoPeaCoal.toNumber() : acc,
+            0,
+          ),
+          nutCoalInInvoices: application?.invoices.reduce(
+            (acc, { declaredNutCoal }) =>
+              declaredNutCoal ? acc + declaredNutCoal.toNumber() : acc,
+            0,
+          ),
+          stockIssuesTotal: application?.invoices?.reduce(
+            (invoiceAcc, { stockIssues }) => invoiceAcc + stockIssues?.length,
+            0,
+          ),
+          ecoPeaCoalWithdrawn: application?.invoices?.reduce(
+            (invoiceAcc, { stockIssues }) =>
+              invoiceAcc +
+              stockIssues?.reduce(
+                (acc, { ecoPeaCoalIssued }) =>
+                  ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
+                0,
+              ),
 
-          0,
-        ),
-        nutCoalWithdrawn: application?.invoices?.reduce(
-          (invoiceAcc, { stockIssues }) =>
-            invoiceAcc +
-            stockIssues?.reduce(
-              (acc, { nutCoalIssued }) =>
-                nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
-              0,
-            ),
-          0,
-        ),
-      };
+            0,
+          ),
+          nutCoalWithdrawn: application?.invoices?.reduce(
+            (invoiceAcc, { stockIssues }) =>
+              invoiceAcc +
+              stockIssues?.reduce(
+                (acc, { nutCoalIssued }) =>
+                  nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
+                0,
+              ),
+            0,
+          ),
+        };
+      } catch {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Nie ma takiego wniosku",
+        });
+      }
     }),
   getTimeline: protectedProcedure
     .input(

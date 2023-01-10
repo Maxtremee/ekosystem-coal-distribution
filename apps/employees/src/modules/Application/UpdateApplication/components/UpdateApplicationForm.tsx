@@ -18,7 +18,7 @@ import frontendAddApplicationSchema, {
 import { Application } from "@ekosystem/db";
 import Decimal from "decimal.js";
 
-export default function UpsertApplicationForm({
+export default function UpdateApplicationForm({
   application,
 }: {
   application: Application;

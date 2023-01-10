@@ -11,13 +11,31 @@ import { trpc } from "../../../utils/trpc";
 
 function ApplicationDetailsPage() {
   const router = useRouter();
+  const utils = trpc.useContext();
   const id = router.query.id as string;
-  const { data, isLoading, isError } = trpc.applications.getDetails.useQuery({
-    id,
-  });
 
-  if (isError) {
-    return <Alert color="failure">Błąd wczytywania wniosku</Alert>;
+  const { data, isLoading, error } = trpc.applications.getDetails.useQuery(
+    {
+      id,
+    },
+    {
+      onSuccess: (res) => {
+        utils.applications.get.setData(
+          {
+            id,
+          },
+          () => res,
+        );
+      },
+    },
+  );
+
+  if (error) {
+    return (
+      <Alert color="failure">
+        {error?.message || "Błąd wczytywania wniosku"}
+      </Alert>
+    );
   }
 
   if (isLoading) {

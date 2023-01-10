@@ -72,12 +72,14 @@ export default function UpdateInvoiceForm({
   const nutCoalLeft = application?.declaredNutCoal
     ? new Decimal(application?.declaredNutCoal)
         .minus(application.nutCoalInInvoices)
+        .add(new Decimal(invoice?.declaredNutCoal || 0))
         .toNumber()
     : 0;
 
   const ecoPeaCoalLeft = application?.declaredEcoPeaCoal
     ? new Decimal(application?.declaredEcoPeaCoal)
         .minus(application.ecoPeaCoalInInvoices)
+        .add(new Decimal(invoice?.declaredEcoPeaCoal || 0))
         .toNumber()
     : 0;
 
