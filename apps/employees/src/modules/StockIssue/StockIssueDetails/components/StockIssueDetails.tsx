@@ -41,7 +41,14 @@ export default function StockIssueDetails({
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Miejsce wydania</p>
-        <Text>{stockIssue?.DistributionCenter?.name}</Text>
+        <Link
+          href={`/distribution-centers/${stockIssue?.distributionCenterId}`}
+          passHref
+        >
+          <Text as="span" className="underline hover:cursor-pointer">
+            {stockIssue?.DistributionCenter?.name}
+          </Text>
+        </Link>
         <p className="text-gray-500">Data wydania</p>
         <Text>{stockIssue?.createdAt.toLocaleString()}</Text>
         <p className="text-gray-500">Wydano: ekogroszek</p>

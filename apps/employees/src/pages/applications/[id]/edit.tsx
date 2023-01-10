@@ -9,22 +9,19 @@ import { trpc } from "../../../utils/trpc";
 function EditApplicationPage() {
   const router = useRouter();
   const id = router.query.id as string;
-  const utils = trpc.useContext();
-  const prefetched = utils.applications.getDetails.getData({
-    id,
-  });
-  const {
-    data: newData,
-    isInitialLoading,
-    error,
-  } = trpc.applications.get.useQuery(
+
+  const { data, isInitialLoading, error } = trpc.applications.get.useQuery(
     {
       id,
     },
     {
-      enabled: !!id && !prefetched,
+      enabled: !!id,
     },
   );
+
+  if (isInitialLoading) {
+    return <Spinner size="xl" color="success" />;
+  }
 
   if (error) {
     return (
@@ -34,17 +31,12 @@ function EditApplicationPage() {
     );
   }
 
-  if (isInitialLoading) {
-    return <Spinner size="xl" color="success" />;
-  }
-  const data = (prefetched || newData) as Application;
-
   return (
     <Card className="w-full">
       <Text as="h2" className="text-lg font-semibold">
-        Edytujesz wniosek: {data?.applicationId || data.applicantName}
+        Edytujesz wniosek: {data?.applicationId || data?.applicantName}
       </Text>
-      <UpdateApplication application={data} />
+      <UpdateApplication application={data as Application} />
     </Card>
   );
 }

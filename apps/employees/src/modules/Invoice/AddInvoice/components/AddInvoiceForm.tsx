@@ -90,9 +90,6 @@ export default function AddInvoiceForm({
       className="flex w-full flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <Text as="h2" className="text-lg font-semibold">
-        Dla wniosku: {application.applicantName} {application?.applicationId}
-      </Text>
       <div>
         <Label htmlFor="invoiceName">Nazwa faktury </Label>
         <TextInput

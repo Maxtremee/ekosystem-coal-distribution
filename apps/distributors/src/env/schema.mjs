@@ -13,6 +13,7 @@ export const serverSchema = z.object({
   AUTH0_AUDIENCE: z.string(),
   AUTH0_SECRET: z.string(),
   AUTH0_BASE_URL: z.string().url(),
+  NEXT_PUBLIC_SENTRY_ENVIRONMENT: z.string(),
 });
 
 /**
@@ -21,7 +22,7 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-  // NEXT_PUBLIC_CLIENTVAR: z.string(),
+  NEXT_PUBLIC_SENTRY_ENVIRONMENT: z.string(),
 });
 
 /**
@@ -31,5 +32,5 @@ export const clientSchema = z.object({
  * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
 export const clientEnv = {
-  // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+  NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
 };

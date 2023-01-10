@@ -12,7 +12,7 @@ const App: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   return (
     <>
       <Head>
-        <title>EkoSystem Coal Distribution Employees</title>
+        <title>EkoSystem Coal Employees</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <QueryParamProvider adapter={NextAdapter}>

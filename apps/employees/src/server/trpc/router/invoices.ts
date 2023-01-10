@@ -135,39 +135,46 @@ export const invoicesRouter = router({
       }),
     )
     .query(async ({ input, ctx }) => {
-      const invoice = await ctx.prisma.invoice.findUnique({
-        where: {
-          id: input.id,
-        },
-        include: {
-          stockIssues: {
-            select: {
-              ecoPeaCoalIssued: true,
-              nutCoalIssued: true,
+      try {
+        const invoice = await ctx.prisma.invoice.findUniqueOrThrow({
+          where: {
+            id: input.id,
+          },
+          include: {
+            stockIssues: {
+              select: {
+                ecoPeaCoalIssued: true,
+                nutCoalIssued: true,
+              },
+            },
+            Application: {
+              select: {
+                id: true,
+                applicationId: true,
+                applicantName: true,
+              },
             },
           },
-          Application: {
-            select: {
-              id: true,
-              applicationId: true,
-              applicantName: true,
-            },
-          },
-        },
-      });
-      return {
-        ...invoice,
-        ecoPeaCoalWithdrawn: invoice?.stockIssues.reduce(
-          (acc, { ecoPeaCoalIssued }) =>
-            ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
-          0,
-        ),
-        nutCoalWithdrawn: invoice?.stockIssues.reduce(
-          (acc, { nutCoalIssued }) =>
-            nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
-          0,
-        ),
-      };
+        });
+        return {
+          ...invoice,
+          ecoPeaCoalWithdrawn: invoice?.stockIssues.reduce(
+            (acc, { ecoPeaCoalIssued }) =>
+              ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
+            0,
+          ),
+          nutCoalWithdrawn: invoice?.stockIssues.reduce(
+            (acc, { nutCoalIssued }) =>
+              nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
+            0,
+          ),
+        };
+      } catch {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Nie ma takiej faktury",
+        });
+      }
     }),
   getFiltered: protectedProcedure
     .input(defaultFilteringSchema)

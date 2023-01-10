@@ -3,27 +3,16 @@ import { Text } from "@ekosystem/ui";
 import { Alert, Button, Spinner } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import {
-  InvoiceDetails,
-  InvoiceTimeline,
-} from "../../../modules/Invoice/InvoiceDetails";
+import StockIssueDetails from "../../../modules/StockIssue/StockIssueDetails";
 import { trpc } from "../../../utils/trpc";
 
-function InvoiceDetailsPage() {
+function StockIssueDetailsPage() {
   const router = useRouter();
-  const utils = trpc.useContext();
   const id = router.query.id as string;
 
-  const { data, isLoading, error } = trpc.invoices.getDetails.useQuery(
-    {
-      id,
-    },
-    {
-      onSuccess: (res) => {
-        utils.invoices.get.setData({ id }, () => res);
-      },
-    },
-  );
+  const { data, isLoading, error } = trpc.stockIssues.getDetails.useQuery({
+    id,
+  });
 
   if (isLoading) {
     return <Spinner size="xl" color="success" />;
@@ -32,7 +21,7 @@ function InvoiceDetailsPage() {
   if (error) {
     return (
       <Alert color="failure">
-        {error?.message || "Błąd wczytywania faktury"}
+        {error?.message || "Błąd wczytywania wydania towaru"}
       </Alert>
     );
   }
@@ -40,13 +29,13 @@ function InvoiceDetailsPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <Text as="h1" className="text-2xl font-bold">
-          {data.name}
+        <Text as="h2" className="text-lg font-semibold">
+          Wydanie z {data?.createdAt.toLocaleString()}
         </Text>
         <div className="flex gap-3">
           <Link
             href={{
-              pathname: `/invoices/${data.id}/edit`,
+              pathname: `/stock-issues/${data?.id}/edit`,
             }}
             passHref
           >
@@ -54,10 +43,9 @@ function InvoiceDetailsPage() {
           </Link>
         </div>
       </div>
-      <InvoiceDetails invoice={data} />
-      <InvoiceTimeline id={id} />
+      <StockIssueDetails stockIssue={data} />;
     </div>
   );
 }
 
-export default withPageAuthRequired(InvoiceDetailsPage);
+export default withPageAuthRequired(StockIssueDetailsPage);

@@ -1,5 +1,6 @@
 import { withPageAuthRequired } from "@auth0/nextjs-auth0/client";
-import { Alert, Spinner } from "flowbite-react";
+import { Text } from "@ekosystem/ui";
+import { Alert, Card, Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
 import AddInvoice from "../../modules/Invoice/AddInvoice";
 import { trpc } from "../../utils/trpc";
@@ -26,7 +27,14 @@ function AddInvoicePage() {
     return <Alert color="failure">Błąd dodawania faktury</Alert>;
   }
 
-  return <AddInvoice application={data} />;
+  return (
+    <Card>
+      <Text as="h2" className="text-lg font-semibold">
+        Dla wniosku: {data.applicantName} {data?.applicationId}
+      </Text>
+      <AddInvoice application={data} />
+    </Card>
+  );
 }
 
 export default withPageAuthRequired(AddInvoicePage);

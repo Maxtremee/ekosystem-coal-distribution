@@ -9,10 +9,7 @@ import { RouterOutputs, trpc } from "../../../utils/trpc";
 function EditInvoicePage() {
   const router = useRouter();
   const id = router.query.id as string;
-  const utils = trpc.useContext();
-  const prefetchedInvoice = utils.invoices.getDetails.getData({
-    id,
-  });
+
   const {
     data: newInvoice,
     isInitialLoading: isInitialLoadingInvoice,
@@ -22,27 +19,20 @@ function EditInvoicePage() {
       id,
     },
     {
-      enabled: !!id && !prefetchedInvoice,
+      enabled: !!id,
     },
   );
 
-  const prefetchedApplication = utils.invoices.checkIfApplicationExists.getData(
-    {
-      id: (prefetchedInvoice?.applicationId ||
-        newInvoice?.applicationId) as string,
-    },
-  );
   const {
     data: newApplication,
     isInitialLoading: isInitialLoadingApplication,
     error: applicationError,
   } = trpc.invoices.checkIfApplicationExists.useQuery(
     {
-      id: (prefetchedInvoice?.applicationId ||
-        newInvoice?.applicationId) as string,
+      id: newInvoice?.applicationId as string,
     },
     {
-      enabled: !!id && !prefetchedApplication,
+      enabled: !!id,
     },
   );
 
@@ -60,8 +50,8 @@ function EditInvoicePage() {
     return <Spinner size="xl" color="success" />;
   }
 
-  const invoice = (prefetchedInvoice || newInvoice) as Invoice;
-  const application = (prefetchedApplication || newApplication) as Exclude<
+  const invoice = newInvoice as Invoice;
+  const application = newApplication as Exclude<
     RouterOutputs["invoices"]["checkIfApplicationExists"],
     null
   >;
