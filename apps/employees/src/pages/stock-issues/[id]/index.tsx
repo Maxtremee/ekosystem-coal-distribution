@@ -43,7 +43,7 @@ function StockIssueDetailsPage() {
           </Link>
         </div>
       </div>
-      <StockIssueDetails stockIssue={data} />;
+      <StockIssueDetails stockIssue={data} />
     </div>
   );
 }

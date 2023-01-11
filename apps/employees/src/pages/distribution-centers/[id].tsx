@@ -1,7 +1,9 @@
 import { Text } from "@ekosystem/ui";
 import { Alert, Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
-import DistributionCenterDetails from "../../modules/DistributionCenters/DistributionCenterDetails";
+import DistributionCenterDetails, {
+  DistributionCenterTimeline,
+} from "../../modules/DistributionCenters/DistributionCenterDetails";
 import { trpc } from "../../utils/trpc";
 
 export default function DistributionCenterDetailsPage() {
@@ -9,9 +11,14 @@ export default function DistributionCenterDetailsPage() {
   const id = router.query.id as string;
 
   const { data, isLoading, error } =
-    trpc.distributionCenters.getDetails.useQuery({
-      id,
-    });
+    trpc.distributionCenters.getDetails.useQuery(
+      {
+        id,
+      },
+      {
+        enabled: !!id,
+      },
+    );
 
   if (error) {
     return (
@@ -31,6 +38,7 @@ export default function DistributionCenterDetailsPage() {
         {data[0].name}
       </Text>
       <DistributionCenterDetails distributionCenter={data} />
+      <DistributionCenterTimeline id={id} />
     </div>
   );
 }
