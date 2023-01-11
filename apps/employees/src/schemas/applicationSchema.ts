@@ -15,7 +15,7 @@ export const frontendAddApplicationSchema = baseAddApplicationSchema
   })
   .refine(
     ({ showApplicationIdField, applicationId }) =>
-      showApplicationIdField && applicationId,
+      showApplicationIdField ? !!applicationId : true,
     {
       message: "Należy podać numer wniosku",
       path: ["applicationId"],

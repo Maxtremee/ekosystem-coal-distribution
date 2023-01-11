@@ -31,7 +31,9 @@ export default function AddApplicationForm() {
   const showApplicationIdHandler = (checked: boolean) => {
     setValue("showApplicationIdField", checked);
     if (!checked) {
-      setValue("applicationId", undefined);
+      setValue("applicationId", undefined, {
+        shouldValidate: true,
+      });
     }
   };
 
