@@ -3,12 +3,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model DistributionCenter {
   id         String       @id @default(cuid())
+  createdAt  DateTime     @default(now())
   email      String       @unique
   name       String
   address    String       @db.Text
@@ -22,9 +24,9 @@ model Application {
   createdBy String //email
   updatedBy String? //email
 
-  applicantName         String
-  applicationId         String?  @unique
-  
+  applicantName String
+  applicationId String? @unique
+
   additionalInformation String?
   issueDate             DateTime
   declaredNutCoal       Decimal?

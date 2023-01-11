@@ -19,6 +19,10 @@ export default function DistributionCenterDetails({
         <Text>{center.name}</Text>
         <p className="text-gray-500">Adres</p>
         <Text>{center.address}</Text>
+        <p className="text-gray-500">Adres email</p>
+        <Text>{center.email}</Text>
+        <p className="text-gray-500">Zarejestrowano</p>
+        <Text>{center.createdAt.toLocaleString()}</Text>
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Łączna liczba wydań towaru</p>
