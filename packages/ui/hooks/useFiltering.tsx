@@ -111,7 +111,7 @@ export const useFiltering = <
       }
       return 1;
     },
-    [resultsLength, setResultsLength],
+    [resultsLength, setResultsLength, query.pageSize],
   );
 
   const onHeaderClick = useCallback(

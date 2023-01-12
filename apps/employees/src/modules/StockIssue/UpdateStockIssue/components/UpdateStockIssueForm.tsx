@@ -12,7 +12,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { InputError } from "@ekosystem/ui";
 
 import Decimal from "decimal.js";
-import { StockIssue } from "@ekosystem/db";
 import frontendStockIssueSchema, {
   FrontendStockIssueSchemaType,
 } from "../../../../schemas/stockIssueSchema";
@@ -137,21 +136,6 @@ export default function UpdateStockIssueForm({
             min={0}
           />
           <InputError error={errors?.nutCoalIssued?.message} />
-        </div>
-        <div className="w-full">
-          <Label htmlFor="ecoPeaCoalIssued">Ilość węgla - groszek [Kg]</Label>
-          <TextInput
-            {...register("ecoPeaCoalIssued", {
-              max: ecoPeaCoalLeft,
-            })}
-            id="ecoPeaCoalIssued"
-            placeholder="Ilość węgla"
-            type="number"
-            helperText={`Pozostało do odebrania: ${ecoPeaCoalLeft} kg`}
-            max={ecoPeaCoalLeft}
-            min={0}
-          />
-          <InputError error={errors?.ecoPeaCoalIssued?.message} />
         </div>
         <InputError error={mutationError?.message} />
       </div>

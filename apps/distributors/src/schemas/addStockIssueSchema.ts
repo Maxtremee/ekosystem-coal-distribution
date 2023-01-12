@@ -11,7 +11,8 @@ export const backendAddStockIssueSchema = baseAddStockIssueSchema.extend({
 });
 
 export const frontendAddStockIssueSchema = baseAddStockIssueSchema.refine(
-  ({ nutCoalIssued, ecoPeaCoalIssued }) => nutCoalIssued || ecoPeaCoalIssued,
+  ({ nutCoalIssued, ecoPeaCoalIssued }) =>
+    nutCoalIssued !== 0 || ecoPeaCoalIssued !== 0,
   {
     message: "Przynajmniej jedna wartość musi być wypełniona",
     path: ["nutCoalIssued", "ecoPeaCoalIssued"],

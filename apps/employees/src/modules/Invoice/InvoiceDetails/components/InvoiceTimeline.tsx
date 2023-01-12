@@ -21,9 +21,9 @@ export default function InvoiceTimeline({ id }: { id: string }) {
       <Text as="h2" className="text-lg font-semibold">
         Oś czasu
       </Text>
-      {data ? (
+      {data?.stockIssues?.length ? (
         <Timeline>
-          {data?.stockIssues.map((stockIssue) => (
+          {data.stockIssues.map((stockIssue) => (
             <StockIssueTimelineItem
               key={stockIssue.id}
               stockIssue={stockIssue}

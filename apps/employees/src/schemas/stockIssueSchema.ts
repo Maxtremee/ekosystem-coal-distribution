@@ -8,7 +8,8 @@ export const baseStockIssueSchema = z.object({
 });
 
 export const frontendStockIssueSchema = baseStockIssueSchema.refine(
-  ({ nutCoalIssued, ecoPeaCoalIssued }) => nutCoalIssued || ecoPeaCoalIssued,
+  ({ nutCoalIssued, ecoPeaCoalIssued }) =>
+    nutCoalIssued !== undefined || ecoPeaCoalIssued !== undefined,
   {
     message: "Przynajmniej jedna wartość musi być wypełniona",
     path: ["nutCoalIssued", "ecoPeaCoalIssued"],

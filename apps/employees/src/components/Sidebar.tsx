@@ -1,4 +1,5 @@
 import {
+  ArrowUpTrayIcon,
   DocumentChartBarIcon,
   DocumentIcon,
   DocumentPlusIcon,
@@ -32,6 +33,11 @@ export default function Sidebar() {
           <Link href="/applications/add" passHref>
             <FlowbiteSidebar.Item icon={DocumentPlusIcon}>
               Dodaj wniosek
+            </FlowbiteSidebar.Item>
+          </Link>
+          <Link href="/import" passHref>
+            <FlowbiteSidebar.Item icon={ArrowUpTrayIcon}>
+              Importuj
             </FlowbiteSidebar.Item>
           </Link>
         </FlowbiteSidebar.ItemGroup>

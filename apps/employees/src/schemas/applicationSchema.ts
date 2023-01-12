@@ -4,7 +4,7 @@ export const baseAddApplicationSchema = z.object({
   applicantName: z.string(),
   applicationId: z.string().optional(),
   additionalInformation: z.string().optional(),
-  issueDate: z.string().or(z.date()),
+  issueDate: z.coerce.date(),
   declaredNutCoal: z.coerce.number().nonnegative().optional(),
   declaredEcoPeaCoal: z.coerce.number().nonnegative().optional(),
 });
@@ -23,7 +23,7 @@ export const frontendAddApplicationSchema = baseAddApplicationSchema
   )
   .refine(
     ({ declaredEcoPeaCoal, declaredNutCoal }) =>
-      declaredEcoPeaCoal || declaredNutCoal,
+      declaredEcoPeaCoal !== 0 || declaredNutCoal !== 0,
     {
       message: "Przynajmniej jedna wartość musi być wypełniona",
       path: ["declaredEcoPeaCoal", "declaredNutCoal"],
