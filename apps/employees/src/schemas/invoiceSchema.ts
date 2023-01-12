@@ -9,7 +9,7 @@ export const baseAddInvoiceSchema = z.object({
 
 export const frontendAddInvoiceSchema = baseAddInvoiceSchema.refine(
   ({ declaredEcoPeaCoal, declaredNutCoal }) =>
-    declaredEcoPeaCoal || declaredNutCoal,
+    declaredEcoPeaCoal !== undefined || declaredNutCoal !== undefined,
   {
     message: "Przynajmniej jedna wartość musi być wypełniona",
     path: ["declaredEcoPeaCoal", "declaredNutCoal"],

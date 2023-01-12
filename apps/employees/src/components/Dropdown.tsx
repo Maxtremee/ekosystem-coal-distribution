@@ -16,6 +16,9 @@ export default function Dropdown() {
       <Link href="/applications/add" passHref>
         <FlowbiteDropdown.Item>Dodaj wniosek</FlowbiteDropdown.Item>
       </Link>
+      <Link href="/import" passHref>
+        <FlowbiteDropdown.Item>Importuj</FlowbiteDropdown.Item>
+      </Link>
       <Link href="/api/auth/logout" passHref>
         <FlowbiteDropdown.Item>Wyloguj się</FlowbiteDropdown.Item>
       </Link>

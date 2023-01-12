@@ -33,6 +33,6 @@ const sentryWebpackPluginOptions = {
   silent: true,
 };
 
-export default process.env.SENTRY_ENVIRONMENT !== "local"
+export default process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT !== "local"
   ? withSentryConfig(config, sentryWebpackPluginOptions)
   : config;

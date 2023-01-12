@@ -44,6 +44,7 @@ export default function UpdateApplicationForm({
       declaredNutCoal: application?.declaredNutCoal
         ? new Decimal(application.declaredNutCoal).toNumber()
         : undefined,
+      // @ts-ignore
       issueDate: dayjs(application?.issueDate).format("YYYY-MM-DD"),
       showApplicationIdField: !!application?.applicationId,
     },

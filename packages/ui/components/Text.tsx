@@ -6,7 +6,7 @@ export default function Text({
   className,
   as: Component = "p",
 }: {
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
   as?: ElementType;
 }) {
