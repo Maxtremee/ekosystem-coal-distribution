@@ -195,6 +195,14 @@ export const invoicesRouter = router({
               },
             },
           },
+          {
+            Application: {
+              applicationId: {
+                contains: input?.search,
+                mode: "insensitive",
+              },
+            },
+          },
         ],
       };
       const data = await ctx.prisma.$transaction([
