@@ -51,6 +51,9 @@ export default function StockIssuesList() {
     isError,
   } = trpc.stockIssues.getFiltered.useQuery({
     ...values,
+    distributionCenter: combinedCenters.find(
+      ({ name }) => name === values.distributionCenter,
+    )?.id,
   });
 
   const totalPages = getTotalPages(stockIssues?.total);
@@ -84,7 +87,7 @@ export default function StockIssuesList() {
               }
             >
               {combinedCenters.map(({ name, id }) => (
-                <option key={id} value={id}>
+                <option key={id} value={name}>
                   {name}
                 </option>
               ))}

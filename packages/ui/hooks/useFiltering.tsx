@@ -71,6 +71,7 @@ export const useFiltering = <
       if (debouncedSearch !== search) {
         setDebouncedSearch(search);
         setQuery({
+          search: search,
           page: 1,
         });
       }

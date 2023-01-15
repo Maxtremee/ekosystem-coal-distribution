@@ -192,6 +192,9 @@ export const stockIssuesRouter = router({
     )
     .query(async ({ input, ctx }) => {
       const filters: Prisma.StockIssueWhereInput = {
+        DistributionCenter: {
+          email: ctx.session.user.email,
+        },
         invoiceId: input?.invoiceId,
         OR: [
           {
