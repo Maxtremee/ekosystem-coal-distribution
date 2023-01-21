@@ -100,7 +100,7 @@ export default function AddInvoiceForm({
       onSubmit={handleSubmit(onSubmit)}
     >
       <div>
-        <Label htmlFor="invoiceName">Nazwa faktury </Label>
+        <Label htmlFor="invoiceId">Nazwa faktury </Label>
         <TextInput
           {...register("invoiceId")}
           id="invoiceId"
@@ -139,7 +139,7 @@ export default function AddInvoiceForm({
           id="additionalInformation"
           placeholder="Dodatkowe informacje"
         />
-        <InputError error={errors?.issueDate?.message} />
+        <InputError error={errors?.additionalInformation?.message} />
       </div>
       <Button
         color="success"
