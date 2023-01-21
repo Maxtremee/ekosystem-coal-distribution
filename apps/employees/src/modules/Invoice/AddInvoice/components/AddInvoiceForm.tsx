@@ -2,15 +2,26 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RouterOutputs, trpc } from "../../../../utils/trpc";
 import frontendAddInvoiceSchema, {
-  FrontendAddInvoiceSchemaType,
+  AddInvoiceSchemaType,
 } from "../../../../schemas/invoiceSchema";
-import { Button, Label, Spinner, TextInput } from "flowbite-react";
+import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
 import { InputError, Text } from "@ekosystem/ui";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
 import { useDebounce } from "react-use";
 import Decimal from "decimal.js";
+
+const calculateCoalLeft = (
+  declaredNutCoal: Decimal | null,
+  declaredEcoPeaCoal: Decimal | null,
+  coalInInvoices: number,
+) => {
+  const nutCoal = new Decimal(declaredNutCoal || 0);
+  const ecoPeaCoal = new Decimal(declaredEcoPeaCoal || 0);
+  const inInvoices = new Decimal(coalInInvoices);
+  return nutCoal.plus(ecoPeaCoal).minus(inInvoices).toNumber();
+};
 
 export default function AddInvoiceForm({
   application,
@@ -22,7 +33,7 @@ export default function AddInvoiceForm({
 }) {
   const router = useRouter();
   const { mutate, isLoading } = trpc.invoices.add.useMutation();
-  const [debounceInvoiceName, setDebouncedInvoiceName] = useState("");
+  const [debounceInvoiceId, setDebouncedInvoiceId] = useState("");
 
   const {
     register,
@@ -30,30 +41,28 @@ export default function AddInvoiceForm({
     watch,
     setError,
     formState: { isValid, errors },
-  } = useForm<FrontendAddInvoiceSchemaType>({
+  } = useForm<AddInvoiceSchemaType>({
     mode: "onTouched",
     resolver: zodResolver(frontendAddInvoiceSchema),
   });
 
-  const nutCoalLeft = application?.declaredNutCoal
-    ? new Decimal(application?.declaredNutCoal)
-        .minus(application.nutCoalInInvoices)
-        .toNumber()
-    : 0;
-
-  const ecoPeaCoalLeft = application?.declaredEcoPeaCoal
-    ? new Decimal(application?.declaredEcoPeaCoal)
-        .minus(application.ecoPeaCoalInInvoices)
-        .toNumber()
-    : 0;
+  const declaredCoalLeft = useMemo(
+    () =>
+      calculateCoalLeft(
+        application.declaredNutCoal,
+        application.declaredEcoPeaCoal,
+        application.coalInInvoices,
+      ),
+    [],
+  );
 
   trpc.invoices.checkIfUnique.useQuery(
-    { name: debounceInvoiceName },
+    { invoiceId: debounceInvoiceId },
     {
-      enabled: !!debounceInvoiceName,
+      enabled: !!debounceInvoiceId,
       onSuccess: (data) => {
         if (data) {
-          setError("name", {
+          setError("invoiceId", {
             message: "Taki numer faktury już istnieje",
             type: "value",
           });
@@ -62,16 +71,16 @@ export default function AddInvoiceForm({
     },
   );
 
-  const invoiceNameWatch = watch("name");
+  const invoiceNameWatch = watch("invoiceId");
   useDebounce(
     () => {
-      setDebouncedInvoiceName(invoiceNameWatch);
+      setDebouncedInvoiceId(invoiceNameWatch);
     },
     600,
     [invoiceNameWatch],
   );
 
-  const onSubmit = (data: FrontendAddInvoiceSchemaType) =>
+  const onSubmit = (data: AddInvoiceSchemaType) =>
     mutate(
       {
         ...data,
@@ -93,11 +102,11 @@ export default function AddInvoiceForm({
       <div>
         <Label htmlFor="invoiceName">Nazwa faktury </Label>
         <TextInput
-          {...register("name")}
+          {...register("invoiceId")}
           id="invoiceName"
-          placeholder="Nazwa faktury"
+          placeholder="Numer faktury"
         />
-        <InputError error={errors?.name?.message} />
+        <InputError error={errors?.invoiceId?.message} />
       </div>
       <div>
         <Label htmlFor="issueDate">Data wystawienia</Label>
@@ -109,36 +118,28 @@ export default function AddInvoiceForm({
         />
         <InputError error={errors?.issueDate?.message} />
       </div>
-
-      <div className="flex w-full flex-col justify-between gap-4 md:flex-row">
-        <div className="w-full">
-          <Label htmlFor="declaredNutCoal">Ilość węgla - orzech [Kg]</Label>
-          <TextInput
-            {...register("declaredNutCoal", {
-              max: nutCoalLeft,
-            })}
-            id="declaredNutCoal"
-            placeholder="Ilość węgla"
-            type="number"
-            helperText={`Pozostało do odebrania z wniosku: ${nutCoalLeft} kg`}
-            max={nutCoalLeft}
-          />
-          <InputError error={errors?.declaredNutCoal?.message} />
-        </div>
-        <div className="w-full">
-          <Label htmlFor="declaredEcoPeaCoal">Ilość węgla - groszek [Kg]</Label>
-          <TextInput
-            {...register("declaredEcoPeaCoal", {
-              max: ecoPeaCoalLeft,
-            })}
-            id="declaredEcoPeaCoal"
-            placeholder="Ilość węgla"
-            type="number"
-            helperText={`Pozostało do odebrania z wniosku: ${ecoPeaCoalLeft} kg`}
-            max={ecoPeaCoalLeft}
-          />
-          <InputError error={errors?.declaredEcoPeaCoal?.message} />
-        </div>
+      <div>
+        <Label htmlFor="paidForCoal">Opłacona ilość węgla [kg]</Label>
+        <TextInput
+          {...register("paidForCoal", {
+            max: declaredCoalLeft,
+          })}
+          id="paidForCoal"
+          placeholder="Ilość węgla"
+          type="number"
+          helperText={`Pozostało do odebrania z wniosku: ${declaredCoalLeft} kg`}
+          max={declaredCoalLeft}
+        />
+        <InputError error={errors?.paidForCoal?.message} />
+      </div>
+      <div>
+        <Label htmlFor="issueDate">Dodatkowe informacje</Label>
+        <Textarea
+          {...register("additionalInformation")}
+          id="additionalInformation"
+          placeholder="Data wystawienia"
+        />
+        <InputError error={errors?.issueDate?.message} />
       </div>
       <Button
         color="success"

@@ -1,23 +1,12 @@
 import { z } from "zod";
 
 export const baseAddInvoiceSchema = z.object({
-  name: z.string(),
+  invoiceId: z.string(),
   issueDate: z.string().or(z.date()),
-  declaredNutCoal: z.coerce.number().nonnegative().optional(),
-  declaredEcoPeaCoal: z.coerce.number().nonnegative().optional(),
+  paidForCoal: z.coerce.number().nonnegative(),
+  additionalInformation: z.string().optional(),
 });
 
-export const frontendAddInvoiceSchema = baseAddInvoiceSchema.refine(
-  ({ declaredEcoPeaCoal, declaredNutCoal }) =>
-    declaredEcoPeaCoal !== undefined || declaredNutCoal !== undefined,
-  {
-    message: "Przynajmniej jedna wartość musi być wypełniona",
-    path: ["declaredEcoPeaCoal", "declaredNutCoal"],
-  },
-);
+export type AddInvoiceSchemaType = z.infer<typeof baseAddInvoiceSchema>;
 
-export type FrontendAddInvoiceSchemaType = z.infer<
-  typeof frontendAddInvoiceSchema
->;
-
-export default frontendAddInvoiceSchema;
+export default baseAddInvoiceSchema;

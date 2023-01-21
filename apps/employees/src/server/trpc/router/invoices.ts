@@ -54,13 +54,13 @@ export const invoicesRouter = router({
   checkIfUnique: protectedProcedure
     .input(
       z.object({
-        name: z.string(),
+        invoiceId: z.string(),
       }),
     )
     .query(async ({ input, ctx }) => {
       return await ctx.prisma.invoice.findUnique({
         where: {
-          name: input.name,
+          invoiceId: input.invoiceId,
         },
       });
     }),
@@ -82,15 +82,9 @@ export const invoicesRouter = router({
       return (
         application && {
           ...application,
-          ecoPeaCoalInInvoices:
-            application.invoices.reduce(
-              (acc, { declaredEcoPeaCoal }) =>
-                declaredEcoPeaCoal ? acc + declaredEcoPeaCoal.toNumber() : acc,
-              0,
-            ) || 0,
-          nutCoalInInvoices: application.invoices.reduce(
-            (acc, { declaredNutCoal }) =>
-              declaredNutCoal ? acc + declaredNutCoal.toNumber() : acc,
+          coalInInvoices: application.invoices.reduce(
+            (acc, { paidForCoal }) =>
+              paidForCoal ? acc + paidForCoal.toNumber() : acc,
             0,
           ),
         }
@@ -151,24 +145,25 @@ export const invoicesRouter = router({
               select: {
                 id: true,
                 applicationId: true,
-                applicantName: true,
               },
             },
           },
         });
-        return {
-          ...invoice,
-          ecoPeaCoalWithdrawn: invoice?.stockIssues.reduce(
-            (acc, { ecoPeaCoalIssued }) =>
-              ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
-            0,
-          ),
-          nutCoalWithdrawn: invoice?.stockIssues.reduce(
-            (acc, { nutCoalIssued }) =>
-              nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
-            0,
-          ),
-        };
+        return (
+          invoice && {
+            ...invoice,
+            ecoPeaCoalWithdrawn: invoice?.stockIssues.reduce(
+              (acc, { ecoPeaCoalIssued }) =>
+                ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
+              0,
+            ),
+            nutCoalWithdrawn: invoice?.stockIssues.reduce(
+              (acc, { nutCoalIssued }) =>
+                nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
+              0,
+            ),
+          }
+        );
       } catch {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -182,17 +177,9 @@ export const invoicesRouter = router({
       const filters: Prisma.InvoiceWhereInput = {
         OR: [
           {
-            name: {
+            invoiceId: {
               contains: input?.search,
               mode: "insensitive",
-            },
-          },
-          {
-            Application: {
-              applicantName: {
-                contains: input?.search,
-                mode: "insensitive",
-              },
             },
           },
           {
@@ -245,14 +232,14 @@ export const invoicesRouter = router({
       const filters: Prisma.InvoiceWhereInput = {
         OR: [
           {
-            name: {
+            invoiceId: {
               contains: input?.search,
               mode: "insensitive",
             },
           },
           {
             Application: {
-              applicantName: {
+              applicationId: {
                 contains: input?.search,
                 mode: "insensitive",
               },
@@ -272,7 +259,6 @@ export const invoicesRouter = router({
           },
           Application: {
             select: {
-              applicantName: true,
               applicationId: true,
             },
           },
@@ -300,29 +286,27 @@ export const invoicesRouter = router({
       }));
       const data = mappedInvoices.map((invoice) => [
         invoice.id,
-        invoice.name,
+        invoice.invoiceId,
         invoice.issueDate.toLocaleString("pl").replace(", ", " "),
-        invoice.Application?.applicantName,
         invoice.Application?.applicationId,
-        invoice?.declaredNutCoal?.toString(),
-        invoice?.declaredEcoPeaCoal?.toString(),
+        invoice?.paidForCoal?.toString(),
         invoice.stockIssues.length,
         invoice.stockIssuesIds,
         invoice.nutCoalWithdrawn,
         invoice.ecoPeaCoalWithdrawn,
+        invoice.additionalInformation,
       ]);
       const header = [
         "identyfikator",
         "numer faktury",
         "data",
-        "imię i nazwisko wnioskodawcy",
         "numer wniosku",
-        "opłacono: orzech [kg]",
-        "opłacono: groszek [kg]",
+        "opłacono węgla [kg]",
         "liczba wydań",
         "identyfikatory wydań",
         "odebrano: orzech [kg]",
         "odebrano: groszek [kg]",
+        "dodatkowe informacje",
       ];
       return { data, header };
     }),

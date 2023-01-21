@@ -10,7 +10,7 @@ import { Invoice } from "@ekosystem/db";
 import { Button, Label, Spinner, TextInput } from "flowbite-react";
 import { RouterOutputs, trpc } from "../../../../utils/trpc";
 import frontendAddInvoiceSchema, {
-  FrontendAddInvoiceSchemaType,
+  AddInvoiceSchemaType,
 } from "../../../../schemas/invoiceSchema";
 
 export default function UpdateInvoiceForm({
@@ -30,7 +30,7 @@ export default function UpdateInvoiceForm({
     watch,
     setError,
     formState: { isValid, errors },
-  } = useForm<FrontendAddInvoiceSchemaType>({
+  } = useForm<AddInvoiceSchemaType>({
     mode: "onTouched",
     resolver: zodResolver(frontendAddInvoiceSchema),
     defaultValues: {
@@ -41,12 +41,12 @@ export default function UpdateInvoiceForm({
         ? new Decimal(invoice.declaredNutCoal).toNumber()
         : undefined,
       issueDate: dayjs(invoice?.issueDate).format("YYYY-MM-DD"),
-      name: invoice?.name,
+      invoiceId: invoice?.name,
     },
   });
 
   trpc.invoices.checkIfUnique.useQuery(
-    { name: debounceInvoiceName },
+    { invoiceId: debounceInvoiceName },
     {
       enabled: !!debounceInvoiceName && !invoice,
       onSuccess: (data) => {
@@ -83,7 +83,7 @@ export default function UpdateInvoiceForm({
         .toNumber()
     : 0;
 
-  const onSubmit = (data: FrontendAddInvoiceSchemaType) =>
+  const onSubmit = (data: AddInvoiceSchemaType) =>
     mutate(
       {
         ...data,
@@ -111,7 +111,7 @@ export default function UpdateInvoiceForm({
           id="invoiceName"
           placeholder="Nazwa faktury"
         />
-        <InputError error={errors?.name?.message} />
+        <InputError error={errors?.invoiceId?.message} />
       </div>
       <div>
         <Label htmlFor="issueDate">Data wystawienia</Label>
