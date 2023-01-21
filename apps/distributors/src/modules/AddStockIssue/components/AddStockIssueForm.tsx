@@ -7,15 +7,15 @@ import { RouterOutputs, trpc } from "../../../utils/trpc";
 import frontendAddStockIssueSchema, {
   FrontendAddStockIssueSchemaType,
 } from "../../../schemas/addStockIssueSchema";
-import Decimal from "decimal.js";
 
 export default function AddStockIssueForm({
   invoice,
 }: {
-  invoice: RouterOutputs["stockIssues"]["checkInvoice"] | undefined;
+  invoice: RouterOutputs["stockIssues"]["checkInvoice"];
 }) {
   const router = useRouter();
   const {
+    watch,
     register,
     handleSubmit,
     formState: { isValid, errors },
@@ -40,17 +40,10 @@ export default function AddStockIssueForm({
       },
     );
 
-  const nutCoalLeft = invoice?.declaredNutCoal
-    ? new Decimal(invoice?.declaredNutCoal)
-        .minus(invoice?.nutCoalWithdrawn || 0)
-        .toNumber()
-    : 0;
-
-  const ecoPeaCoalLeft = invoice?.declaredEcoPeaCoal
-    ? new Decimal(invoice?.declaredEcoPeaCoal)
-        .minus(invoice?.ecoPeaCoalWithdrawn || 0)
-        .toNumber()
-    : 0;
+  const nutCoalWatch = watch("nutCoalIssued") || 0;
+  const ecoPeaCoalWatch = watch("ecoPeaCoalIssued") || 0;
+  const nutCoalLeft = invoice.coalLeftToIssue - ecoPeaCoalWatch;
+  const ecoPeaCoalLeft = invoice.coalLeftToIssue - nutCoalWatch;
 
   return (
     <form

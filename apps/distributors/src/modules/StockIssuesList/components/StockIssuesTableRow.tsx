@@ -14,7 +14,7 @@ export default function StockIssuesTableRow({
       onClick={() => router.push(`/stock-issues/${stockIssue.id}`)}
     >
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {stockIssue.invoiceName}
+        {stockIssue.invoiceId}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {stockIssue.createdAt.toLocaleString()}

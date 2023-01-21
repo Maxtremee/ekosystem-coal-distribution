@@ -133,7 +133,7 @@ export default function UpdateInvoiceForm({
         <InputError error={errors?.paidForCoal?.message} />
       </div>
       <div>
-        <Label htmlFor="issueDate">Dodatkowe informacje</Label>
+        <Label htmlFor="issueDate">Dodatkowe informacje (opcjonalnie)</Label>
         <Textarea
           {...register("additionalInformation")}
           id="additionalInformation"
