@@ -1,3 +1,4 @@
+import { Prisma } from "@ekosystem/db";
 import { TRPCError } from "@trpc/server";
 import { z, ZodError } from "zod";
 import { ErrorMessageOptions, generateErrorMessage } from "zod-error";
@@ -124,23 +125,32 @@ export const importRouter = router({
           };
         }
       } catch (err) {
+        let parsingError: ParsingError | undefined = undefined;
         if (err instanceof ZodError) {
-          const error: ParsingError = {
+          parsingError = {
             lineNumber: curr + 1,
             message: generateErrorMessage(err.issues, zodErrorOptions),
           };
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: JSON.stringify(error),
-          });
         } else if (err instanceof NotEnoughArgumentsError) {
-          const error: ParsingError = {
+          parsingError = {
             lineNumber: curr + 1,
             message: err.message,
           };
+        } else if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === "P2002"
+        ) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: JSON.stringify(error),
+            message: `Numery ${
+              input.type === "applications" ? "wniosków" : "faktur"
+            } muszą być unikalne`,
+          });
+        }
+        if (parsingError) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: JSON.stringify(parsingError),
           });
         } else {
           throw err;

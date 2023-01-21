@@ -1,14 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { trpc } from "../../../../utils/trpc";
-import {
-  Button,
-  Label,
-  Spinner,
-  Textarea,
-  TextInput,
-  ToggleSwitch,
-} from "flowbite-react";
+import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
 import { InputError } from "@ekosystem/ui";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
@@ -18,6 +11,7 @@ import frontendAddApplicationSchema, {
 
 export default function AddApplicationForm() {
   const {
+    setError,
     register,
     handleSubmit,
     formState: { isValid, errors },
@@ -38,6 +32,11 @@ export default function AddApplicationForm() {
       {
         onSuccess: (res) => {
           router.replace(`/applications/${res.id}`);
+        },
+        onError: (err) => {
+          setError("applicationId", {
+            message: err?.message,
+          });
         },
       },
     );

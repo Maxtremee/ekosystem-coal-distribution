@@ -1,4 +1,4 @@
-import { Prisma } from "@ekosystem/db";
+import { Prisma, PrismaPromise } from "@ekosystem/db";
 import { z } from "zod";
 import { baseAddApplicationSchema } from "../../../schemas/applicationSchema";
 import { router, protectedProcedure } from "../trpc";
@@ -9,12 +9,27 @@ export const applicationsRouter = router({
   add: protectedProcedure
     .input(baseAddApplicationSchema)
     .mutation(async ({ input, ctx }) => {
-      return await ctx.prisma.application.create({
-        data: {
-          ...input,
-          createdBy: ctx.session.user.email,
-        },
-      });
+      try {
+        return await ctx.prisma.application.create({
+          data: {
+            ...input,
+            createdBy: ctx.session.user.email,
+          },
+        });
+      } catch (err) {
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === "P2002"
+        ) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "Wniosek o takim numerze już istnieje. Numer wniosku musi być unikalny",
+          });
+        } else {
+          throw err;
+        }
+      }
     }),
   update: protectedProcedure
     .input(
@@ -23,15 +38,30 @@ export const applicationsRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.application.update({
-        where: {
-          id: input.id,
-        },
-        data: {
-          ...input,
-          updatedBy: ctx.session.user.email,
-        },
-      });
+      try {
+        return await ctx.prisma.application.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            ...input,
+            updatedBy: ctx.session.user.email,
+          },
+        });
+      } catch (err) {
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === "P2002"
+        ) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "Wniosek o takim numerze już istnieje. Numer wniosku musi być unikalny",
+          });
+        } else {
+          throw err;
+        }
+      }
     }),
   get: protectedProcedure
     .input(
