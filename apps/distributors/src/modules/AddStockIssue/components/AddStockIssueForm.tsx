@@ -20,7 +20,7 @@ export default function AddStockIssueForm({
     handleSubmit,
     formState: { isValid, errors },
   } = useForm<FrontendAddStockIssueSchemaType>({
-    mode: "onTouched",
+    mode: "onChange",
     resolver: zodResolver(frontendAddStockIssueSchema),
   });
 
@@ -62,7 +62,7 @@ export default function AddStockIssueForm({
             id="nutCoalIssued"
             placeholder="Ilość węgla"
             type="number"
-            helperText={`Pozostało do odebrania: ${nutCoalLeft} kg`}
+            helperText={`Maksymalnie do wydania: ${nutCoalLeft} kg`}
             max={nutCoalLeft}
             min={0}
           />
@@ -77,7 +77,7 @@ export default function AddStockIssueForm({
             id="ecoPeaCoalIssued"
             placeholder="Ilość węgla"
             type="number"
-            helperText={`Pozostało do odebrania: ${ecoPeaCoalLeft} kg`}
+            helperText={`Maksymalnie do wydania: ${ecoPeaCoalLeft} kg`}
             max={ecoPeaCoalLeft}
             min={0}
           />
@@ -95,7 +95,7 @@ export default function AddStockIssueForm({
           placeholder="Dodatkowe informacje"
           rows={3}
         />
-        <InputError error={errors?.ecoPeaCoalIssued?.message} />
+        <InputError error={errors?.additionalInformation?.message} />
       </div>
       <InputError error={mutationError?.message} />
       <Button color="success" type="submit" disabled={isLoading || !isValid}>
