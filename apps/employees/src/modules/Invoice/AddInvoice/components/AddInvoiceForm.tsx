@@ -12,14 +12,14 @@ import dayjs from "dayjs";
 import { useDebounce } from "react-use";
 import Decimal from "decimal.js";
 
-const calculateCoalLeft = (
-  declaredNutCoal: Decimal | null,
-  declaredEcoPeaCoal: Decimal | null,
-  coalInInvoices: number,
+export const calculateCoalLeft = (
+  declaredNutCoal: Decimal | null | undefined,
+  declaredEcoPeaCoal: Decimal | null | undefined,
+  coalInInvoices: number | undefined,
 ) => {
   const nutCoal = new Decimal(declaredNutCoal || 0);
   const ecoPeaCoal = new Decimal(declaredEcoPeaCoal || 0);
-  const inInvoices = new Decimal(coalInInvoices);
+  const inInvoices = new Decimal(coalInInvoices || 0);
   return nutCoal.plus(ecoPeaCoal).minus(inInvoices).toNumber();
 };
 
@@ -103,7 +103,7 @@ export default function AddInvoiceForm({
         <Label htmlFor="invoiceName">Nazwa faktury </Label>
         <TextInput
           {...register("invoiceId")}
-          id="invoiceName"
+          id="invoiceId"
           placeholder="Numer faktury"
         />
         <InputError error={errors?.invoiceId?.message} />
