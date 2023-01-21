@@ -14,22 +14,19 @@ export default function InvoicesTableRow({
       onClick={() => router.push(`/invoices/${invoice.id}`)}
     >
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.name}
+        {invoice.invoiceId}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {invoice.issueDate.toLocaleString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.Application?.applicantName}
+        {invoice.Application?.applicationId}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice?.declaredNutCoal && invoice.declaredNutCoal.toString()}
+        {invoice.paidForCoal.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {invoice.nutCoalWithdrawn}
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice?.declaredEcoPeaCoal && invoice.declaredEcoPeaCoal.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {invoice.ecoPeaCoalWithdrawn}

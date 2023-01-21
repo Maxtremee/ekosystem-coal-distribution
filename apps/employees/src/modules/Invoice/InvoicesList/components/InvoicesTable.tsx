@@ -26,45 +26,34 @@ export default function InvoicesTable({
       <Table.Head>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => headerClickHandler("name")}
+          onClick={() => headerClickHandler("invoiceId")}
         >
           <div className="flex items-center">
             Numer faktury
-            <ShowChevron id="name" />
+            <ShowChevron id="invoiceId" />
           </div>
         </Table.HeadCell>
+
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
           onClick={() => headerClickHandler("issueDate")}
         >
           <div className="flex items-center">
-            Data
+            Data wydania
             <ShowChevron id="issueDate" />
           </div>
         </Table.HeadCell>
-        <Table.HeadCell>
-          <div className="flex items-center">Osoba składająca wniosek</div>
-        </Table.HeadCell>
+        <Table.HeadCell>Numer wniosku</Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => headerClickHandler("declaredNutCoal")}
+          onClick={() => headerClickHandler("paidForCoal")}
         >
           <div className="flex items-center">
-            Zadeklarowana ilość węgla - orzech
-            <ShowChevron id="declaredNutCoal" />
+            Opłacono węgla
+            <ShowChevron id="paidForCoal" />
           </div>
         </Table.HeadCell>
         <Table.HeadCell>Ilość węgla wydana - orzech</Table.HeadCell>
-
-        <Table.HeadCell
-          className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => headerClickHandler("declaredEcoPeaCoal")}
-        >
-          <div className="flex items-center">
-            Zadeklarowana ilość węgla - groszek
-            <ShowChevron id="declaredEcoPeaCoal" />
-          </div>
-        </Table.HeadCell>
         <Table.HeadCell>Ilość węgla wydana - groszek</Table.HeadCell>
       </Table.Head>
       <Table.Body className="divide-y">
