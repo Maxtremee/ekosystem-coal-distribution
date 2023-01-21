@@ -1,3 +1,4 @@
+import { Invoice } from "@ekosystem/db";
 import { InputError, Text } from "@ekosystem/ui";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { Alert, Card, Label, Spinner, TextInput } from "flowbite-react";
@@ -8,37 +9,26 @@ import AddStockIssue from "../../modules/AddStockIssue";
 import { trpc } from "../../utils/trpc";
 
 function AddStockIssuePage() {
-  const [invoiceName, setInvoiceName] = useState("");
-  const [appNameOrId, setAppNameOrId] = useState("");
-  const [debouncedInvoiceName, setDebouncedInvoiceName] = useState(invoiceName);
-  const [debouncedAppNameOrId, setDebouncedAppNameOrId] = useState(appNameOrId);
+  const [invoiceId, setInvoiceId] = useState("");
+  const [debouncedInvoiceId, setDebouncedInvoiceId] = useState(invoiceId);
 
   const { data, isInitialLoading, error } =
     trpc.stockIssues.checkInvoice.useQuery(
       {
-        invoiceName: debouncedInvoiceName,
-        appNameOrId: debouncedAppNameOrId,
+        invoiceId: debouncedInvoiceId,
       },
       {
-        enabled: !!debouncedInvoiceName && !!debouncedAppNameOrId,
+        enabled: !!debouncedInvoiceId,
         retry: false,
       },
     );
 
   useDebounce(
     () => {
-      setDebouncedInvoiceName(invoiceName);
+      setDebouncedInvoiceId(invoiceId);
     },
     600,
-    [invoiceName],
-  );
-
-  useDebounce(
-    () => {
-      setDebouncedAppNameOrId(appNameOrId);
-    },
-    600,
-    [appNameOrId],
+    [invoiceId],
   );
 
   return (
@@ -48,40 +38,21 @@ function AddStockIssuePage() {
       </Text>
       {!data && (
         <Alert color="info" icon={QuestionMarkCircleIcon}>
-          Podaj prawidłowe dane aby odblokować resztę formularza
+          Podaj prawidłowy numer faktury aby odblokować resztę formularza
         </Alert>
       )}
-      <div className="flex w-full items-center gap-4">
-        <div className="w-full">
-          <div className="flex gap-2">
-            <Label htmlFor="invoiceName">Numer faktury</Label>
-            {isInitialLoading && <Spinner size="sm" color="success" />}
-          </div>
-          <TextInput
-            id="invoiceName"
-            placeholder="Numer faktury"
-            type="string"
-            value={invoiceName}
-            onChange={(event) => setInvoiceName(event.currentTarget.value)}
-          />
-          <InputError error={error?.message} />
+      <div className="w-full">
+        <div className="flex gap-2">
+          <Label htmlFor="invoiceName">Numer faktury</Label>
+          {isInitialLoading && <Spinner size="sm" color="success" />}
         </div>
-        <div className="w-full">
-          <div className="flex gap-2">
-            <Label htmlFor="applicationIdentification">
-              Identyfikator wniosku
-            </Label>
-            {isInitialLoading && <Spinner size="sm" color="success" />}
-          </div>
-          <TextInput
-            id="applicationIdentification"
-            placeholder="Numer wniosku lub imię i nazwisko"
-            type="string"
-            value={appNameOrId}
-            onChange={(event) => setAppNameOrId(event.currentTarget.value)}
-          />
-          <InputError error={error?.message} />
-        </div>
+        <TextInput
+          id="invoiceName"
+          placeholder="Numer faktury"
+          value={invoiceId}
+          onChange={(event) => setInvoiceId(event.currentTarget.value)}
+        />
+        <InputError error={error?.message} />
       </div>
       <AddStockIssue invoice={data} />
     </Card>

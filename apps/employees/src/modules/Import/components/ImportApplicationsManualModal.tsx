@@ -27,8 +27,7 @@ export default function ImportApplicationsManualModal() {
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               Wartości muszą być w kolejności:
               <ul className="ml-3">
-                <li>{"Imię i nazwisko wnioskodawcy"}</li>
-                <li>Numer wniosku (opcjonalnie)</li>
+                <li>Numer wniosku</li>
                 <li>Dodatkowe informacje (opcjonalnie)</li>
                 <li>
                   {
@@ -41,9 +40,7 @@ export default function ImportApplicationsManualModal() {
                 </li>
               </ul>
               {"Przykładowy rekord"} (linia):
-              <pre>
-                Adam Testowy,W1/2023,do sprawdzenia,2023/01/08 12:00:00,650,100
-              </pre>
+              <pre>W1/2023,do sprawdzenia,2023/01/08 12:00:00,650,100</pre>
             </p>
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               {

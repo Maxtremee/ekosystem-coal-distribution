@@ -48,7 +48,6 @@ export const importRouter = router({
               ctx.prisma.application.create({
                 data: {
                   applicationId: application.numerWniosku,
-                  applicantName: application.wnioskodawca,
                   issueDate: application.dataWydania,
                   additionalInformation: application.dodatkoweInformacje,
                   declaredEcoPeaCoal: application.zadeklarowanaIloscGroszek,
@@ -72,10 +71,9 @@ export const importRouter = router({
               ctx.prisma.invoice.create({
                 data: {
                   createdBy: ctx.session.user.email,
-                  name: invoice.numerFaktury,
+                  invoiceId: invoice.numerFaktury,
                   issueDate: invoice.dataWydania,
-                  declaredEcoPeaCoal: invoice.oplaconoGroszek,
-                  declaredNutCoal: invoice.oplaconoOrzech,
+                  paidForCoal: invoice.kwota,
                   ...(invoice?.numerWniosku !== undefined && {
                     Application: {
                       connect: {
@@ -107,7 +105,7 @@ export const importRouter = router({
                   nutCoalIssued: stockIssue.wydanoOrzech,
                   Invoice: {
                     connect: {
-                      name: stockIssue.numerFaktury,
+                      invoiceId: stockIssue.numerFaktury,
                     },
                   },
                   ...(stockIssue?.emailSkupu !== undefined && {

@@ -11,7 +11,7 @@ import frontendAddStockIssueSchema, {
 export default function AddStockIssueForm({
   invoice,
 }: {
-  invoice: RouterOutputs["stockIssues"]["checkInvoice"];
+  invoice: RouterOutputs["stockIssues"]["checkInvoice"] | undefined;
 }) {
   const router = useRouter();
   const {
@@ -42,8 +42,8 @@ export default function AddStockIssueForm({
 
   const nutCoalWatch = watch("nutCoalIssued") || 0;
   const ecoPeaCoalWatch = watch("ecoPeaCoalIssued") || 0;
-  const nutCoalLeft = invoice.coalLeftToIssue - ecoPeaCoalWatch;
-  const ecoPeaCoalLeft = invoice.coalLeftToIssue - nutCoalWatch;
+  const nutCoalLeft = (invoice?.coalLeftToIssue || 0) - ecoPeaCoalWatch;
+  const ecoPeaCoalLeft = (invoice?.coalLeftToIssue || 0) - nutCoalWatch;
 
   return (
     <form

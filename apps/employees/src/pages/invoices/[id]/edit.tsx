@@ -59,7 +59,7 @@ function EditInvoicePage() {
   return (
     <Card className="w-full">
       <Text as="h2" className="text-lg font-semibold">
-        Edytujesz fakturę: {invoice.name}
+        Edytujesz fakturę: {invoice.invoiceId}
       </Text>
       <UpdateInvoice invoice={invoice} application={application} />
     </Card>

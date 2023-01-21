@@ -20,38 +20,32 @@ export default function ApplicationsTableRow({
       onClick={() => router.push(`/applications/${application.id}`)}
     >
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {application.applicantName}
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {application.applicationId}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {application.issueDate.toLocaleString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {application.invoices?.map(({ name, id }) => (
-          <Link
-            key={name}
-            href={`/invoices/${id}`}
-            className="cursor-pointer underline"
-            onClick={stopPropagation}
-          >
-            {name} <br />
-          </Link>
-        ))}
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {application?.declaredNutCoal && application.declaredNutCoal.toString()}
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {application.nutCoalInInvoices}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
         {application?.declaredEcoPeaCoal &&
           application.declaredEcoPeaCoal.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {application.ecoPealCoalInInvoices}
+        {application.invoices?.map(({ invoiceId, id }) => (
+          <Link
+            key={id}
+            href={`/invoices/${id}`}
+            className="cursor-pointer underline"
+            onClick={stopPropagation}
+          >
+            {invoiceId} <br />
+          </Link>
+        ))}
+      </Table.Cell>
+      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
+        {application.coalInInvoices}
       </Table.Cell>
     </Table.Row>
   );

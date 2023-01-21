@@ -71,24 +71,31 @@ export const invoicesRouter = router({
       }),
     )
     .query(async ({ input, ctx }) => {
-      const application = await ctx.prisma.application.findUnique({
-        where: {
-          id: input.id,
-        },
-        include: {
-          invoices: true,
-        },
-      });
-      return (
-        application && {
-          ...application,
-          coalInInvoices: application.invoices.reduce(
-            (acc, { paidForCoal }) =>
-              paidForCoal ? acc + paidForCoal.toNumber() : acc,
-            0,
-          ),
-        }
-      );
+      try {
+        const application = await ctx.prisma.application.findUniqueOrThrow({
+          where: {
+            id: input.id,
+          },
+          include: {
+            invoices: true,
+          },
+        });
+        return (
+          application && {
+            ...application,
+            coalInInvoices: application.invoices.reduce(
+              (acc, { paidForCoal }) =>
+                paidForCoal ? acc + paidForCoal.toNumber() : acc,
+              0,
+            ),
+          }
+        );
+      } catch {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Taki wniosek nie istnieje",
+        });
+      }
     }),
   getTimeline: protectedProcedure
     .input(

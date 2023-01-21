@@ -10,8 +10,7 @@ export const stockIssuesRouter = router({
   checkInvoice: protectedProcedure
     .input(
       z.object({
-        invoiceName: z.string(),
-        appNameOrId: z.string(),
+        invoiceId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -21,7 +20,7 @@ export const stockIssuesRouter = router({
             AND: [
               {
                 invoiceId: {
-                  equals: input.invoiceName,
+                  equals: input.invoiceId,
                   mode: "insensitive",
                 },
               },

@@ -137,7 +137,7 @@ export default function AddInvoiceForm({
         <Textarea
           {...register("additionalInformation")}
           id="additionalInformation"
-          placeholder="Data wystawienia"
+          placeholder="Dodatkowe informacje"
         />
         <InputError error={errors?.issueDate?.message} />
       </div>

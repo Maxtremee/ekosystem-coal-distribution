@@ -34,7 +34,7 @@ function EditApplicationPage() {
   return (
     <Card className="w-full">
       <Text as="h2" className="text-lg font-semibold">
-        Edytujesz wniosek: {data?.applicationId || data?.applicantName}
+        Edytujesz wniosek: {data?.applicationId}
       </Text>
       <UpdateApplication application={data as Application} />
     </Card>

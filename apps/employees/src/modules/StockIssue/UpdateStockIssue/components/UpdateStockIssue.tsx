@@ -10,26 +10,27 @@ export default function UpdateStockIssue({
 }: {
   stockIssue: RouterOutputs["stockIssues"]["getDetails"];
 }) {
-  const [invoiceName, setInvoiceName] = useState(
-    stockIssue?.Invoice?.name || "",
+  const [invoiceId, setInvoiceId] = useState(
+    stockIssue?.Invoice?.invoiceId || "",
   );
-  const [debouncedInvoiceName, setDebouncedInvoiceName] = useState(invoiceName);
+  const [debouncedInvoiceId, setDebouncedInvoiceId] = useState(invoiceId);
 
   useDebounce(
     () => {
-      setDebouncedInvoiceName(invoiceName);
+      setDebouncedInvoiceId(invoiceId);
     },
     600,
-    [invoiceName],
+    [invoiceId],
   );
 
   const { data, isInitialLoading, error } =
     trpc.stockIssues.checkInvoice.useQuery(
       {
-        invoiceName: debouncedInvoiceName,
+        invoiceId: debouncedInvoiceId,
       },
       {
-        enabled: !!debouncedInvoiceName,
+        enabled: !!debouncedInvoiceId,
+        retry: 1,
       },
     );
 
@@ -43,8 +44,8 @@ export default function UpdateStockIssue({
         <TextInput
           id="invoiceName"
           placeholder="Numer faktury"
-          value={invoiceName}
-          onChange={(e) => setInvoiceName(e.target.value)}
+          value={invoiceId}
+          onChange={(e) => setInvoiceId(e.target.value)}
         />
         <InputError error={error?.message} />
       </div>

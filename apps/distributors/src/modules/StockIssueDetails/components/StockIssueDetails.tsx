@@ -14,7 +14,7 @@ export default function StockIssueDetails({
       </Text>
       <div className="grid grid-flow-row grid-cols-2">
         <p className="text-gray-500">Numer faktury</p>
-        <Text>{stockIssue?.Invoice?.name}</Text>
+        <Text>{stockIssue?.Invoice?.invoiceId}</Text>
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Data wydania</p>

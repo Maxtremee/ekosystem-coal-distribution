@@ -15,7 +15,7 @@ export default function UpdateStockIssuePage() {
       },
       {
         enabled: !!id,
-        retry: 0,
+        retry: 1,
       },
     );
 

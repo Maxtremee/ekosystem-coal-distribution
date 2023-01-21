@@ -30,7 +30,7 @@ function AddInvoicePage() {
   return (
     <Card>
       <Text as="h2" className="text-lg font-semibold">
-        Dla wniosku: {data.applicantName} {data?.applicationId}
+        Dla wniosku: {data.applicationId}
       </Text>
       <AddInvoice application={data} />
     </Card>

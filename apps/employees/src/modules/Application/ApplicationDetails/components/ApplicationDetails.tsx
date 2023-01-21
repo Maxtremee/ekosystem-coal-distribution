@@ -13,8 +13,6 @@ export default function ApplicationDetails({
         Szczegóły
       </Text>
       <div className="grid grid-flow-row grid-cols-2">
-        <p className="text-gray-500">Imię i nazwisko</p>
-        <Text>{application.applicantName}</Text>
         <p className="text-gray-500">Numer wniosku</p>
         <Text>{application.applicationId || "-"}</Text>
         <p className="text-gray-500">Data wydania</p>
@@ -33,18 +31,16 @@ export default function ApplicationDetails({
         <div className="h-6" />
         <p className="text-gray-500">Liczba faktur</p>
         <Text>{application.invoices?.length}</Text>
-        <p className="text-gray-500">Opłacono: ekogroszek</p>
-        <Text>{application.ecoPeaCoalInInvoices || 0} kg</Text>
-        <p className="text-gray-500">Opłacono: orzech</p>
-        <Text>{application.nutCoalInInvoices || 0} kg</Text>
+        <p className="text-gray-500">Opłacono</p>
+        <Text>{application.coalInInvoices} kg</Text>
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Liczba wydań towaru</p>
         <Text>{application.stockIssuesTotal}</Text>
         <p className="text-gray-500">Odebrano: ekogroszek</p>
-        <Text>{application.ecoPeaCoalWithdrawn || 0} kg</Text>
+        <Text>{application.ecoPeaCoalWithdrawn} kg</Text>
         <p className="text-gray-500">Odebrano: orzech</p>
-        <Text>{application.nutCoalWithdrawn || 0} kg</Text>
+        <Text>{application.nutCoalWithdrawn} kg</Text>
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Dodano dnia</p>

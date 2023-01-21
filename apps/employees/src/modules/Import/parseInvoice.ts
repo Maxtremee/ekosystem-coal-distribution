@@ -2,22 +2,15 @@ import { z } from "zod";
 import { stringOrUndefined } from "../../utils/stringOrUndefined";
 import NotEnoughArgumentsError from "./NotEnoughArgumentsError";
 
-export const invoiceSchema = z
-  .object({
-    numerFaktury: z.string(),
-    numerWniosku: z.string().optional(),
-    dataWydania: z.coerce.date(),
-    oplaconoOrzech: z.coerce.number().nonnegative().optional(),
-    oplaconoGroszek: z.coerce.number().nonnegative().optional(),
-  })
-  .refine(
-    ({ oplaconoGroszek, oplaconoOrzech }) => oplaconoGroszek || oplaconoOrzech,
-    {
-      message:
-        "Przynajmniej jedna wartość musi być wypełniona (orzech lub groszek).",
-      path: ["oplaconoGroszek", "oplaconoOrzech"],
-    },
-  );
+export const invoiceSchema = z.object({
+  numerFaktury: z.string(),
+  numerWniosku: z.string().optional(),
+  dataWydania: z.coerce.date(),
+  kwota: z.coerce
+    .number()
+    .nonnegative()
+    .transform((val) => val / 2),
+});
 
 export const parseInvoice = (line: string[]) => {
   if (line.length > 4) {
@@ -25,8 +18,7 @@ export const parseInvoice = (line: string[]) => {
       numerFaktury: line[0],
       numerWniosku: stringOrUndefined(line[1]),
       dataWydania: line[2],
-      oplaconoOrzech: stringOrUndefined(line[3]),
-      oplaconoGroszek: stringOrUndefined(line[4]),
+      kwota: stringOrUndefined(line[3]),
     };
     return invoiceSchema.parse(invoice);
   } else {

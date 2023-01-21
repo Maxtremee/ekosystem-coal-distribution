@@ -17,16 +17,7 @@ export default function StockIssueDetails({
         <p className="text-gray-500">Numer faktury</p>
         <Link href={`/invoices/${stockIssue?.invoiceId}`} passHref>
           <Text as="span" className="underline hover:cursor-pointer">
-            {stockIssue?.Invoice?.name}
-          </Text>
-        </Link>
-        <p className="text-gray-500">Imię i nazwisko wnioskodawcy</p>
-        <Link
-          href={`/applications/${stockIssue?.Invoice?.Application?.id}`}
-          passHref
-        >
-          <Text as="span" className="underline hover:cursor-pointer">
-            {stockIssue?.Invoice?.Application?.applicantName}
+            {stockIssue?.Invoice?.invoiceId}
           </Text>
         </Link>
         <p className="text-gray-500">Numer wniosku</p>
