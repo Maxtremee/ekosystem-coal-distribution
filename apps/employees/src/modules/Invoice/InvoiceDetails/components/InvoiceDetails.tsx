@@ -24,6 +24,8 @@ export default function InvoiceDetails({
         </Link>
         <p className="text-gray-500">Data wydania</p>
         <Text>{invoice.issueDate?.toLocaleString()}</Text>
+        <p className="text-gray-500">Dodatkowe informacje</p>
+        <Text>{invoice?.additionalInformation}</Text>
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Opłacono węgla</p>
