@@ -5,11 +5,10 @@ import frontendAddInvoiceSchema, {
   AddInvoiceSchemaType,
 } from "../../../../schemas/invoiceSchema";
 import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
-import { InputError, Text } from "@ekosystem/ui";
-import { useMemo, useState } from "react";
+import { InputError } from "@ekosystem/ui";
+import { useMemo } from "react";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
-import { useDebounce } from "react-use";
 import Decimal from "decimal.js";
 
 export const calculateCoalLeft = (
@@ -33,13 +32,11 @@ export default function AddInvoiceForm({
 }) {
   const router = useRouter();
   const { mutate, isLoading } = trpc.invoices.add.useMutation();
-  const [debounceInvoiceId, setDebouncedInvoiceId] = useState("");
 
   const {
+    setError,
     register,
     handleSubmit,
-    watch,
-    setError,
     formState: { isValid, errors },
   } = useForm<AddInvoiceSchemaType>({
     mode: "onTouched",
@@ -56,30 +53,6 @@ export default function AddInvoiceForm({
     [],
   );
 
-  trpc.invoices.checkIfUnique.useQuery(
-    { invoiceId: debounceInvoiceId },
-    {
-      enabled: !!debounceInvoiceId,
-      onSuccess: (data) => {
-        if (data) {
-          setError("invoiceId", {
-            message: "Taki numer faktury już istnieje",
-            type: "value",
-          });
-        }
-      },
-    },
-  );
-
-  const invoiceNameWatch = watch("invoiceId");
-  useDebounce(
-    () => {
-      setDebouncedInvoiceId(invoiceNameWatch);
-    },
-    600,
-    [invoiceNameWatch],
-  );
-
   const onSubmit = (data: AddInvoiceSchemaType) =>
     mutate(
       {
@@ -90,6 +63,11 @@ export default function AddInvoiceForm({
       {
         onSuccess: (res) => {
           router.replace(`/invoices/${res.id}`);
+        },
+        onError: (err) => {
+          setError("invoiceId", {
+            message: err?.message,
+          });
         },
       },
     );

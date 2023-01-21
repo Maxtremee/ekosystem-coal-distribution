@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const baseAddApplicationSchema = z.object({
-  applicationId: z.string(),
+  applicationId: z.string().min(1),
   additionalInformation: z.string().optional(),
   issueDate: z.coerce.date(),
   declaredNutCoal: z.coerce.number().nonnegative().optional(),

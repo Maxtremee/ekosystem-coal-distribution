@@ -3,13 +3,13 @@ import { stringOrUndefined } from "../../utils/stringOrUndefined";
 import NotEnoughArgumentsError from "./NotEnoughArgumentsError";
 
 export const invoiceSchema = z.object({
-  numerFaktury: z.string(),
+  numerFaktury: z.string().min(1),
   numerWniosku: z.string().optional(),
   dataWydania: z.coerce.date(),
   kwota: z.coerce
     .number()
     .nonnegative()
-    .transform((val) => val / 2),
+    .transform((val) => Math.floor(val / 2)),
 });
 
 export const parseInvoice = (line: string[]) => {
@@ -18,7 +18,7 @@ export const parseInvoice = (line: string[]) => {
       numerFaktury: line[0],
       numerWniosku: stringOrUndefined(line[1]),
       dataWydania: line[2],
-      kwota: stringOrUndefined(line[3]),
+      kwota: line[3],
     };
     return invoiceSchema.parse(invoice);
   } else {

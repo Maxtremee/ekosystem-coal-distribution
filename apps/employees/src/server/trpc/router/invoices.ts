@@ -81,19 +81,6 @@ export const invoicesRouter = router({
         });
       }
     }),
-  checkIfUnique: protectedProcedure
-    .input(
-      z.object({
-        invoiceId: z.string(),
-      }),
-    )
-    .query(async ({ input, ctx }) => {
-      return await ctx.prisma.invoice.findUnique({
-        where: {
-          invoiceId: input.invoiceId,
-        },
-      });
-    }),
   checkIfApplicationExists: protectedProcedure
     .input(
       z.object({

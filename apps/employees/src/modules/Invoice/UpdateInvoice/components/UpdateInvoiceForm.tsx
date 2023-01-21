@@ -23,13 +23,11 @@ export default function UpdateInvoiceForm({
 }) {
   const router = useRouter();
   const { mutate, isLoading } = trpc.invoices.update.useMutation();
-  const [debounceInvoiceId, setDebouncedInvoiceId] = useState("");
 
   const {
+    setError,
     register,
     handleSubmit,
-    watch,
-    setError,
     formState: { isValid, errors },
   } = useForm<AddInvoiceSchemaType>({
     mode: "onTouched",
@@ -42,30 +40,6 @@ export default function UpdateInvoiceForm({
       additionalInformation: invoice?.additionalInformation || undefined,
     },
   });
-
-  trpc.invoices.checkIfUnique.useQuery(
-    { invoiceId: debounceInvoiceId },
-    {
-      enabled: !!debounceInvoiceId && !invoice,
-      onSuccess: (data) => {
-        if (data?.invoiceId !== invoice.invoiceId) {
-          setError("invoiceId", {
-            message: "Taki numer faktury już istnieje",
-            type: "value",
-          });
-        }
-      },
-    },
-  );
-
-  const invoiceNameWatch = watch("invoiceId");
-  useDebounce(
-    () => {
-      setDebouncedInvoiceId(invoiceNameWatch);
-    },
-    600,
-    [invoiceNameWatch],
-  );
 
   const declaredCoalLeft = useMemo(
     () =>
@@ -89,6 +63,11 @@ export default function UpdateInvoiceForm({
       {
         onSuccess: (res) => {
           router.replace(`/invoices/${res.id}`);
+        },
+        onError: (err) => {
+          setError("invoiceId", {
+            message: err?.message,
+          });
         },
       },
     );

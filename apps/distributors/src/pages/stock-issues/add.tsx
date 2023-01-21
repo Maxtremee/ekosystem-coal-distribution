@@ -1,4 +1,3 @@
-import { Invoice } from "@ekosystem/db";
 import { InputError, Text } from "@ekosystem/ui";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { Alert, Card, Label, Spinner, TextInput } from "flowbite-react";

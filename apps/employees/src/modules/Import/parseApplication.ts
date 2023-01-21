@@ -4,7 +4,7 @@ import NotEnoughArgumentsError from "./NotEnoughArgumentsError";
 
 export const applicationSchema = z
   .object({
-    numerWniosku: z.string(),
+    numerWniosku: z.string().min(1),
     dodatkoweInformacje: z.string().optional(),
     dataWydania: z.coerce.date(),
     zadeklarowanaIloscOrzech: z.coerce.number().nonnegative().optional(),
