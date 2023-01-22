@@ -55,7 +55,6 @@ export default function UpdateApplicationForm({
           router.replace(`/applications/${res.id}`);
         },
         onError: (err) => {
-          console.log(err)
           setError("applicationId", {
             message: err?.message,
           });

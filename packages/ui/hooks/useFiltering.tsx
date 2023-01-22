@@ -134,7 +134,6 @@ export const useFiltering = <
 
   const setPage = useCallback(
     (page: number) => {
-      console.log(query.page !== page);
       if (query.page !== page) {
         setQuery({
           page,
