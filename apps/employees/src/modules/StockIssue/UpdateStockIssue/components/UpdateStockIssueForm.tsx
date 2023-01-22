@@ -137,7 +137,6 @@ export default function UpdateStockIssueForm({
           />
           <InputError error={errors?.nutCoalIssued?.message} />
         </div>
-        <InputError error={mutationError?.message} />
       </div>
       <div className="w-full">
         <Label htmlFor="additionalInformation">

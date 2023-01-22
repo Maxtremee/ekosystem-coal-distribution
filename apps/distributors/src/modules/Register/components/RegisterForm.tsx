@@ -62,7 +62,7 @@ export default function RegisterForm() {
           />
           <InputError error={errors?.address?.message} />
         </div>
-        {mutationError && <InputError error={mutationError.message} />}
+        <InputError error={mutationError?.message} />
       </div>
       <Button color="success" type="submit" disabled={isLoading || !isValid}>
         {isLoading && <Spinner color="success" className="mr-2" />}

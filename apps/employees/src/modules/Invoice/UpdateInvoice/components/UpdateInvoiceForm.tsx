@@ -21,11 +21,7 @@ export default function UpdateInvoiceForm({
   application: RouterOutputs["invoices"]["checkIfApplicationExists"];
   invoice: Invoice;
 }) {
-  const router = useRouter();
-  const { mutate, isLoading } = trpc.invoices.update.useMutation();
-
   const {
-    setError,
     register,
     handleSubmit,
     formState: { isValid, errors },
@@ -40,6 +36,13 @@ export default function UpdateInvoiceForm({
       additionalInformation: invoice?.additionalInformation || undefined,
     },
   });
+
+  const router = useRouter();
+  const {
+    mutate,
+    isLoading,
+    error: mutationError,
+  } = trpc.invoices.update.useMutation();
 
   const declaredCoalLeft = useMemo(
     () =>
@@ -64,11 +67,6 @@ export default function UpdateInvoiceForm({
         onSuccess: (res) => {
           router.replace(`/invoices/${res.id}`);
         },
-        onError: (err) => {
-          setError("invoiceId", {
-            message: err?.message,
-          });
-        },
       },
     );
 
@@ -78,7 +76,7 @@ export default function UpdateInvoiceForm({
       onSubmit={handleSubmit(onSubmit)}
     >
       <div>
-        <Label htmlFor="invoiceId">Nazwa faktury </Label>
+        <Label htmlFor="invoiceId">Numer faktury </Label>
         <TextInput
           {...register("invoiceId")}
           id="invoiceId"
@@ -96,7 +94,6 @@ export default function UpdateInvoiceForm({
         />
         <InputError error={errors?.issueDate?.message} />
       </div>
-
       <div>
         <Label htmlFor="paidForCoal">Opłacona ilość węgla [kg]</Label>
         <TextInput
@@ -120,6 +117,7 @@ export default function UpdateInvoiceForm({
         />
         <InputError error={errors?.additionalInformation?.message} />
       </div>
+      <InputError error={mutationError?.message} />
       <Button
         color="success"
         type="submit"

@@ -83,7 +83,6 @@ export default function AddStockIssueForm({
           />
           <InputError error={errors?.ecoPeaCoalIssued?.message} />
         </div>
-        <InputError error={mutationError?.message} />
       </div>
       <div className="w-full">
         <Label htmlFor="additionalInformation">

@@ -17,9 +17,12 @@ export default function UpdateApplicationForm({
   application: Application;
 }) {
   const router = useRouter();
-  const { mutate, isLoading } = trpc.applications.update.useMutation();
   const {
-    setError,
+    mutate,
+    isLoading,
+    error: mutationError,
+  } = trpc.applications.update.useMutation();
+  const {
     register,
     handleSubmit,
     formState: { isValid, errors },
@@ -53,11 +56,6 @@ export default function UpdateApplicationForm({
       {
         onSuccess: (res) => {
           router.replace(`/applications/${res.id}`);
-        },
-        onError: (err) => {
-          setError("applicationId", {
-            message: err?.message,
-          });
         },
       },
     );
@@ -126,6 +124,7 @@ export default function UpdateApplicationForm({
           <InputError error={errors?.declaredEcoPeaCoal?.message} />
         </div>
       </div>
+      <InputError error={mutationError?.message} />
       <Button color="success" type="submit" disabled={isLoading || !isValid}>
         {isLoading && <Spinner color="success" className="mr-2" />}
         Aktualizuj wniosek

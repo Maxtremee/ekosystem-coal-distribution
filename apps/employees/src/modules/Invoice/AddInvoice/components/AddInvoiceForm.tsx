@@ -31,10 +31,13 @@ export default function AddInvoiceForm({
   >;
 }) {
   const router = useRouter();
-  const { mutate, isLoading } = trpc.invoices.add.useMutation();
+  const {
+    mutate,
+    isLoading,
+    error: mutationError,
+  } = trpc.invoices.add.useMutation();
 
   const {
-    setError,
     register,
     handleSubmit,
     formState: { isValid, errors },
@@ -63,11 +66,6 @@ export default function AddInvoiceForm({
       {
         onSuccess: (res) => {
           router.replace(`/invoices/${res.id}`);
-        },
-        onError: (err) => {
-          setError("invoiceId", {
-            message: err?.message,
-          });
         },
       },
     );
@@ -119,6 +117,7 @@ export default function AddInvoiceForm({
         />
         <InputError error={errors?.additionalInformation?.message} />
       </div>
+      <InputError error={mutationError?.message} />
       <Button
         color="success"
         type="submit"

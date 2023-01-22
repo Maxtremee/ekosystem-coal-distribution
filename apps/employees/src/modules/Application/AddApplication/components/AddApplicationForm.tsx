@@ -11,7 +11,6 @@ import frontendAddApplicationSchema, {
 
 export default function AddApplicationForm() {
   const {
-    setError,
     register,
     handleSubmit,
     formState: { isValid, errors },
@@ -21,7 +20,11 @@ export default function AddApplicationForm() {
   });
 
   const router = useRouter();
-  const { mutate, isLoading } = trpc.applications.add.useMutation();
+  const {
+    mutate,
+    isLoading,
+    error: mutationError,
+  } = trpc.applications.add.useMutation();
 
   const onSubmit = (data: FrontendAddApplicationSchemaType) =>
     mutate(
@@ -32,11 +35,6 @@ export default function AddApplicationForm() {
       {
         onSuccess: (res) => {
           router.replace(`/applications/${res.id}`);
-        },
-        onError: (err) => {
-          setError("applicationId", {
-            message: err?.message,
-          });
         },
       },
     );
@@ -105,6 +103,7 @@ export default function AddApplicationForm() {
           <InputError error={errors?.declaredEcoPeaCoal?.message} />
         </div>
       </div>
+      <InputError error={mutationError?.message} />
       <Button color="success" type="submit" disabled={isLoading || !isValid}>
         {isLoading && <Spinner color="success" className="mr-2" />}
         Dodaj wniosek

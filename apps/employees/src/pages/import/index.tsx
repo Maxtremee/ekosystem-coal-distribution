@@ -55,13 +55,13 @@ export default function ImportPage() {
       </Text>
       <InputError
         error={
-          (parsingError &&
-            `Błąd w linii: ${parsingError.lineNumber}: ${JSON.stringify(
-              parsingError.message,
-              undefined,
-              2,
-            )}`) ||
-          error?.message
+          parsingError
+            ? `Błąd w linii: ${parsingError.lineNumber}: ${JSON.stringify(
+                parsingError.message,
+                undefined,
+                2,
+              )}`
+            : error?.message
         }
       />
       <div className="flex items-end gap-4">
@@ -124,11 +124,10 @@ export default function ImportPage() {
           Importuj
         </Button>
       </div>
-      {/* modal */}
       <Modal
         show={successModalOpen}
         size="md"
-        popup={true}
+        popup
         onClose={() => setSuccessModalOpen(false)}
       >
         <Modal.Header />
