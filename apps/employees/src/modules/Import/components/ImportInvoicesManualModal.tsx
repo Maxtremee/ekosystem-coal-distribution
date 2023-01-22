@@ -38,11 +38,14 @@ export default function ImportInvoicesManualModal() {
                     "Data wydania (w formacie 2023/01/25 lub z godziną 2023/01/25 08:00:00)"
                   }
                 </li>
-                <li>{"Opłacona ilość węgla typu orzech w kilogramach"}</li>
-                <li>{"Opłacona ilość węgla typu groszek w kilogramach"}</li>
+                <li>
+                  {
+                    "Kwota faktury (zostanie automatycznie podzielona przez 2 aby obliczyć ilość w kg)"
+                  }
+                </li>
               </ul>
               {"Przykładowy rekord"} (linia):{" "}
-              <pre>FV 1/01/23,W1/2023,2023/01/08 13:00:00,650,100</pre>
+              <pre>FV 1/01/23,W1/2023,2023/01/08 13:00:00,650</pre>
             </p>
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               {

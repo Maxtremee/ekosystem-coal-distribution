@@ -24,13 +24,11 @@ model Application {
   createdBy String //email
   updatedBy String? //email
 
-  applicantName String
-  applicationId String? @unique
-
-  additionalInformation String?
+  applicationId         String   @unique
   issueDate             DateTime
   declaredNutCoal       Decimal?
   declaredEcoPeaCoal    Decimal?
+  additionalInformation String?
 
   invoices Invoice[]
 }
@@ -42,11 +40,12 @@ model Invoice {
   createdBy String //email
   updatedBy String? //email
 
-  name               String       @unique
-  issueDate          DateTime
-  declaredNutCoal    Decimal?
-  declaredEcoPeaCoal Decimal?
-  stockIssues        StockIssue[]
+  invoiceId             String   @unique
+  issueDate             DateTime
+  paidForCoal           Decimal
+  additionalInformation String?
+
+  stockIssues StockIssue[]
 
   Application   Application? @relation(fields: [applicationId], references: [id])
   applicationId String?

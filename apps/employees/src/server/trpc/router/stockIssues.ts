@@ -9,7 +9,7 @@ export const stockIssuesRouter = router({
   checkInvoice: protectedProcedure
     .input(
       z.object({
-        invoiceName: z.string(),
+        invoiceId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -18,8 +18,8 @@ export const stockIssuesRouter = router({
           where: {
             AND: [
               {
-                name: {
-                  equals: input.invoiceName,
+                invoiceId: {
+                  equals: input.invoiceId,
                   mode: "insensitive",
                 },
               },
@@ -32,16 +32,18 @@ export const stockIssuesRouter = router({
         return {
           ...invoice,
           stockIssues: undefined,
-          ecoPeaCoalWithdrawn: invoice?.stockIssues.reduce(
-            (acc, { ecoPeaCoalIssued }) =>
-              ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
-            0,
-          ),
-          nutCoalWithdrawn: invoice?.stockIssues.reduce(
-            (acc, { nutCoalIssued }) =>
-              nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
-            0,
-          ),
+          coalLeftToIssue:
+            invoice.paidForCoal.toNumber() -
+            invoice?.stockIssues.reduce(
+              (acc, { ecoPeaCoalIssued, nutCoalIssued }) => {
+                const ecoPea = ecoPeaCoalIssued
+                  ? ecoPeaCoalIssued.toNumber()
+                  : 0;
+                const nut = nutCoalIssued ? nutCoalIssued.toNumber() : 0;
+                return acc + ecoPea + nut;
+              },
+              0,
+            ),
         };
       } catch {
         throw new TRPCError({
@@ -89,12 +91,11 @@ export const stockIssuesRouter = router({
             },
             Invoice: {
               select: {
-                name: true,
+                invoiceId: true,
                 id: true,
                 Application: {
                   select: {
                     id: true,
-                    applicantName: true,
                     applicationId: true,
                   },
                 },
@@ -134,7 +135,7 @@ export const stockIssuesRouter = router({
           },
           {
             Invoice: {
-              name: {
+              invoiceId: {
                 contains: input?.search,
                 mode: "insensitive",
               },
@@ -152,7 +153,7 @@ export const stockIssuesRouter = router({
           include: {
             Invoice: {
               select: {
-                name: true,
+                invoiceId: true,
               },
             },
             DistributionCenter: {
@@ -172,7 +173,7 @@ export const stockIssuesRouter = router({
         stockIssues: data[1].map((stockIssue) => ({
           ...stockIssue,
           distributionCenterName: stockIssue.DistributionCenter?.name,
-          invoiceName: stockIssue.Invoice?.name,
+          invoiceId: stockIssue.Invoice?.invoiceId,
         })),
       };
     }),
@@ -202,7 +203,7 @@ export const stockIssuesRouter = router({
             },
             {
               Invoice: {
-                name: {
+                invoiceId: {
                   contains: input?.search,
                   mode: "insensitive",
                 },
@@ -216,7 +217,7 @@ export const stockIssuesRouter = router({
         include: {
           Invoice: {
             select: {
-              name: true,
+              invoiceId: true,
             },
           },
           DistributionCenter: {
@@ -230,19 +231,19 @@ export const stockIssuesRouter = router({
         stockIssue.id,
         stockIssue.createdAt.toLocaleString("pl").replace(", ", " "),
         stockIssue.DistributionCenter?.name,
+        stockIssue.Invoice?.invoiceId,
         stockIssue.nutCoalIssued?.toString(),
         stockIssue.nutCoalIssued?.toString(),
         stockIssue.additionalInformation,
-        stockIssue.Invoice?.name,
       ]);
       const header = [
         "identyfikator",
         "data",
         "nazwa składu",
+        "numer faktury",
         "orzech [kg]",
         "groszek [kg]",
         "dodatkowe informacje",
-        "numer faktury",
       ];
       return { data, header };
     }),

@@ -1,4 +1,4 @@
-import { Prisma } from "@ekosystem/db";
+import { Prisma, PrismaPromise } from "@ekosystem/db";
 import { z } from "zod";
 import { baseAddApplicationSchema } from "../../../schemas/applicationSchema";
 import { router, protectedProcedure } from "../trpc";
@@ -9,12 +9,27 @@ export const applicationsRouter = router({
   add: protectedProcedure
     .input(baseAddApplicationSchema)
     .mutation(async ({ input, ctx }) => {
-      return await ctx.prisma.application.create({
-        data: {
-          ...input,
-          createdBy: ctx.session.user.email,
-        },
-      });
+      try {
+        return await ctx.prisma.application.create({
+          data: {
+            ...input,
+            createdBy: ctx.session.user.email,
+          },
+        });
+      } catch (err) {
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === "P2002"
+        ) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "Wniosek o takim numerze już istnieje. Numer wniosku musi być unikalny",
+          });
+        } else {
+          throw err;
+        }
+      }
     }),
   update: protectedProcedure
     .input(
@@ -23,15 +38,30 @@ export const applicationsRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.application.update({
-        where: {
-          id: input.id,
-        },
-        data: {
-          ...input,
-          updatedBy: ctx.session.user.email,
-        },
-      });
+      try {
+        return await ctx.prisma.application.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            ...input,
+            updatedBy: ctx.session.user.email,
+          },
+        });
+      } catch (err) {
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === "P2002"
+        ) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "Wniosek o takim numerze już istnieje. Numer wniosku musi być unikalny",
+          });
+        } else {
+          throw err;
+        }
+      }
     }),
   get: protectedProcedure
     .input(
@@ -75,18 +105,13 @@ export const applicationsRouter = router({
         });
         return {
           ...application,
-          ecoPeaCoalInInvoices: application?.invoices.reduce(
-            (acc, { declaredEcoPeaCoal }) =>
-              declaredEcoPeaCoal ? acc + declaredEcoPeaCoal.toNumber() : acc,
-            0,
-          ),
-          nutCoalInInvoices: application?.invoices.reduce(
-            (acc, { declaredNutCoal }) =>
-              declaredNutCoal ? acc + declaredNutCoal.toNumber() : acc,
+          coalInInvoices: application.invoices.reduce(
+            (acc, { paidForCoal }) =>
+              paidForCoal ? acc + paidForCoal.toNumber() : acc,
             0,
           ),
           stockIssuesTotal: application?.invoices?.reduce(
-            (invoiceAcc, { stockIssues }) => invoiceAcc + stockIssues?.length,
+            (ac, { stockIssues }) => ac + stockIssues?.length,
             0,
           ),
           ecoPeaCoalWithdrawn: application?.invoices?.reduce(
@@ -133,10 +158,9 @@ export const applicationsRouter = router({
           invoices: {
             select: {
               id: true,
-              name: true,
+              invoiceId: true,
               issueDate: true,
-              declaredEcoPeaCoal: true,
-              declaredNutCoal: true,
+              paidForCoal: true,
               stockIssues: {
                 select: {
                   id: true,
@@ -162,12 +186,6 @@ export const applicationsRouter = router({
       const filters: Prisma.ApplicationWhereInput = {
         OR: [
           {
-            applicantName: {
-              contains: input?.search,
-              mode: "insensitive",
-            },
-          },
-          {
             applicationId: {
               contains: input?.search,
               mode: "insensitive",
@@ -176,7 +194,7 @@ export const applicationsRouter = router({
           {
             invoices: {
               some: {
-                name: {
+                invoiceId: {
                   contains: input?.search,
                   mode: "insensitive",
                 },
@@ -205,14 +223,9 @@ export const applicationsRouter = router({
         total: data[0],
         applications: data[1].map((application) => ({
           ...application,
-          ecoPealCoalInInvoices: application.invoices.reduce(
-            (acc, { declaredEcoPeaCoal }) =>
-              declaredEcoPeaCoal ? acc + declaredEcoPeaCoal.toNumber() : acc,
-            0,
-          ),
-          nutCoalInInvoices: application.invoices.reduce(
-            (acc, { declaredNutCoal }) =>
-              declaredNutCoal ? acc + declaredNutCoal.toNumber() : acc,
+          coalInInvoices: application.invoices.reduce(
+            (acc, { paidForCoal }) =>
+              paidForCoal ? acc + paidForCoal.toNumber() : acc,
             0,
           ),
         })),
@@ -224,12 +237,6 @@ export const applicationsRouter = router({
       const filters: Prisma.ApplicationWhereInput = {
         OR: [
           {
-            applicantName: {
-              contains: input?.search,
-              mode: "insensitive",
-            },
-          },
-          {
             applicationId: {
               contains: input?.search,
               mode: "insensitive",
@@ -238,7 +245,7 @@ export const applicationsRouter = router({
           {
             invoices: {
               some: {
-                name: {
+                invoiceId: {
                   contains: input?.search,
                   mode: "insensitive",
                 },
@@ -251,9 +258,8 @@ export const applicationsRouter = router({
         include: {
           invoices: {
             select: {
-              name: true,
-              declaredEcoPeaCoal: true,
-              declaredNutCoal: true,
+              invoiceId: true,
+              paidForCoal: true,
             },
           },
         },
@@ -264,36 +270,28 @@ export const applicationsRouter = router({
       });
       const mappedApplications = applications.map((application) => ({
         ...application,
-        ecoPeaCoalInInvoices: application.invoices.reduce(
-          (acc, { declaredEcoPeaCoal }) =>
-            declaredEcoPeaCoal ? acc + declaredEcoPeaCoal.toNumber() : acc,
+        coalInInvoices: application.invoices.reduce(
+          (acc, { paidForCoal }) =>
+            paidForCoal ? acc + paidForCoal.toNumber() : acc,
           0,
         ),
-        nutCoalInInvoices: application.invoices.reduce(
-          (acc, { declaredNutCoal }) =>
-            declaredNutCoal ? acc + declaredNutCoal.toNumber() : acc,
-          0,
-        ),
-        invoicesNames: application.invoices
-          .reduce((acc, { name }) => `${acc}${name};`, "")
+        invoiceIds: application.invoices
+          .reduce((acc, { invoiceId }) => `${acc}${invoiceId};`, "")
           ?.slice(0, -1),
       }));
       const data = mappedApplications.map((application) => [
         application.id,
-        application?.applicantName,
         application?.applicationId,
         application?.additionalInformation,
         application.issueDate.toLocaleString("pl").replace(", ", " "),
         application?.declaredNutCoal?.toString(),
         application?.declaredEcoPeaCoal?.toString(),
         application.invoices.length,
-        application.invoicesNames,
-        application?.nutCoalInInvoices,
-        application?.ecoPeaCoalInInvoices,
+        application.invoiceIds,
+        application?.coalInInvoices,
       ]);
       const header = [
         "identyfikator",
-        "imię i nazwisko wnioskodawcy",
         "numer wniosku",
         "dodatkowe informacje",
         "data",
@@ -301,8 +299,7 @@ export const applicationsRouter = router({
         "zadeklarowano: groszek [kg]",
         "liczba faktur",
         "numery faktur",
-        "opłacono: orzech [kg]",
-        "opłacono: groszek [kg]",
+        "opłacono [kg]",
       ];
       return { data, header };
     }),

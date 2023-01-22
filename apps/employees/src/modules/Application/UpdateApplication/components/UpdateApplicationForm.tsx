@@ -1,14 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { trpc } from "../../../../utils/trpc";
-import {
-  Button,
-  Label,
-  Spinner,
-  Textarea,
-  TextInput,
-  ToggleSwitch,
-} from "flowbite-react";
+import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
 import { InputError } from "@ekosystem/ui";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
@@ -24,10 +17,12 @@ export default function UpdateApplicationForm({
   application: Application;
 }) {
   const router = useRouter();
-  const { mutate, isLoading } = trpc.applications.update.useMutation();
   const {
-    setValue,
-    watch,
+    mutate,
+    isLoading,
+    error: mutationError,
+  } = trpc.applications.update.useMutation();
+  const {
     register,
     handleSubmit,
     formState: { isValid, errors },
@@ -35,9 +30,8 @@ export default function UpdateApplicationForm({
     mode: "onTouched",
     resolver: zodResolver(frontendAddApplicationSchema),
     defaultValues: {
+      applicationId: application.applicationId,
       additionalInformation: application?.additionalInformation || undefined,
-      applicantName: application?.applicantName,
-      applicationId: application?.applicationId || undefined,
       declaredEcoPeaCoal: application?.declaredEcoPeaCoal
         ? new Decimal(application.declaredEcoPeaCoal).toNumber()
         : undefined,
@@ -49,13 +43,6 @@ export default function UpdateApplicationForm({
       showApplicationIdField: !!application?.applicationId,
     },
   });
-  const showApplicationIdValue = watch("showApplicationIdField");
-  const showApplicationIdHandler = (checked: boolean) => {
-    setValue("showApplicationIdField", checked);
-    if (!checked) {
-      setValue("applicationId", undefined);
-    }
-  };
 
   const onSubmit = (data: FrontendAddApplicationSchemaType) =>
     mutate(
@@ -79,32 +66,14 @@ export default function UpdateApplicationForm({
       onSubmit={handleSubmit(onSubmit)}
     >
       <div>
-        <Label htmlFor="applicantName">Imię i nazwisko</Label>
+        <Label htmlFor="app">Numer wniosku</Label>
         <TextInput
-          {...register("applicantName")}
-          id="applicantName"
-          placeholder="Imię i nazwisko"
+          {...register("applicationId")}
+          id="applicationId"
+          placeholder="Numer wniosku"
         />
-        <InputError error={errors?.applicantName?.message} />
+        <InputError error={errors?.applicationId?.message} />
       </div>
-      <ToggleSwitch
-        // @ts-ignore
-        color="success"
-        onChange={showApplicationIdHandler}
-        label="Wniosek posiada numer"
-        checked={showApplicationIdValue}
-      />
-      {showApplicationIdValue && (
-        <div>
-          <Label htmlFor="app">Numer wniosku</Label>
-          <TextInput
-            {...register("applicationId")}
-            id="applicationId"
-            placeholder="Numer wniosku"
-          />
-          <InputError error={errors?.applicantName?.message} />
-        </div>
-      )}
       <div>
         <Label htmlFor="additionalInformation">
           Dodatkowe informacje (opcjonalnie)
@@ -115,7 +84,7 @@ export default function UpdateApplicationForm({
           placeholder="Dodatkowe informacje"
           rows={3}
         />
-        <InputError error={errors?.applicantName?.message} />
+        <InputError error={errors?.additionalInformation?.message} />
       </div>
       <div>
         <Label htmlFor="issueDate">Data wystawienia</Label>
@@ -155,6 +124,7 @@ export default function UpdateApplicationForm({
           <InputError error={errors?.declaredEcoPeaCoal?.message} />
         </div>
       </div>
+      <InputError error={mutationError?.message} />
       <Button color="success" type="submit" disabled={isLoading || !isValid}>
         {isLoading && <Spinner color="success" className="mr-2" />}
         Aktualizuj wniosek

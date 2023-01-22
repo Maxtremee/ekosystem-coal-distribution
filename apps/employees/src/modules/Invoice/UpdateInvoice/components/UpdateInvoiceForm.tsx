@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { useDebounce } from "react-use";
 import { useForm } from "react-hook-form";
@@ -7,11 +7,12 @@ import { InputError } from "@ekosystem/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { Invoice } from "@ekosystem/db";
-import { Button, Label, Spinner, TextInput } from "flowbite-react";
+import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
 import { RouterOutputs, trpc } from "../../../../utils/trpc";
 import frontendAddInvoiceSchema, {
-  FrontendAddInvoiceSchemaType,
+  AddInvoiceSchemaType,
 } from "../../../../schemas/invoiceSchema";
+import { calculateCoalLeft } from "../../AddInvoice/components/AddInvoiceForm";
 
 export default function UpdateInvoiceForm({
   application,
@@ -20,70 +21,40 @@ export default function UpdateInvoiceForm({
   application: RouterOutputs["invoices"]["checkIfApplicationExists"];
   invoice: Invoice;
 }) {
-  const router = useRouter();
-  const { mutate, isLoading } = trpc.invoices.update.useMutation();
-  const [debounceInvoiceName, setDebouncedInvoiceName] = useState("");
-
   const {
     register,
     handleSubmit,
-    watch,
-    setError,
     formState: { isValid, errors },
-  } = useForm<FrontendAddInvoiceSchemaType>({
+  } = useForm<AddInvoiceSchemaType>({
     mode: "onTouched",
     resolver: zodResolver(frontendAddInvoiceSchema),
     defaultValues: {
-      declaredEcoPeaCoal: invoice?.declaredEcoPeaCoal
-        ? new Decimal(invoice.declaredEcoPeaCoal).toNumber()
-        : undefined,
-      declaredNutCoal: invoice?.declaredNutCoal
-        ? new Decimal(invoice.declaredNutCoal).toNumber()
-        : undefined,
+      paidForCoal: new Decimal(invoice.paidForCoal).toNumber(),
+      // @ts-ignore
       issueDate: dayjs(invoice?.issueDate).format("YYYY-MM-DD"),
-      name: invoice?.name,
+      invoiceId: invoice?.invoiceId,
+      additionalInformation: invoice?.additionalInformation || undefined,
     },
   });
 
-  trpc.invoices.checkIfUnique.useQuery(
-    { name: debounceInvoiceName },
-    {
-      enabled: !!debounceInvoiceName && !invoice,
-      onSuccess: (data) => {
-        if (data?.name !== invoice.name) {
-          setError("name", {
-            message: "Taki numer faktury już istnieje",
-            type: "value",
-          });
-        }
-      },
-    },
+  const router = useRouter();
+  const {
+    mutate,
+    isLoading,
+    error: mutationError,
+  } = trpc.invoices.update.useMutation();
+
+  const declaredCoalLeft = useMemo(
+    () =>
+      calculateCoalLeft(
+        application?.declaredNutCoal,
+        application?.declaredEcoPeaCoal,
+        application?.coalInInvoices,
+      ) + Number(invoice.paidForCoal.toString()),
+    [],
   );
 
-  const invoiceNameWatch = watch("name");
-  useDebounce(
-    () => {
-      setDebouncedInvoiceName(invoiceNameWatch);
-    },
-    600,
-    [invoiceNameWatch],
-  );
-
-  const nutCoalLeft = application?.declaredNutCoal
-    ? new Decimal(application?.declaredNutCoal)
-        .minus(application.nutCoalInInvoices)
-        .add(new Decimal(invoice?.declaredNutCoal || 0))
-        .toNumber()
-    : 0;
-
-  const ecoPeaCoalLeft = application?.declaredEcoPeaCoal
-    ? new Decimal(application?.declaredEcoPeaCoal)
-        .minus(application.ecoPeaCoalInInvoices)
-        .add(new Decimal(invoice?.declaredEcoPeaCoal || 0))
-        .toNumber()
-    : 0;
-
-  const onSubmit = (data: FrontendAddInvoiceSchemaType) =>
+  const onSubmit = (data: AddInvoiceSchemaType) =>
     mutate(
       {
         ...data,
@@ -105,13 +76,13 @@ export default function UpdateInvoiceForm({
       onSubmit={handleSubmit(onSubmit)}
     >
       <div>
-        <Label htmlFor="invoiceName">Nazwa faktury </Label>
+        <Label htmlFor="invoiceId">Numer faktury </Label>
         <TextInput
-          {...register("name")}
-          id="invoiceName"
-          placeholder="Nazwa faktury"
+          {...register("invoiceId")}
+          id="invoiceId"
+          placeholder="Numer faktury"
         />
-        <InputError error={errors?.name?.message} />
+        <InputError error={errors?.invoiceId?.message} />
       </div>
       <div>
         <Label htmlFor="issueDate">Data wystawienia</Label>
@@ -123,37 +94,30 @@ export default function UpdateInvoiceForm({
         />
         <InputError error={errors?.issueDate?.message} />
       </div>
-
-      <div className="flex w-full flex-col justify-between gap-4 md:flex-row">
-        <div className="w-full">
-          <Label htmlFor="declaredNutCoal">Ilość węgla - orzech [Kg]</Label>
-          <TextInput
-            {...register("declaredNutCoal", {
-              max: nutCoalLeft,
-            })}
-            id="declaredNutCoal"
-            placeholder="Ilość węgla"
-            type="number"
-            helperText={`Pozostało do odebrania z wniosku: ${nutCoalLeft} kg`}
-            max={nutCoalLeft}
-          />
-          <InputError error={errors?.declaredNutCoal?.message} />
-        </div>
-        <div className="w-full">
-          <Label htmlFor="declaredEcoPeaCoal">Ilość węgla - groszek [Kg]</Label>
-          <TextInput
-            {...register("declaredEcoPeaCoal", {
-              max: ecoPeaCoalLeft,
-            })}
-            id="declaredEcoPeaCoal"
-            placeholder="Ilość węgla"
-            type="number"
-            helperText={`Pozostało do odebrania z wniosku: ${ecoPeaCoalLeft} kg`}
-            max={ecoPeaCoalLeft}
-          />
-          <InputError error={errors?.declaredEcoPeaCoal?.message} />
-        </div>
+      <div>
+        <Label htmlFor="paidForCoal">Opłacona ilość węgla [kg]</Label>
+        <TextInput
+          {...register("paidForCoal", {
+            max: declaredCoalLeft,
+          })}
+          id="paidForCoal"
+          placeholder="Ilość węgla"
+          type="number"
+          helperText={`Pozostało do odebrania z wniosku: ${declaredCoalLeft} kg`}
+          max={declaredCoalLeft}
+        />
+        <InputError error={errors?.paidForCoal?.message} />
       </div>
+      <div>
+        <Label htmlFor="issueDate">Dodatkowe informacje (opcjonalnie)</Label>
+        <Textarea
+          {...register("additionalInformation")}
+          id="additionalInformation"
+          placeholder="Data wystawienia"
+        />
+        <InputError error={errors?.additionalInformation?.message} />
+      </div>
+      <InputError error={mutationError?.message} />
       <Button
         color="success"
         type="submit"

@@ -35,11 +35,9 @@ export default function RenderLayout({ children }: { children: ReactNode }) {
       }
       dropdown={<Dropdown />}
       logo={
-        <div className="h-14">
-          <Link href="/">
-            <Logo />
-          </Link>
-        </div>
+        <Link href="/">
+          <Logo />
+        </Link>
       }
     >
       {children}

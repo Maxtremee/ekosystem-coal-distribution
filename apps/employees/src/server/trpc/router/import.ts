@@ -1,3 +1,4 @@
+import { Prisma } from "@ekosystem/db";
 import { TRPCError } from "@trpc/server";
 import { z, ZodError } from "zod";
 import { ErrorMessageOptions, generateErrorMessage } from "zod-error";
@@ -48,7 +49,6 @@ export const importRouter = router({
               ctx.prisma.application.create({
                 data: {
                   applicationId: application.numerWniosku,
-                  applicantName: application.wnioskodawca,
                   issueDate: application.dataWydania,
                   additionalInformation: application.dodatkoweInformacje,
                   declaredEcoPeaCoal: application.zadeklarowanaIloscGroszek,
@@ -72,10 +72,9 @@ export const importRouter = router({
               ctx.prisma.invoice.create({
                 data: {
                   createdBy: ctx.session.user.email,
-                  name: invoice.numerFaktury,
+                  invoiceId: invoice.numerFaktury,
                   issueDate: invoice.dataWydania,
-                  declaredEcoPeaCoal: invoice.oplaconoGroszek,
-                  declaredNutCoal: invoice.oplaconoOrzech,
+                  paidForCoal: invoice.kwota,
                   ...(invoice?.numerWniosku !== undefined && {
                     Application: {
                       connect: {
@@ -107,7 +106,7 @@ export const importRouter = router({
                   nutCoalIssued: stockIssue.wydanoOrzech,
                   Invoice: {
                     connect: {
-                      name: stockIssue.numerFaktury,
+                      invoiceId: stockIssue.numerFaktury,
                     },
                   },
                   ...(stockIssue?.emailSkupu !== undefined && {
@@ -126,23 +125,32 @@ export const importRouter = router({
           };
         }
       } catch (err) {
+        let parsingError: ParsingError | undefined = undefined;
         if (err instanceof ZodError) {
-          const error: ParsingError = {
+          parsingError = {
             lineNumber: curr + 1,
             message: generateErrorMessage(err.issues, zodErrorOptions),
           };
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: JSON.stringify(error),
-          });
         } else if (err instanceof NotEnoughArgumentsError) {
-          const error: ParsingError = {
+          parsingError = {
             lineNumber: curr + 1,
             message: err.message,
           };
+        } else if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === "P2002"
+        ) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: JSON.stringify(error),
+            message: `Numery ${
+              input.type === "applications" ? "wniosków" : "faktur"
+            } muszą być unikalne`,
+          });
+        }
+        if (parsingError) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: JSON.stringify(parsingError),
           });
         } else {
           throw err;

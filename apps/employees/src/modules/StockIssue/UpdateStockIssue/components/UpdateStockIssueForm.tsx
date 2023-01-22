@@ -16,6 +16,7 @@ import frontendStockIssueSchema, {
   FrontendStockIssueSchemaType,
 } from "../../../../schemas/stockIssueSchema";
 import { RouterOutputs, trpc } from "../../../../utils/trpc";
+import { useMemo } from "react";
 
 export default function UpdateStockIssueForm({
   stockIssue,
@@ -26,11 +27,12 @@ export default function UpdateStockIssueForm({
 }) {
   const router = useRouter();
   const {
+    watch,
     register,
     handleSubmit,
     formState: { isValid, errors },
   } = useForm<FrontendStockIssueSchemaType>({
-    mode: "onTouched",
+    mode: "onChange",
     resolver: zodResolver(frontendStockIssueSchema),
     defaultValues: {
       distributionCenterId: stockIssue?.distributionCenterId || undefined,
@@ -69,19 +71,18 @@ export default function UpdateStockIssueForm({
       },
     );
 
-  const nutCoalLeft = invoice?.declaredNutCoal
-    ? new Decimal(invoice?.declaredNutCoal)
-        .minus(invoice?.nutCoalWithdrawn || 0)
-        .add(new Decimal(stockIssue?.nutCoalIssued || 0))
-        .toNumber()
-    : 0;
+  const coalLeftWithoutThisStockIssue = useMemo(
+    () =>
+      (invoice?.coalLeftToIssue || 0) +
+      new Decimal(stockIssue?.nutCoalIssued || 0).toNumber() +
+      new Decimal(stockIssue?.ecoPeaCoalIssued || 0).toNumber(),
+    [],
+  );
 
-  const ecoPeaCoalLeft = invoice?.declaredEcoPeaCoal
-    ? new Decimal(invoice?.declaredEcoPeaCoal)
-        .minus(invoice?.ecoPeaCoalWithdrawn || 0)
-        .add(new Decimal(stockIssue?.ecoPeaCoalIssued || 0))
-        .toNumber()
-    : 0;
+  const nutCoalWatch = watch("nutCoalIssued") || 0;
+  const ecoPeaCoalWatch = watch("ecoPeaCoalIssued") || 0;
+  const nutCoalLeft = coalLeftWithoutThisStockIssue - ecoPeaCoalWatch;
+  const ecoPeaCoalLeft = coalLeftWithoutThisStockIssue - nutCoalWatch;
 
   return (
     <form
@@ -90,23 +91,22 @@ export default function UpdateStockIssueForm({
       }`}
       onSubmit={handleSubmit(onSubmit)}
     >
+      <div>
+        <Label htmlFor="search">Wydane przez</Label>
+        <Select
+          {...register("distributionCenterId")}
+          id="distributionCenterId"
+          placeholder="Wybierz skup węgla"
+          disabled={isLoadingCenters || centersError || centers?.length < 1}
+        >
+          {centers?.map(({ name, id }) => (
+            <option key={id} value={id}>
+              {name}
+            </option>
+          ))}
+        </Select>
+      </div>
       <div className="flex w-full flex-col justify-between gap-4 md:flex-row">
-        <div>
-          <Label htmlFor="search">Wydane przez</Label>
-          <Select
-            {...register("distributionCenterId")}
-            id="distributionCenterId"
-            className="w-full md:w-80"
-            placeholder="Wybierz skup węgla"
-            disabled={isLoadingCenters || centersError || centers?.length < 1}
-          >
-            {centers?.map(({ name, id }) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-          </Select>
-        </div>
         <div className="w-full">
           <Label htmlFor="ecoPeaCoalIssued">Ilość węgla - groszek [Kg]</Label>
           <TextInput
@@ -116,7 +116,7 @@ export default function UpdateStockIssueForm({
             id="ecoPeaCoalIssued"
             placeholder="Ilość węgla"
             type="number"
-            helperText={`Pozostało do odebrania: ${ecoPeaCoalLeft} kg`}
+            helperText={`Maksymalnie do wydania: ${ecoPeaCoalLeft} kg`}
             max={ecoPeaCoalLeft}
             min={0}
           />
@@ -131,13 +131,12 @@ export default function UpdateStockIssueForm({
             id="nutCoalIssued"
             placeholder="Ilość węgla"
             type="number"
-            helperText={`Pozostało do odebrania: ${nutCoalLeft} kg`}
+            helperText={`Maksymalnie do wydania: ${nutCoalLeft} kg`}
             max={nutCoalLeft}
             min={0}
           />
           <InputError error={errors?.nutCoalIssued?.message} />
         </div>
-        <InputError error={mutationError?.message} />
       </div>
       <div className="w-full">
         <Label htmlFor="additionalInformation">
@@ -149,7 +148,7 @@ export default function UpdateStockIssueForm({
           placeholder="Dodatkowe informacje"
           rows={3}
         />
-        <InputError error={errors?.ecoPeaCoalIssued?.message} />
+        <InputError error={errors?.additionalInformation?.message} />
       </div>
       <InputError error={mutationError?.message} />
       <Button color="success" type="submit" disabled={isLoading || !isValid}>

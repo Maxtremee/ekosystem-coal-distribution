@@ -7,7 +7,6 @@ import { RouterOutputs, trpc } from "../../../utils/trpc";
 import frontendAddStockIssueSchema, {
   FrontendAddStockIssueSchemaType,
 } from "../../../schemas/addStockIssueSchema";
-import Decimal from "decimal.js";
 
 export default function AddStockIssueForm({
   invoice,
@@ -16,11 +15,12 @@ export default function AddStockIssueForm({
 }) {
   const router = useRouter();
   const {
+    watch,
     register,
     handleSubmit,
     formState: { isValid, errors },
   } = useForm<FrontendAddStockIssueSchemaType>({
-    mode: "onTouched",
+    mode: "onChange",
     resolver: zodResolver(frontendAddStockIssueSchema),
   });
 
@@ -40,17 +40,10 @@ export default function AddStockIssueForm({
       },
     );
 
-  const nutCoalLeft = invoice?.declaredNutCoal
-    ? new Decimal(invoice?.declaredNutCoal)
-        .minus(invoice?.nutCoalWithdrawn || 0)
-        .toNumber()
-    : 0;
-
-  const ecoPeaCoalLeft = invoice?.declaredEcoPeaCoal
-    ? new Decimal(invoice?.declaredEcoPeaCoal)
-        .minus(invoice?.ecoPeaCoalWithdrawn || 0)
-        .toNumber()
-    : 0;
+  const nutCoalWatch = watch("nutCoalIssued") || 0;
+  const ecoPeaCoalWatch = watch("ecoPeaCoalIssued") || 0;
+  const nutCoalLeft = (invoice?.coalLeftToIssue || 0) - ecoPeaCoalWatch;
+  const ecoPeaCoalLeft = (invoice?.coalLeftToIssue || 0) - nutCoalWatch;
 
   return (
     <form
@@ -69,7 +62,7 @@ export default function AddStockIssueForm({
             id="nutCoalIssued"
             placeholder="Ilość węgla"
             type="number"
-            helperText={`Pozostało do odebrania: ${nutCoalLeft} kg`}
+            helperText={`Maksymalnie do wydania: ${nutCoalLeft} kg`}
             max={nutCoalLeft}
             min={0}
           />
@@ -84,13 +77,12 @@ export default function AddStockIssueForm({
             id="ecoPeaCoalIssued"
             placeholder="Ilość węgla"
             type="number"
-            helperText={`Pozostało do odebrania: ${ecoPeaCoalLeft} kg`}
+            helperText={`Maksymalnie do wydania: ${ecoPeaCoalLeft} kg`}
             max={ecoPeaCoalLeft}
             min={0}
           />
           <InputError error={errors?.ecoPeaCoalIssued?.message} />
         </div>
-        <InputError error={mutationError?.message} />
       </div>
       <div className="w-full">
         <Label htmlFor="additionalInformation">
@@ -102,7 +94,7 @@ export default function AddStockIssueForm({
           placeholder="Dodatkowe informacje"
           rows={3}
         />
-        <InputError error={errors?.ecoPeaCoalIssued?.message} />
+        <InputError error={errors?.additionalInformation?.message} />
       </div>
       <InputError error={mutationError?.message} />
       <Button color="success" type="submit" disabled={isLoading || !isValid}>

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export type InvoiceTimelineItemValue = Pick<
   Invoice,
-  "issueDate" | "name" | "declaredEcoPeaCoal" | "declaredNutCoal" | "id"
+  "issueDate" | "invoiceId" | "paidForCoal" | "id"
 >;
 
 export default function InvoiceTimelineItem({
@@ -24,13 +24,11 @@ export default function InvoiceTimelineItem({
             <p className="text-gray-500">Numer</p>
             <Link href={`/invoices/${invoice.id}`}>
               <Text as="span" className="underline hover:cursor-pointer">
-                {invoice.name}
+                {invoice.invoiceId}
               </Text>
             </Link>
-            <p className="text-gray-500">Opłacono: ekogroszek</p>
-            <Text>{invoice.declaredEcoPeaCoal?.toString() || 0} kg</Text>
-            <p className="text-gray-500">Opłacono: orzech</p>
-            <Text>{invoice.declaredNutCoal?.toString() || 0} kg</Text>
+            <p className="text-gray-500">Opłacono węgla</p>
+            <Text>{invoice.paidForCoal.toString()} kg</Text>
           </div>
         </Timeline.Body>
       </Timeline.Content>

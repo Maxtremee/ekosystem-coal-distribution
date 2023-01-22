@@ -15,13 +15,7 @@ export default function InvoiceDetails({
       </Text>
       <div className="grid grid-flow-row grid-cols-2">
         <p className="text-gray-500">Numer faktury</p>
-        <Text>{invoice.name}</Text>
-        <p className="text-gray-500">Imię i nazwisko wnioskodawcy</p>
-        <Link href={`/applications/${invoice?.Application?.id}`} passHref>
-          <Text as="span" className="underline hover:cursor-pointer">
-            {invoice?.Application?.applicantName}
-          </Text>
-        </Link>
+        <Text>{invoice.invoiceId}</Text>
         <p className="text-gray-500">Numer wniosku</p>
         <Link href={`/applications/${invoice?.Application?.id}`} passHref>
           <Text as="span" className="underline hover:cursor-pointer">
@@ -30,12 +24,12 @@ export default function InvoiceDetails({
         </Link>
         <p className="text-gray-500">Data wydania</p>
         <Text>{invoice.issueDate?.toLocaleString()}</Text>
+        <p className="text-gray-500">Dodatkowe informacje</p>
+        <Text>{invoice?.additionalInformation}</Text>
         <div className="h-6" />
         <div className="h-6" />
-        <p className="text-gray-500">Opłacono: ekogroszek</p>
-        <Text>{invoice.declaredEcoPeaCoal?.toString() || 0} kg</Text>
-        <p className="text-gray-500">Opłacono: orzech</p>
-        <Text>{invoice.declaredNutCoal?.toString() || 0} kg</Text>
+        <p className="text-gray-500">Opłacono węgla</p>
+        <Text>{invoice.paidForCoal.toString()} kg</Text>
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Liczba wydań towaru</p>

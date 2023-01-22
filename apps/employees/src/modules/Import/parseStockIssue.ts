@@ -18,7 +18,6 @@ const stockIssueSchema = z
   });
 
 export const parseStockIssue = (line: string[]) => {
-  console.log(line.length);
   if (line.length > 5) {
     const stockIssue = {
       numerFaktury: line[0],

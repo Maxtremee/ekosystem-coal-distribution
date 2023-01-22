@@ -4,13 +4,13 @@ import { router, protectedProcedure } from "../trpc";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
 import { backendAddStockIssueSchema } from "../../../schemas/addStockIssueSchema";
 import { TRPCError } from "@trpc/server";
+import Decimal from "decimal.js";
 
 export const stockIssuesRouter = router({
   checkInvoice: protectedProcedure
     .input(
       z.object({
-        invoiceName: z.string(),
-        appNameOrId: z.string(),
+        invoiceId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -19,27 +19,9 @@ export const stockIssuesRouter = router({
           where: {
             AND: [
               {
-                name: {
-                  equals: input.invoiceName,
+                invoiceId: {
+                  equals: input.invoiceId,
                   mode: "insensitive",
-                },
-              },
-              {
-                Application: {
-                  OR: [
-                    {
-                      applicantName: {
-                        equals: input.appNameOrId,
-                        mode: "insensitive",
-                      },
-                    },
-                    {
-                      applicationId: {
-                        equals: input.appNameOrId,
-                        mode: "insensitive",
-                      },
-                    },
-                  ],
                 },
               },
             ],
@@ -48,20 +30,24 @@ export const stockIssuesRouter = router({
             stockIssues: true,
           },
         });
-        return {
-          ...invoice,
-          stockIssues: undefined,
-          ecoPeaCoalWithdrawn: invoice?.stockIssues.reduce(
-            (acc, { ecoPeaCoalIssued }) =>
-              ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
-            0,
-          ),
-          nutCoalWithdrawn: invoice?.stockIssues.reduce(
-            (acc, { nutCoalIssued }) =>
-              nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
-            0,
-          ),
-        };
+        return (
+          invoice && {
+            ...invoice,
+            stockIssues: undefined,
+            coalLeftToIssue:
+              invoice.paidForCoal.toNumber() -
+              invoice?.stockIssues.reduce(
+                (acc, { ecoPeaCoalIssued, nutCoalIssued }) => {
+                  const ecoPea = ecoPeaCoalIssued
+                    ? ecoPeaCoalIssued.toNumber()
+                    : 0;
+                  const nut = nutCoalIssued ? nutCoalIssued.toNumber() : 0;
+                  return acc + ecoPea + nut;
+                },
+                0,
+              ),
+          }
+        );
       } catch {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -105,39 +91,35 @@ export const stockIssuesRouter = router({
         });
       }
 
-      // check if value issued isn't bigger than allowed
-      if (input?.ecoPeaCoalIssued) {
-        const ecoPeaCoalWithdrawn = invoice?.stockIssues?.reduce(
-          (acc, { ecoPeaCoalIssued }) =>
-            ecoPeaCoalIssued ? acc + ecoPeaCoalIssued.toNumber() : acc,
-          0,
-        );
-        const ecoPeaCoalLeft =
-          invoice?.declaredEcoPeaCoal?.minus(ecoPeaCoalWithdrawn).toNumber() ||
-          0;
-        if (input.ecoPeaCoalIssued > ecoPeaCoalLeft) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message:
-              "Wartość wydania towaru: groszek przekracza wartość pozostałą do odebrania",
-          });
-        }
+      if (!input?.ecoPeaCoalIssued && !input?.nutCoalIssued) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "Przynajmniej jedna wartość musi być wypełniona: groszek, orzech",
+        });
       }
-      if (input?.nutCoalIssued) {
-        const nutCoalWithdrawn = invoice?.stockIssues?.reduce(
-          (acc, { nutCoalIssued }) =>
-            nutCoalIssued ? acc + nutCoalIssued.toNumber() : acc,
+
+      // check if issued values aren't bigger than left to issue
+      const coalLeft = invoice.paidForCoal.minus(
+        invoice?.stockIssues.reduce(
+          (acc, { ecoPeaCoalIssued, nutCoalIssued }) => {
+            const ecoPea = ecoPeaCoalIssued ? ecoPeaCoalIssued.toNumber() : 0;
+            const nut = nutCoalIssued ? nutCoalIssued.toNumber() : 0;
+            return acc + ecoPea + nut;
+          },
           0,
-        );
-        const nutCoalLeft =
-          invoice?.declaredNutCoal?.minus(nutCoalWithdrawn).toNumber() || 0;
-        if (input.nutCoalIssued > nutCoalLeft) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message:
-              "Wartość wydania towaru: orzech przekracza wartość pozostałą do odebrania",
-          });
-        }
+        ),
+      );
+      const issuedSum = new Decimal(input?.ecoPeaCoalIssued || 0)
+        .plus(new Decimal(input?.nutCoalIssued || 0))
+        .toNumber();
+
+      if (coalLeft.minus(issuedSum).lessThan(0)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "Wartość wydania towaru przekracza wartość pozostałą do odebrania",
+        });
       }
 
       return await ctx.prisma.stockIssue.create({
@@ -171,12 +153,12 @@ export const stockIssuesRouter = router({
           },
           Invoice: {
             select: {
-              name: true,
+              invoiceId: true,
               id: true,
               Application: {
                 select: {
                   id: true,
-                  applicantName: true,
+                  applicationId: true,
                 },
               },
             },
@@ -207,19 +189,9 @@ export const stockIssuesRouter = router({
           },
           {
             Invoice: {
-              name: {
+              invoiceId: {
                 contains: input?.search,
                 mode: "insensitive",
-              },
-            },
-          },
-          {
-            Invoice: {
-              Application: {
-                applicantName: {
-                  contains: input?.search,
-                  mode: "insensitive",
-                },
               },
             },
           },
@@ -235,7 +207,7 @@ export const stockIssuesRouter = router({
           include: {
             Invoice: {
               select: {
-                name: true,
+                invoiceId: true,
               },
             },
           },
@@ -249,7 +221,7 @@ export const stockIssuesRouter = router({
         total: data[0],
         stockIssues: data[1].map((stockIssue) => ({
           ...stockIssue,
-          invoiceName: stockIssue.Invoice?.name,
+          invoiceId: stockIssue.Invoice?.invoiceId,
         })),
       };
     }),
