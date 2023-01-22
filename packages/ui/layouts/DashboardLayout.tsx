@@ -22,7 +22,7 @@ export default function DashboardLayout({
       <div className="h-screen">
         <Navbar
           fluid
-          className="w-full  bg-white drop-shadow-lg dark:bg-gray-800"
+          className="w-full bg-white drop-shadow-lg dark:bg-gray-800"
         >
           <div className="flex w-full items-center justify-between gap-2">
             <div>{logo}</div>
@@ -30,7 +30,7 @@ export default function DashboardLayout({
             <div className="hidden gap-2 md:flex">{navbarItems}</div>
           </div>
         </Navbar>
-        <main className="flex h-[calc(100vh-76px)] w-full bg-white dark:bg-gray-800 ">
+        <main className="flex h-[calc(100vh-62px)] w-full bg-white dark:bg-gray-800 ">
           <div className="hidden md:block md:w-1/4 md:overflow-y-auto">
             {sidebar}
           </div>
