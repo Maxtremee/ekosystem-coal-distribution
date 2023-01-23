@@ -13,7 +13,7 @@ export const invoiceSchema = z.object({
 });
 
 export const parseInvoice = (line: string[]) => {
-  if (line.length > 4) {
+  if (line.length > 3) {
     const invoice = {
       numerFaktury: line[0],
       numerWniosku: stringOrUndefined(line[1]),

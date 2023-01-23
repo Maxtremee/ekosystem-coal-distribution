@@ -21,7 +21,7 @@ export const applicationSchema = z
   );
 
 export const parseApplication = (line: string[]) => {
-  if (line.length > 5) {
+  if (line.length > 4) {
     const application = {
       numerWniosku: stringOrUndefined(line[0]),
       dodatkoweInformacje: stringOrUndefined(line[1]),
