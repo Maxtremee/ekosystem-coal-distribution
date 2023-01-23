@@ -153,7 +153,7 @@ export const stockIssuesRouter = router({
           include: {
             Invoice: {
               select: {
-                invoiceId: true,
+                id: true,
               },
             },
             DistributionCenter: {
@@ -173,7 +173,7 @@ export const stockIssuesRouter = router({
         stockIssues: data[1].map((stockIssue) => ({
           ...stockIssue,
           distributionCenterName: stockIssue.DistributionCenter?.name,
-          invoiceId: stockIssue.Invoice?.invoiceId,
+          invoiceId: stockIssue.Invoice?.id,
         })),
       };
     }),
