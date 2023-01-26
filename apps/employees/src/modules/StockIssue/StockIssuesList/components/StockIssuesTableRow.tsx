@@ -36,7 +36,7 @@ export default function StockIssuesTableRow({
           className="cursor-pointer underline"
           onClick={stopPropagation}
         >
-          {stockIssue.invoiceId}
+          {stockIssue.invoiceIdName}
         </Link>
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
