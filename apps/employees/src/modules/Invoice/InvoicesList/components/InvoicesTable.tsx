@@ -49,12 +49,11 @@ export default function InvoicesTable({
           onClick={() => headerClickHandler("amount")}
         >
           <div className="flex items-center">
-            Opłacono węgla [kg]
+            Opłacono [kg]
             <ShowChevron id="amount" />
           </div>
         </Table.HeadCell>
-        <Table.HeadCell>Ilość węgla wydana - orzech [kg]</Table.HeadCell>
-        <Table.HeadCell>Ilość węgla wydana - groszek [kg]</Table.HeadCell>
+        <Table.HeadCell>Odebrano [kg]</Table.HeadCell>
       </Table.Head>
       <Table.Body className="divide-y">
         {invoices?.map((invoice) => (

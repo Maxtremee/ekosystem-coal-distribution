@@ -1,12 +1,21 @@
 import { useRouter } from "next/router";
-import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
-import { useForm } from "react-hook-form";
+import {
+  Button,
+  Label,
+  Spinner,
+  Textarea,
+  TextInput,
+  Select,
+} from "flowbite-react";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputError } from "@ekosystem/ui";
 import { RouterOutputs, trpc } from "../../../utils/trpc";
-import frontendAddStockIssueSchema, {
-  FrontendAddStockIssueSchemaType,
+import baseAddStockIssueSchema, {
+  BaseAddStockIssueSchemaType,
 } from "../../../schemas/addStockIssueSchema";
+import { ChangeEvent } from "react";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 
 export default function AddStockIssueForm({
   invoice,
@@ -15,22 +24,39 @@ export default function AddStockIssueForm({
 }) {
   const router = useRouter();
   const {
-    watch,
-    register,
-    handleSubmit,
-    formState: { isValid, errors },
-  } = useForm<FrontendAddStockIssueSchemaType>({
-    mode: "onChange",
-    resolver: zodResolver(frontendAddStockIssueSchema),
-  });
-
-  const {
     mutate,
     isLoading,
     error: mutationError,
   } = trpc.stockIssues.add.useMutation();
 
-  const onSubmit = (data: FrontendAddStockIssueSchemaType) =>
+  const {
+    watch,
+    control,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { isValid, errors },
+  } = useForm<BaseAddStockIssueSchemaType>({
+    mode: "onChange",
+    resolver: zodResolver(baseAddStockIssueSchema),
+    defaultValues: {
+      items: [{ amount: 0, type: "ekogroszek" }],
+    },
+  });
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "items",
+    rules: {
+      minLength: 1,
+    },
+  });
+
+  const itemsWatch = watch("items");
+  const coalLeft =
+    (invoice?.coalLeftToIssue || 0) -
+    itemsWatch.reduce((acc, { amount }) => acc + Number(amount), 0);
+
+  const onSubmit = (data: BaseAddStockIssueSchemaType) =>
     mutate(
       { ...data, invoiceId: invoice?.id as string },
       {
@@ -40,11 +66,6 @@ export default function AddStockIssueForm({
       },
     );
 
-  const nutCoalWatch = watch("nutCoalIssued") || 0;
-  const ecoPeaCoalWatch = watch("ecoPeaCoalIssued") || 0;
-  const nutCoalLeft = (invoice?.coalLeftToIssue || 0) - ecoPeaCoalWatch;
-  const ecoPeaCoalLeft = (invoice?.coalLeftToIssue || 0) - nutCoalWatch;
-
   return (
     <form
       className={`flex w-full flex-col gap-4 transition-opacity ${
@@ -52,39 +73,51 @@ export default function AddStockIssueForm({
       }`}
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="flex w-full flex-col justify-between gap-4 md:flex-row">
-        <div className="w-full">
-          <Label htmlFor="nutCoalIssued">Ilość węgla - orzech [Kg]</Label>
-          <TextInput
-            {...register("nutCoalIssued", {
-              max: nutCoalLeft,
-            })}
-            id="nutCoalIssued"
-            placeholder="Ilość węgla"
-            type="number"
-            helperText={`Maksymalnie do wydania: ${nutCoalLeft} kg`}
-            max={nutCoalLeft}
-            min={0}
-          />
-          <InputError error={errors?.nutCoalIssued?.message} />
+      {fields.map((field, index) => (
+        <div key={field.id} className="flex items-start gap-4">
+          <div>
+            <Label htmlFor={`items.${index}.type` as const}>Rodzaj węgla</Label>
+            <Select
+              id={`items.${index}.type` as const}
+              className="w-full md:w-60"
+              placeholder="Wybierz rodzaj węgla"
+              value={field.type}
+              onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                setValue(`items.${index}.type`, event.currentTarget.value)
+              }
+            >
+              <option value="ekogroszek">Ekogroszek</option>
+              <option value="orzech">Orzech</option>
+              <option value="inny">Inny</option>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor={`items.${index}.amount` as const}>Ilość [kg]</Label>
+            <TextInput
+              {...register(`items.${index}.amount` as const)}
+              id={`items.${index}.amount`}
+              placeholder="Ilość węgla"
+              type="number"
+              min={0}
+              helperText={`Pozostało do wydania: ${coalLeft} kg`}
+            />
+          </div>
+          <Button
+            color="failure"
+            className="mt-6"
+            onClick={() => remove(index)}
+          >
+            <XMarkIcon height={20} />
+          </Button>
         </div>
-        <div className="w-full">
-          <Label htmlFor="ecoPeaCoalIssued">Ilość węgla - groszek [Kg]</Label>
-          <TextInput
-            {...register("ecoPeaCoalIssued", {
-              max: ecoPeaCoalLeft,
-            })}
-            id="ecoPeaCoalIssued"
-            placeholder="Ilość węgla"
-            type="number"
-            helperText={`Maksymalnie do wydania: ${ecoPeaCoalLeft} kg`}
-            max={ecoPeaCoalLeft}
-            min={0}
-          />
-          <InputError error={errors?.ecoPeaCoalIssued?.message} />
-        </div>
-      </div>
-      <div className="w-full">
+      ))}
+      <Button
+        className="w-32"
+        onClick={() => append({ amount: 0, type: "ekogroszek" })}
+      >
+        Dodaj towar
+      </Button>
+      <div>
         <Label htmlFor="additionalInformation">
           Dodatkowe informacje (opcjonalnie)
         </Label>

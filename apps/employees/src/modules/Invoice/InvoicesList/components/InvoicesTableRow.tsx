@@ -26,22 +26,13 @@ export default function InvoicesTableRow({
         {invoice.issueDate.toLocaleString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        <Link
-          href={`/applications/${invoice.Application?.id}`}
-          className="cursor-pointer underline"
-          onClick={stopPropagation}
-        >
-          {invoice.Application?.applicationId}
-        </Link>
+        {invoice.applicationId}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.paidForCoal.toString()}
+        {invoice.amount.toString()}
       </Table.Cell>
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.nutCoalWithdrawn}
-      </Table.Cell>
-      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-gray-300">
-        {invoice.ecoPeaCoalWithdrawn}
+        {invoice.coalWithdrawn}
       </Table.Cell>
     </Table.Row>
   );

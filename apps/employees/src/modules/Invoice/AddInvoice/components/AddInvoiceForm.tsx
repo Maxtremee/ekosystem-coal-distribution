@@ -57,7 +57,7 @@ export default function AddInvoiceForm() {
       onSubmit={handleSubmit(onSubmit)}
     >
       <div>
-        <Label htmlFor="invoiceId">Nazwa faktury </Label>
+        <Label htmlFor="invoiceId">Nazwa faktury</Label>
         <TextInput
           {...register("invoiceId")}
           id="invoiceId"

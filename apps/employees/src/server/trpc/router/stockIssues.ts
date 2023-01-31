@@ -63,6 +63,14 @@ export const stockIssuesRouter = router({
         data: {
           ...input,
           updatedBy: ctx.session.user.email,
+          items: {
+            deleteMany: {
+              type: {
+                contains: "",
+              },
+            },
+            create: input.items,
+          },
         },
       });
     }),

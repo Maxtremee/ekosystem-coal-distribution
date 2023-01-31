@@ -19,10 +19,8 @@ export default function StockIssueDetails({
         <div className="h-6" />
         <p className="text-gray-500">Data wydania</p>
         <Text>{stockIssue?.createdAt.toLocaleString()}</Text>
-        <p className="text-gray-500">Wydano: ekogroszek</p>
-        <Text>{stockIssue?.ecoPeaCoalIssued?.toString() || 0} kg</Text>
-        <p className="text-gray-500">Wydano: orzech</p>
-        <Text>{stockIssue?.nutCoalIssued?.toString() || 0} kg</Text>
+        <p className="text-gray-500">Wydano łącznie</p>
+        <Text>{stockIssue?.coalIssued} kg</Text>
         <p className="text-gray-500">Dodatkowe informacje</p>
         <Text className="break-all">
           {stockIssue?.additionalInformation || "-"}

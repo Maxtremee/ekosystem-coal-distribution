@@ -7,16 +7,17 @@ import {
   Textarea,
   TextInput,
 } from "flowbite-react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputError } from "@ekosystem/ui";
 
 import Decimal from "decimal.js";
 import frontendStockIssueSchema, {
-  FrontendStockIssueSchemaType,
+  BaseStockIssueSchemaType,
 } from "../../../../schemas/stockIssueSchema";
 import { RouterOutputs, trpc } from "../../../../utils/trpc";
-import { useMemo } from "react";
+import { ChangeEvent } from "react";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 
 export default function UpdateStockIssueForm({
   stockIssue,
@@ -27,30 +28,43 @@ export default function UpdateStockIssueForm({
 }) {
   const router = useRouter();
   const {
+    mutate,
+    isLoading,
+    error: mutationError,
+  } = trpc.stockIssues.update.useMutation();
+
+  const {
     watch,
+    control,
+    setValue,
     register,
     handleSubmit,
     formState: { isValid, errors },
-  } = useForm<FrontendStockIssueSchemaType>({
+  } = useForm<BaseStockIssueSchemaType>({
     mode: "onChange",
     resolver: zodResolver(frontendStockIssueSchema),
     defaultValues: {
       distributionCenterId: stockIssue?.distributionCenterId || undefined,
       additionalInformation: stockIssue?.additionalInformation || undefined,
-      ecoPeaCoalIssued: stockIssue?.ecoPeaCoalIssued
-        ? new Decimal(stockIssue.ecoPeaCoalIssued).toNumber()
-        : undefined,
-      nutCoalIssued: stockIssue?.nutCoalIssued
-        ? new Decimal(stockIssue.nutCoalIssued).toNumber()
-        : undefined,
+      items: stockIssue?.items.map(({ amount, type }) => ({
+        type,
+        amount: new Decimal(amount).toNumber(),
+      })),
+    },
+  });
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "items",
+    rules: {
+      minLength: 1,
     },
   });
 
-  const {
-    mutate,
-    isLoading,
-    error: mutationError,
-  } = trpc.stockIssues.update.useMutation();
+  const itemsWatch = watch("items");
+  const coalLeft =
+    (invoice?.coalLeftToIssue || 0) +
+    stockIssue.coalIssued -
+    itemsWatch.reduce((acc, { amount }) => acc + Number(amount), 0);
 
   const {
     data: centers,
@@ -61,7 +75,7 @@ export default function UpdateStockIssueForm({
     refetchOnWindowFocus: false,
   });
 
-  const onSubmit = (data: FrontendStockIssueSchemaType) =>
+  const onSubmit = (data: BaseStockIssueSchemaType) =>
     mutate(
       { ...data, invoiceId: invoice?.id as string, id: stockIssue.id },
       {
@@ -70,19 +84,6 @@ export default function UpdateStockIssueForm({
         },
       },
     );
-
-  const coalLeftWithoutThisStockIssue = useMemo(
-    () =>
-      (invoice?.coalLeftToIssue || 0) +
-      new Decimal(stockIssue?.nutCoalIssued || 0).toNumber() +
-      new Decimal(stockIssue?.ecoPeaCoalIssued || 0).toNumber(),
-    [],
-  );
-
-  const nutCoalWatch = watch("nutCoalIssued") || 0;
-  const ecoPeaCoalWatch = watch("ecoPeaCoalIssued") || 0;
-  const nutCoalLeft = coalLeftWithoutThisStockIssue - ecoPeaCoalWatch;
-  const ecoPeaCoalLeft = coalLeftWithoutThisStockIssue - nutCoalWatch;
 
   return (
     <form
@@ -106,38 +107,50 @@ export default function UpdateStockIssueForm({
           ))}
         </Select>
       </div>
-      <div className="flex w-full flex-col justify-between gap-4 md:flex-row">
-        <div className="w-full">
-          <Label htmlFor="ecoPeaCoalIssued">Ilość węgla - groszek [Kg]</Label>
-          <TextInput
-            {...register("ecoPeaCoalIssued", {
-              max: ecoPeaCoalLeft,
-            })}
-            id="ecoPeaCoalIssued"
-            placeholder="Ilość węgla"
-            type="number"
-            helperText={`Maksymalnie do wydania: ${ecoPeaCoalLeft} kg`}
-            max={ecoPeaCoalLeft}
-            min={0}
-          />
-          <InputError error={errors?.ecoPeaCoalIssued?.message} />
+      {fields.map((field, index) => (
+        <div key={field.id} className="flex items-start gap-4">
+          <div>
+            <Label htmlFor={`items.${index}.type` as const}>Rodzaj węgla</Label>
+            <Select
+              id={`items.${index}.type` as const}
+              className="w-full md:w-60"
+              placeholder="Wybierz rodzaj węgla"
+              value={field.type}
+              onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                setValue(`items.${index}.type`, event.currentTarget.value)
+              }
+            >
+              <option value="ekogroszek">Ekogroszek</option>
+              <option value="orzech">Orzech</option>
+              <option value="inny">Inny</option>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor={`items.${index}.amount` as const}>Ilość [kg]</Label>
+            <TextInput
+              {...register(`items.${index}.amount` as const)}
+              id={`items.${index}.amount`}
+              placeholder="Ilość węgla"
+              type="number"
+              min={0}
+              helperText={`Pozostało do wydania: ${coalLeft} kg`}
+            />
+          </div>
+          <Button
+            color="failure"
+            className="mt-6"
+            onClick={() => remove(index)}
+          >
+            <XMarkIcon height={20} />
+          </Button>
         </div>
-        <div className="w-full">
-          <Label htmlFor="nutCoalIssued">Ilość węgla - orzech [Kg]</Label>
-          <TextInput
-            {...register("nutCoalIssued", {
-              max: nutCoalLeft,
-            })}
-            id="nutCoalIssued"
-            placeholder="Ilość węgla"
-            type="number"
-            helperText={`Maksymalnie do wydania: ${nutCoalLeft} kg`}
-            max={nutCoalLeft}
-            min={0}
-          />
-          <InputError error={errors?.nutCoalIssued?.message} />
-        </div>
-      </div>
+      ))}
+      <Button
+        className="w-32"
+        onClick={() => append({ amount: 0, type: "ekogroszek" })}
+      >
+        Dodaj towar
+      </Button>
       <div className="w-full">
         <Label htmlFor="additionalInformation">
           Dodatkowe informacje (opcjonalnie)
