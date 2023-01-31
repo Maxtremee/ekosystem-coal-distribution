@@ -17,22 +17,6 @@ model DistributionCenter {
   StockIssue StockIssue[]
 }
 
-model Application {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  createdBy String //email
-  updatedBy String? //email
-
-  applicationId         String   @unique
-  issueDate             DateTime
-  declaredNutCoal       Decimal?
-  declaredEcoPeaCoal    Decimal?
-  additionalInformation String?
-
-  invoices Invoice[]
-}
-
 model Invoice {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -41,28 +25,35 @@ model Invoice {
   updatedBy String? //email
 
   invoiceId             String   @unique
+  applicationId         String?
   issueDate             DateTime
-  paidForCoal           Decimal
+  amount                Decimal
   additionalInformation String?
 
   stockIssues StockIssue[]
-
-  Application   Application? @relation(fields: [applicationId], references: [id])
-  applicationId String?
 }
 
 model StockIssue {
-  id                    String   @id @default(cuid())
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  createdBy             String //email
-  updatedBy             String? //email
-  nutCoalIssued         Decimal?
-  ecoPeaCoalIssued      Decimal?
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String //email
+  updatedBy String? //email
+
+  items                 CoalIssue[]
   additionalInformation String?
 
   Invoice              Invoice?            @relation(fields: [invoiceId], references: [id])
   invoiceId            String?
   DistributionCenter   DistributionCenter? @relation(fields: [distributionCenterId], references: [id])
   distributionCenterId String?
+}
+
+model CoalIssue {
+  id     String  @id @default(cuid())
+  type   String
+  amount Decimal
+
+  StockIssue   StockIssue? @relation(fields: [stockIssueId], references: [id])
+  stockIssueId String?
 }
