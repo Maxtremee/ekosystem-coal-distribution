@@ -1,7 +1,6 @@
 import {
   ArrowUpTrayIcon,
   DocumentChartBarIcon,
-  DocumentIcon,
   DocumentPlusIcon,
   DocumentTextIcon,
 } from "@heroicons/react/24/solid";
@@ -13,11 +12,6 @@ export default function Sidebar() {
     <FlowbiteSidebar>
       <FlowbiteSidebar.Items>
         <FlowbiteSidebar.ItemGroup>
-          <Link href="/applications" passHref>
-            <FlowbiteSidebar.Item icon={DocumentIcon}>
-              Wnioski
-            </FlowbiteSidebar.Item>
-          </Link>
           <Link href="/invoices" passHref>
             <FlowbiteSidebar.Item icon={DocumentChartBarIcon}>
               Faktury
@@ -30,9 +24,9 @@ export default function Sidebar() {
           </Link>
         </FlowbiteSidebar.ItemGroup>
         <FlowbiteSidebar.ItemGroup>
-          <Link href="/applications/add" passHref>
+          <Link href="/invoices/add" passHref>
             <FlowbiteSidebar.Item icon={DocumentPlusIcon}>
-              Dodaj wniosek
+              Dodaj fakturę
             </FlowbiteSidebar.Item>
           </Link>
           <Link href="/import" passHref>

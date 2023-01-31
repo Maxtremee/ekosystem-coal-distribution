@@ -1,6 +1,4 @@
-import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import { useDebounce } from "react-use";
 import { useForm } from "react-hook-form";
 import Decimal from "decimal.js";
 import { InputError } from "@ekosystem/ui";
@@ -8,19 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { Invoice } from "@ekosystem/db";
 import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
-import { RouterOutputs, trpc } from "../../../../utils/trpc";
+import { trpc } from "../../../../utils/trpc";
 import frontendAddInvoiceSchema, {
   AddInvoiceSchemaType,
 } from "../../../../schemas/invoiceSchema";
-import { calculateCoalLeft } from "../../AddInvoice/components/AddInvoiceForm";
 
-export default function UpdateInvoiceForm({
-  application,
-  invoice,
-}: {
-  application: RouterOutputs["invoices"]["checkIfApplicationExists"];
-  invoice: Invoice;
-}) {
+export default function UpdateInvoiceForm({ invoice }: { invoice: Invoice }) {
   const {
     register,
     handleSubmit,
@@ -29,10 +20,11 @@ export default function UpdateInvoiceForm({
     mode: "onTouched",
     resolver: zodResolver(frontendAddInvoiceSchema),
     defaultValues: {
-      paidForCoal: new Decimal(invoice.paidForCoal).toNumber(),
+      amount: new Decimal(invoice.amount).toNumber(),
       // @ts-ignore
-      issueDate: dayjs(invoice?.issueDate).format("YYYY-MM-DD"),
-      invoiceId: invoice?.invoiceId,
+      issueDate: dayjs(invoice.issueDate).format("YYYY-MM-DD"),
+      invoiceId: invoice.invoiceId,
+      applicationId: invoice?.applicationId || undefined,
       additionalInformation: invoice?.additionalInformation || undefined,
     },
   });
@@ -43,16 +35,6 @@ export default function UpdateInvoiceForm({
     isLoading,
     error: mutationError,
   } = trpc.invoices.update.useMutation();
-
-  const declaredCoalLeft = useMemo(
-    () =>
-      calculateCoalLeft(
-        application?.declaredNutCoal,
-        application?.declaredEcoPeaCoal,
-        application?.coalInInvoices,
-      ) + Number(invoice.paidForCoal.toString()),
-    [],
-  );
 
   const onSubmit = (data: AddInvoiceSchemaType) =>
     mutate(
@@ -85,6 +67,15 @@ export default function UpdateInvoiceForm({
         <InputError error={errors?.invoiceId?.message} />
       </div>
       <div>
+        <Label htmlFor="applicationId">Numer wniosku (opcjonalnie)</Label>
+        <TextInput
+          {...register("applicationId")}
+          id="applicationId"
+          placeholder="Numer wniosku"
+        />
+        <InputError error={errors?.applicationId?.message} />
+      </div>
+      <div>
         <Label htmlFor="issueDate">Data wystawienia</Label>
         <TextInput
           {...register("issueDate")}
@@ -95,18 +86,14 @@ export default function UpdateInvoiceForm({
         <InputError error={errors?.issueDate?.message} />
       </div>
       <div>
-        <Label htmlFor="paidForCoal">Opłacona ilość węgla [kg]</Label>
+        <Label htmlFor="amount">Opłacona ilość węgla [kg]</Label>
         <TextInput
-          {...register("paidForCoal", {
-            max: declaredCoalLeft,
-          })}
-          id="paidForCoal"
+          {...register("amount")}
+          id="amount"
           placeholder="Ilość węgla"
           type="number"
-          helperText={`Pozostało do odebrania z wniosku: ${declaredCoalLeft} kg`}
-          max={declaredCoalLeft}
         />
-        <InputError error={errors?.paidForCoal?.message} />
+        <InputError error={errors?.amount?.message} />
       </div>
       <div>
         <Label htmlFor="issueDate">Dodatkowe informacje (opcjonalnie)</Label>
@@ -118,11 +105,7 @@ export default function UpdateInvoiceForm({
         <InputError error={errors?.additionalInformation?.message} />
       </div>
       <InputError error={mutationError?.message} />
-      <Button
-        color="success"
-        type="submit"
-        disabled={isLoading || !isValid || !application}
-      >
+      <Button color="success" type="submit" disabled={isLoading || !isValid}>
         {isLoading && <Spinner color="success" className="mr-2" />}
         Aktualizuj fakturę
       </Button>

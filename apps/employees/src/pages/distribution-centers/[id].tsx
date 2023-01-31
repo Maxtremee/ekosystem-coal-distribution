@@ -3,7 +3,7 @@ import { Alert, Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
 import DistributionCenterDetails, {
   DistributionCenterTimeline,
-} from "../../modules/DistributionCenters/DistributionCenterDetails";
+} from "../../modules/DistributionCenterDetails";
 import { trpc } from "../../utils/trpc";
 
 export default function DistributionCenterDetailsPage() {

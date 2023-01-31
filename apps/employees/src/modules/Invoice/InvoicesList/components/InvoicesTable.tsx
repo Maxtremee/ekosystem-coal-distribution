@@ -46,11 +46,11 @@ export default function InvoicesTable({
         <Table.HeadCell>Numer wniosku</Table.HeadCell>
         <Table.HeadCell
           className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => headerClickHandler("paidForCoal")}
+          onClick={() => headerClickHandler("amount")}
         >
           <div className="flex items-center">
             Opłacono węgla [kg]
-            <ShowChevron id="paidForCoal" />
+            <ShowChevron id="amount" />
           </div>
         </Table.HeadCell>
         <Table.HeadCell>Ilość węgla wydana - orzech [kg]</Table.HeadCell>

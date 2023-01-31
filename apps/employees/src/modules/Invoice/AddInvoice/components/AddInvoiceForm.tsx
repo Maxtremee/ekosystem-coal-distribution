@@ -6,7 +6,6 @@ import frontendAddInvoiceSchema, {
 } from "../../../../schemas/invoiceSchema";
 import { Button, Label, Spinner, Textarea, TextInput } from "flowbite-react";
 import { InputError } from "@ekosystem/ui";
-import { useMemo } from "react";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
 import Decimal from "decimal.js";
@@ -22,14 +21,7 @@ export const calculateCoalLeft = (
   return nutCoal.plus(ecoPeaCoal).minus(inInvoices).toNumber();
 };
 
-export default function AddInvoiceForm({
-  application,
-}: {
-  application: Exclude<
-    RouterOutputs["invoices"]["checkIfApplicationExists"],
-    null
-  >;
-}) {
+export default function AddInvoiceForm() {
   const router = useRouter();
   const {
     mutate,
@@ -46,22 +38,11 @@ export default function AddInvoiceForm({
     resolver: zodResolver(frontendAddInvoiceSchema),
   });
 
-  const declaredCoalLeft = useMemo(
-    () =>
-      calculateCoalLeft(
-        application.declaredNutCoal,
-        application.declaredEcoPeaCoal,
-        application.coalInInvoices,
-      ),
-    [],
-  );
-
   const onSubmit = (data: AddInvoiceSchemaType) =>
     mutate(
       {
         ...data,
         issueDate: dayjs(data.issueDate).set("hour", dayjs().hour()).toDate(),
-        applicationId: application.id as string,
       },
       {
         onSuccess: (res) => {
@@ -85,6 +66,15 @@ export default function AddInvoiceForm({
         <InputError error={errors?.invoiceId?.message} />
       </div>
       <div>
+        <Label htmlFor="applicationId">Numer wniosku (opcjonalnie)</Label>
+        <TextInput
+          {...register("applicationId")}
+          id="applicationId"
+          placeholder="Numer wniosku"
+        />
+        <InputError error={errors?.applicationId?.message} />
+      </div>
+      <div>
         <Label htmlFor="issueDate">Data wystawienia</Label>
         <TextInput
           {...register("issueDate")}
@@ -95,18 +85,14 @@ export default function AddInvoiceForm({
         <InputError error={errors?.issueDate?.message} />
       </div>
       <div>
-        <Label htmlFor="paidForCoal">Opłacona ilość węgla [kg]</Label>
+        <Label htmlFor="amount">Opłacona ilość węgla [kg]</Label>
         <TextInput
-          {...register("paidForCoal", {
-            max: declaredCoalLeft,
-          })}
-          id="paidForCoal"
+          {...register("amount")}
+          id="amount"
           placeholder="Ilość węgla"
           type="number"
-          helperText={`Pozostało do odebrania z wniosku: ${declaredCoalLeft} kg`}
-          max={declaredCoalLeft}
         />
-        <InputError error={errors?.paidForCoal?.message} />
+        <InputError error={errors?.amount?.message} />
       </div>
       <div>
         <Label htmlFor="issueDate">Dodatkowe informacje (opcjonalnie)</Label>
@@ -118,11 +104,7 @@ export default function AddInvoiceForm({
         <InputError error={errors?.additionalInformation?.message} />
       </div>
       <InputError error={mutationError?.message} />
-      <Button
-        color="success"
-        type="submit"
-        disabled={isLoading || !isValid || !application}
-      >
+      <Button color="success" type="submit" disabled={isLoading || !isValid}>
         {isLoading && <Spinner color="success" className="mr-2" />}
         Dodaj fakturę
       </Button>

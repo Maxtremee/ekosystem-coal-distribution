@@ -4,17 +4,13 @@ import { Text } from "@ekosystem/ui";
 import { Alert, Card, Spinner } from "flowbite-react";
 import { useRouter } from "next/router";
 import UpdateInvoice from "../../../modules/Invoice/UpdateInvoice";
-import { RouterOutputs, trpc } from "../../../utils/trpc";
+import { trpc } from "../../../utils/trpc";
 
 function EditInvoicePage() {
   const router = useRouter();
   const id = router.query.id as string;
 
-  const {
-    data: newInvoice,
-    isInitialLoading: isInitialLoadingInvoice,
-    error: invoiceError,
-  } = trpc.invoices.get.useQuery(
+  const { data, isInitialLoading, error } = trpc.invoices.get.useQuery(
     {
       id,
     },
@@ -23,45 +19,24 @@ function EditInvoicePage() {
     },
   );
 
-  const {
-    data: newApplication,
-    isInitialLoading: isInitialLoadingApplication,
-    error: applicationError,
-  } = trpc.invoices.checkIfApplicationExists.useQuery(
-    {
-      id: newInvoice?.applicationId as string,
-    },
-    {
-      enabled: !!id,
-    },
-  );
-
-  if (invoiceError || applicationError) {
+  if (error) {
     return (
       <Alert color="failure">
-        {invoiceError?.message ||
-          applicationError?.message ||
-          "Błąd wczytywania faktury"}
+        {error?.message || "Błąd wczytywania faktury"}
       </Alert>
     );
   }
 
-  if (isInitialLoadingInvoice || isInitialLoadingApplication) {
+  if (isInitialLoading) {
     return <Spinner size="xl" color="success" />;
   }
-
-  const invoice = newInvoice as Invoice;
-  const application = newApplication as Exclude<
-    RouterOutputs["invoices"]["checkIfApplicationExists"],
-    null
-  >;
 
   return (
     <Card className="w-full">
       <Text as="h2" className="text-lg font-semibold">
-        Edytujesz fakturę: {invoice.invoiceId}
+        Edytujesz fakturę: {data?.invoiceId}
       </Text>
-      <UpdateInvoice invoice={invoice} application={application} />
+      <UpdateInvoice invoice={data as Invoice} />
     </Card>
   );
 }

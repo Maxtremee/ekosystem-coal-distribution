@@ -2,14 +2,11 @@ import { StockIssue } from "@ekosystem/db";
 import { Text } from "@ekosystem/ui";
 import { Timeline } from "flowbite-react";
 import Link from "next/link";
+import { RouterOutputs } from "../../utils/trpc";
 
 export type StockIssueTimelineItemValue = Pick<
   StockIssue,
-  | "id"
-  | "createdAt"
-  | "distributionCenterId"
-  | "ecoPeaCoalIssued"
-  | "nutCoalIssued"
+  "id" | "createdAt" | "distributionCenterId"
 > & {
   DistributionCenter: {
     name: string;
@@ -19,15 +16,13 @@ export type StockIssueTimelineItemValue = Pick<
 export default function StockIssueTimelineItem({
   stockIssue,
 }: {
-  stockIssue: StockIssueTimelineItemValue;
+  stockIssue: RouterOutputs["distributionCenters"]["getTimeline"]["items"][number];
 }) {
   return (
     <Timeline.Item>
       <Timeline.Point />
       <Timeline.Content>
-        <Timeline.Time>
-          {stockIssue?.createdAt.toLocaleString()}
-        </Timeline.Time>
+        <Timeline.Time>{stockIssue?.createdAt.toLocaleString()}</Timeline.Time>
         <Link href={`/stock-issues/${stockIssue.id}`}>
           <Timeline.Title className="cursor-pointer underline">
             Wydanie towaru
@@ -44,10 +39,12 @@ export default function StockIssueTimelineItem({
                 {stockIssue?.DistributionCenter?.name}
               </Text>
             </Link>
-            <p className="text-gray-500">Wydano: ekogroszek</p>
-            <Text>{stockIssue?.ecoPeaCoalIssued?.toString() || 0} kg</Text>
-            <p className="text-gray-500">Wydano: orzech</p>
-            <Text>{stockIssue?.nutCoalIssued?.toString() || 0} kg</Text>
+            {stockIssue.items?.map(({ type, amount }) => (
+              <>
+                <p className="text-gray-500">{type}</p>
+                <Text>{amount?.toString() || 0} kg</Text>
+              </>
+            ))}
           </div>
         </Timeline.Body>
       </Timeline.Content>

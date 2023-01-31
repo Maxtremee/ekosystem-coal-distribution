@@ -4,6 +4,7 @@ import { router, protectedProcedure } from "../trpc";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
 import { TRPCError } from "@trpc/server";
 import { baseStockIssueSchema } from "../../../schemas/stockIssueSchema";
+import calculateTotalCoalInIssue from "../../../utils/calculateTotalCoalInIssue";
 
 export const stockIssuesRouter = router({
   checkInvoice: protectedProcedure
@@ -26,24 +27,19 @@ export const stockIssuesRouter = router({
             ],
           },
           include: {
-            stockIssues: true,
+            stockIssues: {
+              select: {
+                items: true,
+              },
+            },
           },
         });
         return {
           ...invoice,
           stockIssues: undefined,
           coalLeftToIssue:
-            invoice.paidForCoal.toNumber() -
-            invoice?.stockIssues.reduce(
-              (acc, { ecoPeaCoalIssued, nutCoalIssued }) => {
-                const ecoPea = ecoPeaCoalIssued
-                  ? ecoPeaCoalIssued.toNumber()
-                  : 0;
-                const nut = nutCoalIssued ? nutCoalIssued.toNumber() : 0;
-                return acc + ecoPea + nut;
-              },
-              0,
-            ),
+            invoice.amount.toNumber() -
+            calculateTotalCoalInIssue(invoice?.stockIssues),
         };
       } catch {
         throw new TRPCError({
@@ -78,11 +74,12 @@ export const stockIssuesRouter = router({
     )
     .query(async ({ input, ctx }) => {
       try {
-        return await ctx.prisma.stockIssue.findUniqueOrThrow({
+        const stockIssue = await ctx.prisma.stockIssue.findUniqueOrThrow({
           where: {
             id: input.id,
           },
           include: {
+            items: true,
             DistributionCenter: {
               select: {
                 name: true,
@@ -92,17 +89,17 @@ export const stockIssuesRouter = router({
             Invoice: {
               select: {
                 invoiceId: true,
-                id: true,
-                Application: {
-                  select: {
-                    id: true,
-                    applicationId: true,
-                  },
-                },
               },
             },
           },
         });
+        return {
+          ...stockIssue,
+          coalIssued: stockIssue.items.reduce(
+            (acc, { amount }) => acc + amount.toNumber(),
+            0,
+          ),
+        };
       } catch {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -151,6 +148,7 @@ export const stockIssuesRouter = router({
           skip: input?.skip,
           take: input?.take,
           include: {
+            items: true,
             Invoice: {
               select: {
                 invoiceId: true,
@@ -176,6 +174,10 @@ export const stockIssuesRouter = router({
           distributionCenterName: stockIssue.DistributionCenter?.name,
           invoiceIdName: stockIssue.Invoice?.invoiceId,
           invoiceId: stockIssue.Invoice?.id,
+          coalIssued: stockIssue.items.reduce(
+            (acc, { amount }) => acc + amount.toNumber(),
+            0,
+          ),
         })),
       };
     }),
@@ -217,6 +219,7 @@ export const stockIssuesRouter = router({
           [input.sortBy]: input.sortDir,
         },
         include: {
+          items: true,
           Invoice: {
             select: {
               invoiceId: true,
@@ -234,8 +237,10 @@ export const stockIssuesRouter = router({
         stockIssue.createdAt.toLocaleString("pl").replace(", ", " "),
         stockIssue.DistributionCenter?.name,
         stockIssue.Invoice?.invoiceId,
-        stockIssue.nutCoalIssued?.toString(),
-        stockIssue.nutCoalIssued?.toString(),
+        stockIssue.items.reduce(
+          (acc, { amount }) => acc + amount.toNumber(),
+          0,
+        ),
         stockIssue.additionalInformation,
       ]);
       const header = [
@@ -243,8 +248,7 @@ export const stockIssuesRouter = router({
         "data",
         "nazwa składu",
         "numer faktury",
-        "orzech [kg]",
-        "groszek [kg]",
+        "łącznie [kg]",
         "dodatkowe informacje",
       ];
       return { data, header };

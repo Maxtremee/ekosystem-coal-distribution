@@ -10,20 +10,13 @@ import { trpc } from "../../../../utils/trpc";
 import DownloadInvoicesButton from "./DownloadInvoicesButton";
 import InvoicesTable from "./InvoicesTable";
 
-export default function InvoicesList({
-  applicationId,
-}: {
-  applicationId?: string;
-}) {
+export default function InvoicesList() {
   const filtering = useFiltering();
   const { values, register, getTotalPages, setPage, pageSize, setValue } =
     filtering;
 
   const { data, isLoading, isError } = trpc.invoices.getFiltered.useQuery({
     ...values,
-    ...(!!applicationId && {
-      applicationId: applicationId,
-    }),
   });
 
   const totalPages = getTotalPages(data?.total);
