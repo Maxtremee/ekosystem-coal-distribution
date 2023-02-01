@@ -1,4 +1,4 @@
-import { Prisma } from "@ekosystem/db";
+import { CoalIssue, Invoice, Prisma } from "@ekosystem/db";
 import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
@@ -14,8 +14,16 @@ export const stockIssuesRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
+      let invoice: Invoice & {
+        stockIssues: {
+          DistributionCenter: {
+            email: string;
+          } | null;
+          items: CoalIssue[];
+        }[];
+      };
       try {
-        const invoice = await ctx.prisma.invoice.findFirstOrThrow({
+        invoice = await ctx.prisma.invoice.findFirstOrThrow({
           where: {
             AND: [
               {
@@ -30,25 +38,45 @@ export const stockIssuesRouter = router({
             stockIssues: {
               select: {
                 items: true,
+                DistributionCenter: {
+                  select: {
+                    email: true,
+                  },
+                },
               },
             },
           },
         });
-        return (
-          invoice && {
-            ...invoice,
-            stockIssues: undefined,
-            coalLeftToIssue: invoice.amount
-              .minus(calculateTotalCoalInIssue(invoice?.stockIssues))
-              .toNumber(),
-          }
-        );
       } catch {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Taka faktura nie istnieje",
         });
       }
+
+      // check if some other distribution center didn't already claim this invoice
+      if (
+        invoice?.stockIssues.length > 0 &&
+        !invoice?.stockIssues?.some(
+          ({ DistributionCenter }) =>
+            DistributionCenter?.email === ctx.session.user?.email,
+        )
+      ) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Ta faktura została przyjęta przez inny skład",
+        });
+      }
+
+      return (
+        invoice && {
+          ...invoice,
+          stockIssues: undefined,
+          coalLeftToIssue: invoice.amount
+            .minus(calculateTotalCoalInIssue(invoice?.stockIssues))
+            .toNumber(),
+        }
+      );
     }),
   add: protectedProcedure
     .input(backendAddStockIssueSchema)
