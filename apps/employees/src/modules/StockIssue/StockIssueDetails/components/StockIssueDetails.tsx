@@ -1,4 +1,4 @@
-import { Text } from "@ekosystem/ui";
+import { StockIssueItemsTable, Text } from "@ekosystem/ui";
 import { Card } from "flowbite-react";
 import Link from "next/link";
 import { RouterOutputs } from "../../../../utils/trpc";
@@ -33,8 +33,6 @@ export default function StockIssueDetails({
         </Link>
         <p className="text-gray-500">Data wydania</p>
         <Text>{stockIssue?.createdAt.toLocaleString()}</Text>
-        <p className="text-gray-500">Wydano łącznie</p>
-        <Text>{stockIssue?.coalIssued} kg</Text>
         <p className="text-gray-500">Dodatkowe informacje</p>
         <Text className="break-all">
           {stockIssue?.additionalInformation || "-"}
@@ -50,6 +48,7 @@ export default function StockIssueDetails({
         <p className="text-gray-500">Ostatnio aktualizowano przez</p>
         <Text className="break-all">{stockIssue?.updatedBy || "-"}</Text>
       </div>
+      <StockIssueItemsTable items={stockIssue.items} />
     </Card>
   );
 }

@@ -159,10 +159,6 @@ export const stockIssuesRouter = router({
         });
         return {
           ...stockIssue,
-          coalIssued: stockIssue.items.reduce(
-            (acc, { amount }) => acc + amount.toNumber(),
-            0,
-          ),
         };
       } catch {
         throw new TRPCError({

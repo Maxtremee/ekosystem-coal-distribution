@@ -115,13 +115,9 @@ export default function UpdateStockIssueForm({
           <div>
             <Label htmlFor={`items.${index}.type` as const}>Rodzaj węgla</Label>
             <Select
-              id={`items.${index}.type` as const}
+              {...register(`items.${index}.type` as const)}
               className="w-full md:w-60"
               placeholder="Wybierz rodzaj węgla"
-              value={field.type}
-              onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                setValue(`items.${index}.type`, event.currentTarget.value)
-              }
             >
               <option value="ekogroszek">Ekogroszek</option>
               <option value="orzech">Orzech</option>
