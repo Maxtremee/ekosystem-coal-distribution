@@ -50,6 +50,7 @@ function AddStockIssuePage() {
           placeholder="Numer faktury"
           value={invoiceId}
           onChange={(event) => setInvoiceId(event.currentTarget.value)}
+          autoFocus
         />
         <InputError error={error?.message} />
       </div>

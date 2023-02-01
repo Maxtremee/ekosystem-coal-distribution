@@ -34,6 +34,7 @@ export default function AddStockIssueForm({
     control,
     register,
     setValue,
+    getValues,
     handleSubmit,
     formState: { isValid, errors },
   } = useForm<BaseAddStockIssueSchemaType>({
@@ -52,9 +53,12 @@ export default function AddStockIssueForm({
   });
 
   const itemsWatch = watch("items");
-  const coalLeft =
+  const coalLeftToIssue =
     (invoice?.coalLeftToIssue || 0) -
     itemsWatch.reduce((acc, { amount }) => acc + Number(amount), 0);
+  const itemsMaxCoal = itemsWatch.map(
+    ({ amount }) => coalLeftToIssue + Number(amount),
+  );
 
   const onSubmit = (data: BaseAddStockIssueSchemaType) =>
     mutate(
@@ -99,7 +103,8 @@ export default function AddStockIssueForm({
               placeholder="Ilość węgla"
               type="number"
               min={0}
-              helperText={`Pozostało do wydania: ${coalLeft} kg`}
+              max={itemsMaxCoal[index]}
+              helperText={`Pozostało do wydania: ${coalLeftToIssue} kg`}
             />
           </div>
           <Button
