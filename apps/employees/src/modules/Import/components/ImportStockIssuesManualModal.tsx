@@ -26,7 +26,7 @@ export default function ImportStockIssuesManualModal() {
             </p>
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               {"Wartości muszą być w kolejności:"}
-              <ul className="ml-3">
+              <ul className="flex gap-2 px-2">
                 <li>Numer faktury</li>
                 <li>
                   {
@@ -35,11 +35,13 @@ export default function ImportStockIssuesManualModal() {
                 </li>
                 <li>Adres email skupu (opcjonalnie)</li>
                 <li>Dodatkowe informacje (opcjonalnie)</li>
-                <li>{"Wydana ilość węgla typu orzech w kilogramach"}</li>
-                <li>{"Wydana ilość węgla typu groszek w kilogramach"}</li>
+                <li>{"Rodzaj węgla"}</li>
+                <li>{"Ilość"}</li>
               </ul>
               {"Przykładowy rekord"} (linia):{" "}
-              <pre>FV 1/01/23,2023/01/08 13:00:00,email@email.com,,650,</pre>
+              <pre className="px-2">
+                FV 1/01/23,2023/01/08 13:00:00,email@email.com,ekogroszek,650
+              </pre>
             </p>
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               {

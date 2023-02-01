@@ -2,7 +2,7 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { Button, Modal } from "flowbite-react";
 import { useState } from "react";
 
-export default function ImportApplicationsManualModal() {
+export default function ImportInvoicesManualModal() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
     <>
@@ -11,7 +11,7 @@ export default function ImportApplicationsManualModal() {
         onClick={() => setModalOpen(true)}
       />
       <Modal show={modalOpen} onClose={() => setModalOpen(false)}>
-        <Modal.Header>Importowanie wniosków</Modal.Header>
+        <Modal.Header>Importowanie faktur</Modal.Header>
         <Modal.Body>
           <div className="space-y-6">
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
@@ -25,22 +25,21 @@ export default function ImportApplicationsManualModal() {
               zamienić na np. średniki) lub powiedzie się ze złymi danymi.`}
             </p>
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              Wartości muszą być w kolejności:
-              <ul className="ml-3">
-                <li>Numer wniosku</li>
-                <li>Dodatkowe informacje (opcjonalnie)</li>
+              {"Wartości muszą być w kolejności:"}
+              <ul className="flex gap-2 px-2">
+                <li>Numer faktury</li>
+                <li>{"Numer wniosku (opcjonalnie)"}</li>
                 <li>
                   {
                     "Data wydania (w formacie 2023/01/25 lub z godziną 2023/01/25 08:00:00)"
                   }
                 </li>
-                <li>{"Zadeklarowana ilość węgla typu orzech w kilogramach"}</li>
-                <li>
-                  {"Zadeklarowana ilość węgla typu groszek w kilogramach"}
-                </li>
+                <li>{"Kwota faktury (zostanie podzielona przez 2)"}</li>
               </ul>
-              {"Przykładowy rekord"} (linia):
-              <pre>W1/2023,do sprawdzenia,2023/01/08 12:00:00,650,100</pre>
+              {"Przykładowy rekord"} (linia):{" "}
+              <pre className="px-2">
+                FV 1/01/23,W1/2023,2023/01/08 13:00:00,650
+              </pre>
             </p>
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               {

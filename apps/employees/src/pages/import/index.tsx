@@ -5,7 +5,6 @@ import { trpc } from "../../utils/trpc";
 import fileToBase64 from "../../utils/fileToBase64";
 import { ParsingError } from "../../modules/Import/ParsingError";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import ImportApplicationsManualModal from "../../modules/Import/components/ImportApplicationsManualModal";
 import ImportStockIssuesManualModal from "../../modules/Import/components/ImportStockIssuesManualModal";
 import ImportInvoicesManualModal from "../../modules/Import/components/ImportInvoicesManualModal";
 
@@ -13,14 +12,13 @@ export default function ImportPage() {
   const [parsingError, setParsingError] = useState<ParsingError>();
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
-  const applicationsRef = useRef<HTMLInputElement>(null);
   const invoicesRef = useRef<HTMLInputElement>(null);
   const stockIssuesRef = useRef<HTMLInputElement>(null);
   const { mutate, data, isLoading, error } = trpc.import.file.useMutation();
 
   const sendFile = async (
     fileRef: RefObject<HTMLInputElement>,
-    type: "applications" | "invoices" | "stockIssues",
+    type: "invoices" | "stockIssues",
   ) => {
     if (fileRef.current?.files?.item(0) instanceof File) {
       mutate(
@@ -64,26 +62,6 @@ export default function ImportPage() {
             : error?.message
         }
       />
-      <div className="flex items-end gap-4">
-        <div className="w-full">
-          <div className="mb-2 flex gap-2">
-            <Label htmlFor="applications">Importuj wnioski</Label>
-            <ImportApplicationsManualModal />
-          </div>
-          <FileInput
-            ref={applicationsRef}
-            id="applications"
-            accept="text/csv, text/plain"
-          />
-        </div>
-        <Button
-          disabled={isLoading}
-          onClick={() => sendFile(applicationsRef, "applications")}
-          className="w-32"
-        >
-          Importuj
-        </Button>
-      </div>
       <div className="flex items-end gap-4">
         <div className="w-full">
           <div className="mb-2 flex gap-2">

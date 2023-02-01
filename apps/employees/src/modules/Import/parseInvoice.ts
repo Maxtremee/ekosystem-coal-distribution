@@ -22,7 +22,7 @@ export const parseInvoice = (line: string[]) => {
     };
     return invoiceSchema.parse(invoice);
   } else {
-    throw new NotEnoughArgumentsError(5, line.length);
+    throw new NotEnoughArgumentsError(4, line.length);
   }
 };
 

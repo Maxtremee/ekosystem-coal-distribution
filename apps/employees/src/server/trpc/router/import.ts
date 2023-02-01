@@ -3,7 +3,6 @@ import { TRPCError } from "@trpc/server";
 import { z, ZodError } from "zod";
 import { ErrorMessageOptions, generateErrorMessage } from "zod-error";
 import NotEnoughArgumentsError from "../../../modules/Import/NotEnoughArgumentsError";
-import parseApplication from "../../../modules/Import/parseApplication";
 import parseInvoice from "../../../modules/Import/parseInvoice";
 import parseStockIssue from "../../../modules/Import/parseStockIssue";
 import { ParsingError } from "../../../modules/Import/ParsingError";
@@ -72,8 +71,12 @@ export const importRouter = router({
                   createdBy: ctx.session.user.email,
                   createdAt: stockIssue.dataWydania,
                   additionalInformation: stockIssue.dodatkoweInformacje,
-                  ecoPeaCoalIssued: stockIssue.wydanoGroszek,
-                  nutCoalIssued: stockIssue.wydanoOrzech,
+                  items: {
+                    create: {
+                      type: stockIssue.rodzaj,
+                      amount: stockIssue.ilosc,
+                    },
+                  },
                   Invoice: {
                     connect: {
                       invoiceId: stockIssue.numerFaktury,
