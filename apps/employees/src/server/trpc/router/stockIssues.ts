@@ -240,7 +240,16 @@ export const stockIssuesRouter = router({
           },
         },
       });
-      const data = stockIssues?.map((stockIssue) => [
+
+      const stockIssueHeader = [
+        "identyfikator",
+        "data",
+        "nazwa składu",
+        "numer faktury",
+        "łącznie [kg]",
+        "dodatkowe informacje",
+      ];
+      const stockIssuesFormatted = stockIssues?.map((stockIssue) => [
         stockIssue.id,
         stockIssue.createdAt.toLocaleString("pl").replace(", ", " "),
         stockIssue.DistributionCenter?.name,
@@ -251,14 +260,25 @@ export const stockIssuesRouter = router({
         ),
         stockIssue.additionalInformation,
       ]);
-      const header = [
-        "identyfikator",
-        "data",
-        "nazwa składu",
-        "numer faktury",
-        "łącznie [kg]",
-        "dodatkowe informacje",
+
+      const itemsHeader = ["identyfikator wydania", "rodzaj", "ilosc"];
+      const itemsFormatted = stockIssues
+        ?.map((stockIssue) =>
+          stockIssue.items.map((item) => [
+            stockIssue.id,
+            item.type,
+            item.amount.toString(),
+          ]),
+        )
+        .flat();
+
+      return [
+        {
+          data: stockIssuesFormatted,
+          header: stockIssueHeader,
+          title: "wydania_towaru",
+        },
+        { data: itemsFormatted, header: itemsHeader, title: "towary" },
       ];
-      return { data, header };
     }),
 });
