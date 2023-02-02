@@ -37,23 +37,8 @@ export default function StockIssuesTable({
             <ShowChevron id="createdAt" />
           </div>
         </Table.HeadCell>
-        <Table.HeadCell
-          className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => headerClickHandler("nutCoalIssued")}
-        >
-          <div className="flex items-center">
-            Ilość węgla wydana - orzech
-            <ShowChevron id="nutCoalIssued" />
-          </div>
-        </Table.HeadCell>
-        <Table.HeadCell
-          className="hover:cursor-pointer hover:bg-gray-300 hover:dark:bg-gray-600"
-          onClick={() => headerClickHandler("ecoPeaCoalIssued")}
-        >
-          <div className="flex items-center">
-            Ilość węgla wydana - groszek
-            <ShowChevron id="ecoPeaCoalIssued" />
-          </div>
+        <Table.HeadCell>
+          <div className="flex">Ilość węgla wydana łącznie</div>
         </Table.HeadCell>
       </Table.Head>
       <Table.Body className="divide-y">

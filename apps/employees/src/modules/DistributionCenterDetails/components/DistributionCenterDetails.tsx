@@ -1,6 +1,6 @@
 import { Text } from "@ekosystem/ui";
 import { Card } from "flowbite-react";
-import { RouterOutputs } from "../../../../utils/trpc";
+import { RouterOutputs } from "../../../utils/trpc";
 
 export default function DistributionCenterDetails({
   distributionCenter,

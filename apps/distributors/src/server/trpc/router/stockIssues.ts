@@ -1,10 +1,10 @@
-import { Prisma } from "@ekosystem/db";
+import { CoalIssue, Invoice, Prisma } from "@ekosystem/db";
 import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
 import defaultFilteringSchema from "../../../schemas/defaultFilteringSchema";
 import { backendAddStockIssueSchema } from "../../../schemas/addStockIssueSchema";
 import { TRPCError } from "@trpc/server";
-import Decimal from "decimal.js";
+import calculateTotalCoalInIssue from "../../../utils/calculateTotalCoalInIssue";
 
 export const stockIssuesRouter = router({
   checkInvoice: protectedProcedure
@@ -14,8 +14,16 @@ export const stockIssuesRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
+      let invoice: Invoice & {
+        stockIssues: {
+          DistributionCenter: {
+            email: string;
+          } | null;
+          items: CoalIssue[];
+        }[];
+      };
       try {
-        const invoice = await ctx.prisma.invoice.findFirstOrThrow({
+        invoice = await ctx.prisma.invoice.findFirstOrThrow({
           where: {
             AND: [
               {
@@ -27,33 +35,48 @@ export const stockIssuesRouter = router({
             ],
           },
           include: {
-            stockIssues: true,
+            stockIssues: {
+              select: {
+                items: true,
+                DistributionCenter: {
+                  select: {
+                    email: true,
+                  },
+                },
+              },
+            },
           },
         });
-        return (
-          invoice && {
-            ...invoice,
-            stockIssues: undefined,
-            coalLeftToIssue:
-              invoice.paidForCoal.toNumber() -
-              invoice?.stockIssues.reduce(
-                (acc, { ecoPeaCoalIssued, nutCoalIssued }) => {
-                  const ecoPea = ecoPeaCoalIssued
-                    ? ecoPeaCoalIssued.toNumber()
-                    : 0;
-                  const nut = nutCoalIssued ? nutCoalIssued.toNumber() : 0;
-                  return acc + ecoPea + nut;
-                },
-                0,
-              ),
-          }
-        );
       } catch {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Taka faktura nie istnieje",
         });
       }
+
+      // check if some other distribution center didn't already claim this invoice
+      if (
+        invoice?.stockIssues.length > 0 &&
+        !invoice?.stockIssues?.some(
+          ({ DistributionCenter }) =>
+            DistributionCenter?.email === ctx.session.user?.email,
+        )
+      ) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Ta faktura została przyjęta przez inny skład",
+        });
+      }
+
+      return (
+        invoice && {
+          ...invoice,
+          stockIssues: undefined,
+          coalLeftToIssue: invoice.amount
+            .minus(calculateTotalCoalInIssue(invoice?.stockIssues))
+            .toNumber(),
+        }
+      );
     }),
   add: protectedProcedure
     .input(backendAddStockIssueSchema)
@@ -68,6 +91,7 @@ export const stockIssuesRouter = router({
             id: true,
           },
         });
+
       if (!distributionCenter) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -81,9 +105,14 @@ export const stockIssuesRouter = router({
           id: input.invoiceId,
         },
         include: {
-          stockIssues: true,
+          stockIssues: {
+            select: {
+              items: true,
+            },
+          },
         },
       });
+
       if (!invoice) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -91,29 +120,22 @@ export const stockIssuesRouter = router({
         });
       }
 
-      if (!input?.ecoPeaCoalIssued && !input?.nutCoalIssued) {
+      // check if passed any items
+      if (input.items.length < 1) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message:
-            "Przynajmniej jedna wartość musi być wypełniona: groszek, orzech",
+          message: "Przynajmniej jeden rodzaj węgla musi zostać wybrany",
         });
       }
 
       // check if issued values aren't bigger than left to issue
-      const coalLeft = invoice.paidForCoal.minus(
-        invoice?.stockIssues.reduce(
-          (acc, { ecoPeaCoalIssued, nutCoalIssued }) => {
-            const ecoPea = ecoPeaCoalIssued ? ecoPeaCoalIssued.toNumber() : 0;
-            const nut = nutCoalIssued ? nutCoalIssued.toNumber() : 0;
-            return acc + ecoPea + nut;
-          },
-          0,
-        ),
+      const coalLeft = invoice.amount.minus(
+        calculateTotalCoalInIssue(invoice.stockIssues),
       );
-      const issuedSum = new Decimal(input?.ecoPeaCoalIssued || 0)
-        .plus(new Decimal(input?.nutCoalIssued || 0))
-        .toNumber();
-
+      const issuedSum = input.items.reduce<number>(
+        (acc, { amount }) => acc + amount,
+        0,
+      );
       if (coalLeft.minus(issuedSum).lessThan(0)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -124,9 +146,12 @@ export const stockIssuesRouter = router({
 
       return await ctx.prisma.stockIssue.create({
         data: {
-          ...input,
+          invoiceId: input.invoiceId,
           createdBy: ctx.session.user.email,
           distributionCenterId: distributionCenter.id,
+          items: {
+            create: input.items,
+          },
         },
         select: {
           id: true,
@@ -140,31 +165,35 @@ export const stockIssuesRouter = router({
       }),
     )
     .query(async ({ input, ctx }) => {
-      return await ctx.prisma.stockIssue.findUnique({
-        where: {
-          id: input.id,
-        },
-        include: {
-          DistributionCenter: {
-            select: {
-              name: true,
-              id: true,
-            },
+      try {
+        const stockIssue = await ctx.prisma.stockIssue.findUniqueOrThrow({
+          where: {
+            id: input.id,
           },
-          Invoice: {
-            select: {
-              invoiceId: true,
-              id: true,
-              Application: {
-                select: {
-                  id: true,
-                  applicationId: true,
-                },
+          include: {
+            items: true,
+            DistributionCenter: {
+              select: {
+                name: true,
+                id: true,
+              },
+            },
+            Invoice: {
+              select: {
+                invoiceId: true,
               },
             },
           },
-        },
-      });
+        });
+        return {
+          ...stockIssue,
+        };
+      } catch {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Takie wydanie nie istnieje",
+        });
+      }
     }),
   getFiltered: protectedProcedure
     .input(
@@ -179,14 +208,6 @@ export const stockIssuesRouter = router({
         },
         invoiceId: input?.invoiceId,
         OR: [
-          {
-            DistributionCenter: {
-              name: {
-                contains: input?.search,
-                mode: "insensitive",
-              },
-            },
-          },
           {
             Invoice: {
               invoiceId: {
@@ -205,6 +226,7 @@ export const stockIssuesRouter = router({
           skip: input?.skip,
           take: input?.take,
           include: {
+            items: true,
             Invoice: {
               select: {
                 invoiceId: true,
@@ -222,6 +244,10 @@ export const stockIssuesRouter = router({
         stockIssues: data[1].map((stockIssue) => ({
           ...stockIssue,
           invoiceId: stockIssue.Invoice?.invoiceId,
+          coalIssued: stockIssue.items.reduce(
+            (acc, { amount }) => acc + amount.toNumber(),
+            0,
+          ),
         })),
       };
     }),

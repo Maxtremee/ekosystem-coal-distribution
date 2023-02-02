@@ -8,7 +8,7 @@ import { StockIssuesFiltersType } from "./StockIssuesList";
 export default function DownloadStockIssuesButton() {
   const { values } = useFilteringContext<StockIssuesFiltersType>();
   const { mutate, isLoading } = trpc.stockIssues.downloadFiltered.useMutation({
-    onSuccess: (res) => downloadCsv(res, "wydania_towaru"),
+    onSuccess: (res) => res.forEach((csv) => downloadCsv(csv, csv.title)),
   });
   const clickHandler = () => mutate(values);
   return (

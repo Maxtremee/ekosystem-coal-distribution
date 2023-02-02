@@ -3,7 +3,6 @@ import { TRPCError } from "@trpc/server";
 import { z, ZodError } from "zod";
 import { ErrorMessageOptions, generateErrorMessage } from "zod-error";
 import NotEnoughArgumentsError from "../../../modules/Import/NotEnoughArgumentsError";
-import parseApplication from "../../../modules/Import/parseApplication";
 import parseInvoice from "../../../modules/Import/parseInvoice";
 import parseStockIssue from "../../../modules/Import/parseStockIssue";
 import { ParsingError } from "../../../modules/Import/ParsingError";
@@ -32,36 +31,13 @@ export const importRouter = router({
     .input(
       z.object({
         data: z.string(),
-        type: z.enum(["applications", "invoices", "stockIssues"]),
+        type: z.enum(["invoices", "stockIssues"]),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const values = await base64ToStringsArrays(input.data);
       let curr = 0;
       try {
-        if (input.type === "applications") {
-          const applications = values.map((application, index) => {
-            curr = index;
-            return parseApplication(application);
-          });
-          await ctx.prisma.$transaction(
-            applications.map((application) =>
-              ctx.prisma.application.create({
-                data: {
-                  applicationId: application.numerWniosku,
-                  issueDate: application.dataWydania,
-                  additionalInformation: application.dodatkoweInformacje,
-                  declaredEcoPeaCoal: application.zadeklarowanaIloscGroszek,
-                  declaredNutCoal: application.zadeklarowanaIloscOrzech,
-                  createdBy: ctx.session.user.email,
-                },
-              }),
-            ),
-          );
-          return {
-            imported: applications.length,
-          };
-        }
         if (input.type === "invoices") {
           const invoices = values.map((invoice, index) => {
             curr = index;
@@ -74,14 +50,7 @@ export const importRouter = router({
                   createdBy: ctx.session.user.email,
                   invoiceId: invoice.numerFaktury,
                   issueDate: invoice.dataWydania,
-                  paidForCoal: invoice.kwota,
-                  ...(invoice?.numerWniosku !== undefined && {
-                    Application: {
-                      connect: {
-                        applicationId: invoice.numerWniosku,
-                      },
-                    },
-                  }),
+                  amount: invoice.kwota,
                 },
               }),
             ),
@@ -102,8 +71,12 @@ export const importRouter = router({
                   createdBy: ctx.session.user.email,
                   createdAt: stockIssue.dataWydania,
                   additionalInformation: stockIssue.dodatkoweInformacje,
-                  ecoPeaCoalIssued: stockIssue.wydanoGroszek,
-                  nutCoalIssued: stockIssue.wydanoOrzech,
+                  items: {
+                    create: {
+                      type: stockIssue.rodzaj,
+                      amount: stockIssue.ilosc,
+                    },
+                  },
                   Invoice: {
                     connect: {
                       invoiceId: stockIssue.numerFaktury,
@@ -142,9 +115,7 @@ export const importRouter = router({
         ) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: `Numery ${
-              input.type === "applications" ? "wniosków" : "faktur"
-            } muszą być unikalne`,
+            message: "Numery faktur muszą być unikalne",
           });
         }
         if (parsingError) {

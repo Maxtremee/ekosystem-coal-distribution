@@ -1,7 +1,7 @@
 import { Text } from "@ekosystem/ui";
 import { Alert, Spinner, Card, Timeline, Button } from "flowbite-react";
-import { trpc } from "../../../../utils/trpc";
-import StockIssueTimelineItem from "../../../StockIssue/StockIssueTimelineItem";
+import { trpc } from "../../../utils/trpc";
+import StockIssueTimelineItem from "../../StockIssue/StockIssueTimelineItem";
 
 export default function DistributionCenterTimeline({ id }: { id: string }) {
   const {

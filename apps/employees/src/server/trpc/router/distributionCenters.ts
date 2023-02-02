@@ -65,9 +65,8 @@ export const distributionCentersRouter = router({
         select: {
           id: true,
           createdAt: true,
+          items: true,
           distributionCenterId: true,
-          ecoPeaCoalIssued: true,
-          nutCoalIssued: true,
           DistributionCenter: {
             select: {
               name: true,

@@ -2,8 +2,9 @@ import { z } from "zod";
 
 export const baseAddInvoiceSchema = z.object({
   invoiceId: z.string().min(1),
+  applicationId: z.string().optional(),
   issueDate: z.coerce.date(),
-  paidForCoal: z.coerce.number().nonnegative(),
+  amount: z.coerce.number().nonnegative(),
   additionalInformation: z.string().optional(),
 });
 

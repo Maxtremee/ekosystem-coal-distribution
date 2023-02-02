@@ -26,26 +26,20 @@ export default function ImportInvoicesManualModal() {
             </p>
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               {"Wartości muszą być w kolejności:"}
-              <ul className="ml-3">
+              <ul className="flex gap-2 px-2">
                 <li>Numer faktury</li>
-                <li>
-                  {
-                    "Numer wniosku (opcjonalnie) (imię i nazwisko nie wystarczy)"
-                  }
-                </li>
+                <li>{"Numer wniosku (opcjonalnie)"}</li>
                 <li>
                   {
                     "Data wydania (w formacie 2023/01/25 lub z godziną 2023/01/25 08:00:00)"
                   }
                 </li>
-                <li>
-                  {
-                    "Kwota faktury (zostanie automatycznie podzielona przez 2 aby obliczyć ilość w kg)"
-                  }
-                </li>
+                <li>{"Kwota faktury (zostanie podzielona przez 2)"}</li>
               </ul>
               {"Przykładowy rekord"} (linia):{" "}
-              <pre>FV 1/01/23,W1/2023,2023/01/08 13:00:00,650</pre>
+              <pre className="px-2">
+                FV 1/01/23,W1/2023,2023/01/08 13:00:00,650
+              </pre>
             </p>
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               {

@@ -10,12 +10,12 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (user?.email) {
-      router.push("/applications");
+      router.push("/invoices");
     }
   }, [user, router]);
 
   return (
-    <Button href="/api/auth/login?returnTo=/applications" color="success">
+    <Button href="/api/auth/login?returnTo=/invoices" color="success">
       Zaloguj się
     </Button>
   );

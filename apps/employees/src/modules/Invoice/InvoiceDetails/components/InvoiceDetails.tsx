@@ -1,6 +1,5 @@
 import { Text } from "@ekosystem/ui";
 import { Card } from "flowbite-react";
-import Link from "next/link";
 import { RouterOutputs } from "../../../../utils/trpc";
 
 export default function InvoiceDetails({
@@ -17,27 +16,19 @@ export default function InvoiceDetails({
         <p className="text-gray-500">Numer faktury</p>
         <Text>{invoice.invoiceId}</Text>
         <p className="text-gray-500">Numer wniosku</p>
-        <Link href={`/applications/${invoice?.Application?.id}`} passHref>
-          <Text as="span" className="underline hover:cursor-pointer">
-            {invoice?.Application?.applicationId}
-          </Text>
-        </Link>
+        <Text>{invoice.applicationId}</Text>
         <p className="text-gray-500">Data wydania</p>
         <Text>{invoice.issueDate?.toLocaleString()}</Text>
+        <p className="text-gray-500">Opłacono węgla</p>
+        <Text>{invoice.amount.toString()} kg</Text>
         <p className="text-gray-500">Dodatkowe informacje</p>
         <Text>{invoice?.additionalInformation}</Text>
         <div className="h-6" />
         <div className="h-6" />
-        <p className="text-gray-500">Opłacono węgla</p>
-        <Text>{invoice.paidForCoal.toString()} kg</Text>
-        <div className="h-6" />
-        <div className="h-6" />
         <p className="text-gray-500">Liczba wydań towaru</p>
         <Text>{invoice.stockIssues?.length}</Text>
-        <p className="text-gray-500">Odebrano: ekogroszek</p>
-        <Text>{invoice.ecoPeaCoalWithdrawn || 0} kg</Text>
-        <p className="text-gray-500">Odebrano: orzech</p>
-        <Text>{invoice.nutCoalWithdrawn || 0} kg</Text>
+        <p className="text-gray-500">Odebrano łącznie</p>
+        <Text>{invoice.coalWithdrawn} kg</Text>
         <div className="h-6" />
         <div className="h-6" />
         <p className="text-gray-500">Dodano dnia</p>
