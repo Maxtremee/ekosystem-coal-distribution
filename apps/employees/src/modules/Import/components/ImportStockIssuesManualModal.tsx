@@ -40,7 +40,7 @@ export default function ImportStockIssuesManualModal() {
               </ul>
               {"Przykładowy rekord"} (linia):{" "}
               <pre className="px-2">
-                FV 1/01/23,2023/01/08 13:00:00,email@email.com,ekogroszek,650
+                FV 1/01/23,2023/01/08 13:00:00,email@email.com,,ekogroszek,650
               </pre>
             </p>
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">

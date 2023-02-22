@@ -51,6 +51,7 @@ export const importRouter = router({
                   invoiceId: invoice.numerFaktury,
                   issueDate: invoice.dataWydania,
                   amount: invoice.kwota,
+                  applicationId: invoice.numerWniosku,
                 },
               }),
             ),
