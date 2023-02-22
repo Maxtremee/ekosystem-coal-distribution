@@ -235,7 +235,7 @@ export const stockIssuesRouter = router({
           },
           DistributionCenter: {
             select: {
-              name: true,
+              email: true,
             },
           },
         },
@@ -252,7 +252,7 @@ export const stockIssuesRouter = router({
       const stockIssuesFormatted = stockIssues?.map((stockIssue) => [
         stockIssue.id,
         stockIssue.createdAt.toLocaleString("pl").replace(", ", " "),
-        stockIssue.DistributionCenter?.name,
+        stockIssue.DistributionCenter?.email,
         stockIssue.Invoice?.invoiceId,
         stockIssue.items.reduce(
           (acc, { amount }) => acc + amount.toNumber(),
