@@ -261,11 +261,17 @@ export const stockIssuesRouter = router({
         stockIssue.additionalInformation,
       ]);
 
-      const itemsHeader = ["identyfikator wydania", "rodzaj", "ilosc"];
+      const itemsHeader = [
+        "identyfikator wydania",
+        "numer faktury",
+        "rodzaj",
+        "ilosc",
+      ];
       const itemsFormatted = stockIssues
         ?.map((stockIssue) =>
           stockIssue.items.map((item) => [
             stockIssue.id,
+            stockIssue.invoiceId,
             item.type,
             item.amount.toString(),
           ]),
