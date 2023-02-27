@@ -10,6 +10,7 @@ export default function DownloadStockIssuesButton() {
   const { mutate, isLoading } = trpc.stockIssues.downloadFiltered.useMutation({
     onSuccess: (res) => res.forEach((csv) => downloadCsv(csv, csv.title)),
   });
+  // @ts-ignore
   const clickHandler = () => mutate(values);
   return (
     <Button onClick={clickHandler} disabled={isLoading}>

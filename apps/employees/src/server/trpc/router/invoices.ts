@@ -160,6 +160,10 @@ export const invoicesRouter = router({
             },
           },
         ],
+        issueDate: {
+          lte: input?.before,
+          gte: input?.after,
+        },
       };
       const data = await ctx.prisma.$transaction([
         ctx.prisma.invoice.count({
@@ -201,6 +205,10 @@ export const invoicesRouter = router({
             },
           },
         ],
+        issueDate: {
+          lte: input?.before,
+          gte: input?.after,
+        },
       };
       const invoices = await ctx.prisma.invoice.findMany({
         where: filters,

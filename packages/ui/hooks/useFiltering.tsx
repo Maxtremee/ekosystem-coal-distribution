@@ -8,6 +8,7 @@ import {
   withDefault,
   createEnumParam,
   QueryParamConfigMap,
+  DateTimeParam,
 } from "use-query-params";
 
 export const defaultFilters = {
@@ -16,6 +17,8 @@ export const defaultFilters = {
   page: 1,
   search: "",
   sortBy: "createdAt",
+  after: undefined,
+  before: undefined,
 };
 
 type FilteringValues<T extends QueryParamConfigMap = QueryParamConfigMap> = {
@@ -25,6 +28,8 @@ type FilteringValues<T extends QueryParamConfigMap = QueryParamConfigMap> = {
   sortBy: string;
   page: number;
   search: string;
+  after: string;
+  before: string;
 } & Record<keyof T, string>;
 
 export type UseFilteringReturn<
@@ -60,6 +65,8 @@ export const useFiltering = <
       createEnumParam(["asc", "desc"]),
       defaultFilters.sortDir,
     ),
+    after: StringParam,
+    before: StringParam,
     ...filters,
   });
   const [search, setSearch] = useState(query?.search || defaultFilters.search);
@@ -95,7 +102,10 @@ export const useFiltering = <
   );
 
   const register = (filter: keyof typeof query | keyof T) => ({
-    value: filter === "search" ? search : query[filter as keyof typeof query],
+    value:
+      filter === "search"
+        ? search
+        : query[filter as keyof typeof query] || undefined,
     name: filter as string,
     onChange: (ev: FormEvent<HTMLInputElement> | undefined) => {
       setValue(filter, ev?.currentTarget?.value);

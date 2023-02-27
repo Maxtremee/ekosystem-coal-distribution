@@ -1,5 +1,6 @@
 import {
   FilteringProvider,
+  SelectDate,
   SelectPageSize,
   Text,
   useFiltering,
@@ -14,6 +15,7 @@ export default function StockIssuesList() {
   const { values, register, getTotalPages, setPage, pageSize, setValue } =
     filtering;
 
+  //@ts-ignore
   const { data, isLoading, isError } = trpc.stockIssues.getFiltered.useQuery({
     ...values,
   });
@@ -26,7 +28,7 @@ export default function StockIssuesList() {
         Lista wydań towaru
       </Text>
       <FilteringProvider {...filtering}>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <div>
             <Label htmlFor="search">Szukaj</Label>
             <TextInput
@@ -36,6 +38,10 @@ export default function StockIssuesList() {
               placeholder="Wpisz wybraną frazę"
             />
           </div>
+          <SelectDate
+            registerAfter={register("after")}
+            registerBefore={register("before")}
+          />
           <SelectPageSize value={pageSize} setValue={setValue} />
         </div>
         <StockIssuesTable stockIssues={data?.stockIssues} isError={isError} />
