@@ -62,6 +62,10 @@ export const stockIssuesRouter = router({
         },
         data: {
           ...input,
+          distributionCenterId:
+            input.distributionCenterId === ""
+              ? undefined
+              : input.distributionCenterId,
           updatedBy: ctx.session.user.email,
           items: {
             deleteMany: {
