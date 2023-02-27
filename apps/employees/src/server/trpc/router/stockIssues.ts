@@ -62,6 +62,10 @@ export const stockIssuesRouter = router({
         },
         data: {
           ...input,
+          distributionCenterId:
+            input.distributionCenterId === ""
+              ? undefined
+              : input.distributionCenterId,
           updatedBy: ctx.session.user.email,
           items: {
             deleteMany: {
@@ -147,6 +151,10 @@ export const stockIssuesRouter = router({
             },
           },
         ],
+        createdAt: {
+          lte: input?.before,
+          gte: input?.after,
+        },
       };
       const data = await ctx.prisma.$transaction([
         ctx.prisma.stockIssue.count({
@@ -222,6 +230,10 @@ export const stockIssuesRouter = router({
               },
             },
           ],
+          createdAt: {
+            lte: input?.before,
+            gte: input?.after,
+          },
         },
         orderBy: {
           [input.sortBy]: input.sortDir,

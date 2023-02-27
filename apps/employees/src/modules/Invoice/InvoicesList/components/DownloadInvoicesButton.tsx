@@ -9,6 +9,7 @@ export default function DownloadInvoicesButton() {
   const { mutate, isLoading } = trpc.invoices.downloadFiltered.useMutation({
     onSuccess: (res) => downloadCsv(res, "faktury"),
   });
+  // @ts-ignore
   const clickHandler = () => mutate(values);
   return (
     <Button onClick={clickHandler} disabled={isLoading}>

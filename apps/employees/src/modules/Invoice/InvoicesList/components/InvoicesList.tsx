@@ -1,5 +1,6 @@
 import {
   FilteringProvider,
+  SelectDate,
   SelectPageSize,
   Text,
   useFiltering,
@@ -15,6 +16,7 @@ export default function InvoicesList() {
   const { values, register, getTotalPages, setPage, pageSize, setValue } =
     filtering;
 
+  //@ts-ignore
   const { data, isLoading, isError } = trpc.invoices.getFiltered.useQuery({
     ...values,
   });
@@ -27,7 +29,7 @@ export default function InvoicesList() {
         Lista faktur
       </Text>
       <FilteringProvider {...filtering}>
-        <div className="flex items-end gap-4">
+        <div className="flex flex-wrap items-end gap-4">
           <div>
             <Label htmlFor="search">Szukaj</Label>
             <TextInput
@@ -37,6 +39,10 @@ export default function InvoicesList() {
               placeholder="Wpisz wybraną frazę"
             />
           </div>
+          <SelectDate
+            registerAfter={register("after")}
+            registerBefore={register("before")}
+          />
           <SelectPageSize value={pageSize} setValue={setValue} />
           <DownloadInvoicesButton />
         </div>

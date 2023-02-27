@@ -217,6 +217,10 @@ export const stockIssuesRouter = router({
             },
           },
         ],
+        createdAt: {
+          lte: input?.before,
+          gte: input?.after,
+        },
       };
       const data = await ctx.prisma.$transaction([
         ctx.prisma.stockIssue.count({

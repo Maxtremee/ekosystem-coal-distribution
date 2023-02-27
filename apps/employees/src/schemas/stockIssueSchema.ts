@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const baseStockIssueSchema = z.object({
+  createdAt: z.coerce.date(),
   distributionCenterId: z.string(),
   additionalInformation: z.string().optional(),
   items: z

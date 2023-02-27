@@ -16,8 +16,8 @@ import frontendStockIssueSchema, {
   BaseStockIssueSchemaType,
 } from "../../../../schemas/stockIssueSchema";
 import { RouterOutputs, trpc } from "../../../../utils/trpc";
-import { ChangeEvent } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import dayjs from "dayjs";
 
 export default function UpdateStockIssueForm({
   stockIssue,
@@ -36,7 +36,6 @@ export default function UpdateStockIssueForm({
   const {
     watch,
     control,
-    setValue,
     register,
     handleSubmit,
     formState: { isValid, errors },
@@ -44,6 +43,8 @@ export default function UpdateStockIssueForm({
     mode: "onChange",
     resolver: zodResolver(frontendStockIssueSchema),
     defaultValues: {
+      //@ts-ignore
+      createdAt: dayjs(stockIssue.createdAt).format("YYYY-MM-DDTHH:mm:ss.sss"),
       distributionCenterId: stockIssue?.distributionCenterId || undefined,
       additionalInformation: stockIssue?.additionalInformation || undefined,
       items: stockIssue?.items.map(({ amount, type }) => ({
@@ -96,6 +97,15 @@ export default function UpdateStockIssueForm({
       onSubmit={handleSubmit(onSubmit)}
     >
       <div>
+        <Label htmlFor="createdAt">Data wydania</Label>
+        <TextInput
+          {...register("createdAt")}
+          id="createdAt"
+          placeholder="Data wydania"
+          type="datetime-local"
+        />
+      </div>
+      <div>
         <Label htmlFor="search">Wydane przez</Label>
         <Select
           {...register("distributionCenterId")}
@@ -103,6 +113,7 @@ export default function UpdateStockIssueForm({
           placeholder="Wybierz skup węgla"
           disabled={isLoadingCenters || centersError || centers?.length < 1}
         >
+          <option value={""}>Wybierz skup</option>
           {centers?.map(({ name, id }) => (
             <option key={id} value={id}>
               {name}
