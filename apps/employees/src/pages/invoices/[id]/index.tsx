@@ -3,6 +3,7 @@ import { Text } from "@ekosystem/ui";
 import { Alert, Button, Spinner } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import DeleteInvoiceButton from "../../../modules/Invoice/DeleteInvoice/components/DeleteInvoiceButton";
 import {
   InvoiceDetails,
   InvoiceTimeline,
@@ -46,12 +47,24 @@ function InvoiceDetailsPage() {
         <div className="flex gap-3">
           <Link
             href={{
+              pathname: `/stock-issues/add`,
+              query: {
+                invoiceId: data.id,
+              },
+            }}
+            passHref
+          >
+            <Button color="info">Dodaj wydanie</Button>
+          </Link>
+          <Link
+            href={{
               pathname: `/invoices/${data.id}/edit`,
             }}
             passHref
           >
             <Button color="warning">Edytuj</Button>
           </Link>
+          <DeleteInvoiceButton id={data.id} invoiceId={data.invoiceId} />
         </div>
       </div>
       <InvoiceDetails invoice={data} />

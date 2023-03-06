@@ -9,7 +9,7 @@ import {
 } from "flowbite-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { InputError } from "@ekosystem/ui";
+import { CoalTypes, InputError } from "@ekosystem/ui";
 import { RouterOutputs, trpc } from "../../../utils/trpc";
 import baseAddStockIssueSchema, {
   BaseAddStockIssueSchemaType,
@@ -32,8 +32,6 @@ export default function AddStockIssueForm({
     watch,
     control,
     register,
-    setValue,
-    getValues,
     handleSubmit,
     formState: { isValid, errors },
   } = useForm<BaseAddStockIssueSchemaType>({
@@ -85,9 +83,11 @@ export default function AddStockIssueForm({
               className="w-full md:w-60"
               placeholder="Wybierz rodzaj węgla"
             >
-              <option value="ekogroszek">Ekogroszek</option>
-              <option value="orzech">Orzech</option>
-              <option value="inny">Inny</option>
+              {CoalTypes.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
             </Select>
           </div>
           <div>

@@ -43,7 +43,7 @@ model StockIssue {
   items                 CoalIssue[]
   additionalInformation String?
 
-  Invoice              Invoice?            @relation(fields: [invoiceId], references: [id])
+  Invoice              Invoice?            @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   invoiceId            String?
   DistributionCenter   DistributionCenter? @relation(fields: [distributionCenterId], references: [id])
   distributionCenterId String?
@@ -54,6 +54,6 @@ model CoalIssue {
   type   String
   amount Decimal
 
-  StockIssue   StockIssue? @relation(fields: [stockIssueId], references: [id])
+  StockIssue   StockIssue? @relation(fields: [stockIssueId], references: [id], onDelete: Cascade)
   stockIssueId String?
 }

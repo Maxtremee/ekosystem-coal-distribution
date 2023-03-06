@@ -11,20 +11,17 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputError, CoalTypes } from "@ekosystem/ui";
 
-import Decimal from "decimal.js";
 import frontendStockIssueSchema, {
   BaseStockIssueSchemaType,
 } from "../../../../schemas/stockIssueSchema";
 import { RouterOutputs, trpc } from "../../../../utils/trpc";
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import dayjs from "dayjs";
 import DistributionCentersSelect from "../../DistributionCentersSelect";
+import dayjs from "dayjs";
 
-export default function UpdateStockIssueForm({
-  stockIssue,
+export default function AddStockIssueForm({
   invoice,
 }: {
-  stockIssue: RouterOutputs["stockIssues"]["getDetails"];
   invoice: RouterOutputs["stockIssues"]["checkInvoice"] | undefined;
 }) {
   const router = useRouter();
@@ -32,7 +29,7 @@ export default function UpdateStockIssueForm({
     mutate,
     isLoading,
     error: mutationError,
-  } = trpc.stockIssues.update.useMutation();
+  } = trpc.stockIssues.add.useMutation();
 
   const {
     watch,
@@ -44,16 +41,13 @@ export default function UpdateStockIssueForm({
     mode: "onChange",
     resolver: zodResolver(frontendStockIssueSchema),
     defaultValues: {
+      items: [{ amount: 0, type: "ekogroszek" }],
+      distributionCenterId: "",
       //@ts-ignore
-      createdAt: dayjs(stockIssue.createdAt).format("YYYY-MM-DDTHH:mm"),
-      distributionCenterId: stockIssue?.distributionCenterId || undefined,
-      additionalInformation: stockIssue?.additionalInformation || undefined,
-      items: stockIssue?.items.map(({ amount, type }) => ({
-        type,
-        amount: new Decimal(amount).toNumber(),
-      })),
+      createdAt: dayjs(invoice?.createdAt).format("YYYY-MM-DDTHH:mm"),
     },
   });
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items",
@@ -64,13 +58,12 @@ export default function UpdateStockIssueForm({
 
   const itemsWatch = watch("items");
   const coalLeftToIssue =
-    (invoice?.coalLeftToIssue || 0) +
-    stockIssue.coalIssued -
-    itemsWatch.reduce((acc, { amount }) => acc + Number(amount), 0);
+    (invoice?.coalLeftToIssue || 0) -
+    itemsWatch?.reduce((acc, { amount }) => acc + Number(amount), 0);
 
   const onSubmit = (data: BaseStockIssueSchemaType) =>
     mutate(
-      { ...data, invoiceId: invoice?.id as string, id: stockIssue.id },
+      { ...data, invoiceId: invoice?.id as string },
       {
         onSuccess: (res) => {
           router.replace(`/stock-issues/${res.id}`);
@@ -152,7 +145,7 @@ export default function UpdateStockIssueForm({
       <InputError error={mutationError?.message} />
       <Button color="success" type="submit" disabled={isLoading || !isValid}>
         {isLoading && <Spinner color="success" className="mr-2" />}
-        Aktualizuj wydanie
+        Dodaj wydanie
       </Button>
     </form>
   );

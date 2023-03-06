@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RouterOutputs, trpc } from "../../../../utils/trpc";
+import { trpc } from "../../../../utils/trpc";
 import frontendAddInvoiceSchema, {
   AddInvoiceSchemaType,
 } from "../../../../schemas/invoiceSchema";

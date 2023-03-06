@@ -17,11 +17,16 @@ export const stockIssuesRouter = router({
       try {
         const invoice = await ctx.prisma.invoice.findFirstOrThrow({
           where: {
-            AND: [
+            OR: [
               {
                 invoiceId: {
                   equals: input.invoiceId,
                   mode: "insensitive",
+                },
+              },
+              {
+                id: {
+                  equals: input.invoiceId,
                 },
               },
             ],
@@ -48,12 +53,41 @@ export const stockIssuesRouter = router({
         });
       }
     }),
-  update: protectedProcedure
+  add: protectedProcedure
     .input(
       baseStockIssueSchema.extend({
-        id: z.string(),
         invoiceId: z.string(),
       }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      // check if passed any items
+      if (input.items.length < 1) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Przynajmniej jeden rodzaj węgla musi zostać wybrany",
+        });
+      }
+
+      return await ctx.prisma.stockIssue.create({
+        data: {
+          invoiceId: input.invoiceId,
+          createdBy: ctx.session.user.email,
+          distributionCenterId:
+            input.distributionCenterId === ""
+              ? undefined
+              : input.distributionCenterId,
+          items: {
+            create: input.items,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+    }),
+  update: protectedProcedure
+    .input(
+      baseStockIssueSchema.extend({ id: z.string(), invoiceId: z.string() }),
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.stockIssue.update({
@@ -68,13 +102,22 @@ export const stockIssuesRouter = router({
               : input.distributionCenterId,
           updatedBy: ctx.session.user.email,
           items: {
-            deleteMany: {
-              type: {
-                contains: "",
-              },
-            },
+            deleteMany: {},
             create: input.items,
           },
+        },
+      });
+    }),
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.stockIssue.delete({
+        where: {
+          id: input.id,
         },
       });
     }),
