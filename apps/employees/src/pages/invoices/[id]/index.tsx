@@ -47,6 +47,17 @@ function InvoiceDetailsPage() {
         <div className="flex gap-3">
           <Link
             href={{
+              pathname: `/stock-issues/add`,
+              query: {
+                invoiceId: data.id,
+              },
+            }}
+            passHref
+          >
+            <Button color="info">Dodaj wydanie</Button>
+          </Link>
+          <Link
+            href={{
               pathname: `/invoices/${data.id}/edit`,
             }}
             passHref
