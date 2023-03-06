@@ -78,6 +78,19 @@ export const invoicesRouter = router({
         });
       }
     }),
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.invoice.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
   getTimeline: protectedProcedure
     .input(
       z.object({

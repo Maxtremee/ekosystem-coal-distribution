@@ -78,6 +78,19 @@ export const stockIssuesRouter = router({
         },
       });
     }),
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.stockIssue.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
   getDetails: protectedProcedure
     .input(
       z.object({

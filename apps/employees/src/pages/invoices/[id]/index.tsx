@@ -3,6 +3,7 @@ import { Text } from "@ekosystem/ui";
 import { Alert, Button, Spinner } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import DeleteInvoiceButton from "../../../modules/Invoice/DeleteInvoice/components/DeleteInvoiceButton";
 import {
   InvoiceDetails,
   InvoiceTimeline,
@@ -52,6 +53,7 @@ function InvoiceDetailsPage() {
           >
             <Button color="warning">Edytuj</Button>
           </Link>
+          <DeleteInvoiceButton id={data.id} invoiceId={data.invoiceId} />
         </div>
       </div>
       <InvoiceDetails invoice={data} />

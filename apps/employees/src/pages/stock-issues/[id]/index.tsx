@@ -3,6 +3,7 @@ import { Text } from "@ekosystem/ui";
 import { Alert, Button, Spinner } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import DeleteStockIssueButton from "../../../modules/StockIssue/DeleteStockIssue/components/DeleteStockIssueButton";
 import StockIssueDetails from "../../../modules/StockIssue/StockIssueDetails";
 import { trpc } from "../../../utils/trpc";
 
@@ -41,6 +42,7 @@ function StockIssueDetailsPage() {
           >
             <Button color="warning">Edytuj</Button>
           </Link>
+          <DeleteStockIssueButton id={data.id} />
         </div>
       </div>
       <StockIssueDetails stockIssue={data} />
