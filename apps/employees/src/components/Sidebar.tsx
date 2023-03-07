@@ -1,5 +1,6 @@
 import {
   ArrowUpTrayIcon,
+  ChartBarIcon,
   DocumentChartBarIcon,
   DocumentPlusIcon,
   DocumentTextIcon,
@@ -12,6 +13,11 @@ export default function Sidebar() {
     <FlowbiteSidebar>
       <FlowbiteSidebar.Items>
         <FlowbiteSidebar.ItemGroup>
+          <Link href="/dashboard" passHref>
+            <FlowbiteSidebar.Item icon={ChartBarIcon}>
+              Statystyki
+            </FlowbiteSidebar.Item>
+          </Link>
           <Link href="/invoices" passHref>
             <FlowbiteSidebar.Item icon={DocumentChartBarIcon}>
               Faktury

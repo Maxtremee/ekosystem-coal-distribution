@@ -4,6 +4,9 @@ import Link from "next/link";
 export default function Dropdown() {
   return (
     <FlowbiteDropdown label="Opcje">
+      <Link href="/dashboard" passHref>
+        <FlowbiteDropdown.Item>Statystyki</FlowbiteDropdown.Item>
+      </Link>
       <Link href="/invoices" passHref>
         <FlowbiteDropdown.Item>Faktury</FlowbiteDropdown.Item>
       </Link>

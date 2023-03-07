@@ -15,7 +15,7 @@ const Home: NextPage = () => {
   }, [user, router]);
 
   return (
-    <Button href="/api/auth/login?returnTo=/invoices" color="success">
+    <Button href="/api/auth/login?returnTo=/dashboard" color="success">
       Zaloguj się
     </Button>
   );
