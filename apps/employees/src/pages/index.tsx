@@ -10,7 +10,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (user?.email) {
-      router.push("/invoices");
+      router.push("/dashboard");
     }
   }, [user, router]);
 
