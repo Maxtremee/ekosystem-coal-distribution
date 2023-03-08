@@ -70,7 +70,7 @@ export const stockIssuesRouter = router({
 
       return await ctx.prisma.stockIssue.create({
         data: {
-          invoiceId: input.invoiceId,
+          ...input,
           createdBy: ctx.session.user.email,
           distributionCenterId:
             input.distributionCenterId === ""
