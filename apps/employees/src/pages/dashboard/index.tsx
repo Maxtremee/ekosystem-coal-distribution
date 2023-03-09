@@ -14,6 +14,7 @@ import CoalTypeChart from "../../modules/Dashboard/CoalTypeChart";
 import DistributionCentersChart from "../../modules/Dashboard/DistributionCentersChart";
 import dayjs from "dayjs";
 import spaceEvery3Chars from "../../utils/spaceEvery3Chars";
+import DistributedCoalTimeline from "../../modules/Dashboard/DistributedCoalTimeline";
 
 function DashboardPage() {
   const [query, setQuery] = useQueryParams({
@@ -73,7 +74,6 @@ function DashboardPage() {
               type="date"
               value={dayjs(query.after).format("YYYY-MM-DD")}
               max={dayjs(query.before).format("YYYY-MM-DD")}
-              // onChange={(e) => setAfter(e.currentTarget.value)}
               onChange={(e) =>
                 setQuery({
                   after: dayjs(e.currentTarget.value).toDate(),
@@ -89,7 +89,6 @@ function DashboardPage() {
               type="date"
               value={dayjs(query.before).format("YYYY-MM-DD")}
               min={dayjs(query.after).format("YYYY-MM-DD")}
-              // onChange={(e) => setBefore(e.currentTarget.value)}
               onChange={(e) =>
                 setQuery({
                   before: dayjs(e.currentTarget.value).toDate(),
@@ -118,6 +117,10 @@ function DashboardPage() {
           kg
         </StatCard>
       </div>
+      <DistributedCoalTimeline
+        isLoading={isLoading}
+        distributedCoalTimelineData={data?.distributedCoalTimelineData}
+      />
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <CoalTypeChart isLoading={isLoading} coalByType={data?.coalByType} />
         <DistributionCentersChart

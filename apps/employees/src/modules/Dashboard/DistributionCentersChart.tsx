@@ -1,7 +1,16 @@
 import { Text } from "@ekosystem/ui";
 import distinctColors from "distinct-colors";
 import { Card, Spinner } from "flowbite-react";
-import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+import {
+  ResponsiveContainer,
+  Cell,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
 import { RouterOutputs } from "../../utils/trpc";
 
 export default function DistributionCentersChart({
@@ -13,14 +22,16 @@ export default function DistributionCentersChart({
     | RouterOutputs["stats"]["get"]["issuesByDistributionCenter"]
     | undefined;
 }) {
-  const distributionCenterPieChartData =
+  const chartData =
     issuesByDistributionCenter &&
-    Object.entries(issuesByDistributionCenter).map(([type, total]) => ({
-      name: type,
-      value: total,
-    }));
+    Object.entries(issuesByDistributionCenter)
+      .map(([type, total]) => ({
+        name: type,
+        value: total,
+      }))
+      .sort((a, b) => b.value - a.value);
   const centersColors = distinctColors({
-    count: distributionCenterPieChartData?.length,
+    count: chartData?.length,
   });
   return (
     <Card className="flex flex-col gap-4">
@@ -31,24 +42,20 @@ export default function DistributionCentersChart({
         <Spinner color="success" />
       ) : (
         <ResponsiveContainer height={500} width="100%">
-          <PieChart>
-            <Pie
-              dataKey="value"
-              nameKey="name"
-              data={distributionCenterPieChartData}
-              label
-              labelLine
-              outerRadius={80}
-            >
-              {distributionCenterPieChartData!.map((_, index) => (
+          <BarChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip formatter={(value) => [value, "Wydania"]} />
+            <Bar dataKey="value" fill="#8884d8">
+              {chartData!.map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={centersColors![index]!.hex()}
                 />
               ))}
-            </Pie>
-            <Legend verticalAlign="top" height={36} />
-          </PieChart>
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
       )}
     </Card>

@@ -89,6 +89,46 @@ const getIssuesByDistributionCenter = (
   );
 };
 
+function intoNChunks<T>(arr: T[], groups: number) {
+  const size = Math.ceil(arr.length / groups);
+  return Array.from({ length: groups }, (v, i) =>
+    arr.slice(i * size, i * size + size),
+  );
+}
+
+function stockIssuesMean(
+  issues: Array<{ items: CoalIssue[]; createdAt: Date }>,
+) {
+  const sortedDates = [...issues]
+    .map(({ createdAt }) => createdAt)
+    .sort((a, b) => a.getTime() - b.getTime());
+  const meanDate =
+    sortedDates.length > 1
+      ? new Date(
+          (sortedDates.at(0)!.getTime() + sortedDates.at(-1)!.getTime()) / 2,
+        )
+      : sortedDates.at(0);
+  const meanAmount = R.pipe(
+    issues,
+    R.map((x) => x.items),
+    R.flatten(),
+    R.meanBy((x) => Number(x.amount.toString())),
+  );
+  return {
+    meanDate,
+    meanAmount: Math.round(meanAmount),
+  };
+}
+
+const getDistributedCoalTimeline = (
+  stockIssues: Array<{ items: CoalIssue[]; createdAt: Date }>,
+) => {
+  return R.pipe(
+    intoNChunks(stockIssues, 20),
+    R.map((x) => stockIssuesMean(x)),
+  );
+};
+
 export const statsRouter = router({
   get: protectedProcedure.input(statsSchema).query(async ({ ctx, input }) => {
     const period = getPeriod({ ...input });
@@ -107,6 +147,9 @@ export const statsRouter = router({
         },
       }),
       ctx.prisma.stockIssue.findMany({
+        orderBy: {
+          createdAt: "asc",
+        },
         where: {
           createdAt: {
             gte: period.after,
@@ -114,6 +157,7 @@ export const statsRouter = router({
           },
         },
         select: {
+          createdAt: true,
           DistributionCenter: {
             select: {
               name: true,
@@ -147,6 +191,7 @@ export const statsRouter = router({
         ),
       ),
       issuesByDistributionCenter: getIssuesByDistributionCenter(stockIssues),
+      distributedCoalTimelineData: getDistributedCoalTimeline(stockIssues),
     };
   }),
 });
