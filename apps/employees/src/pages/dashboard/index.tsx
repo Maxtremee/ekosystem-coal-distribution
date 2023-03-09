@@ -1,6 +1,5 @@
 import { Text } from "@ekosystem/ui";
-import { Alert, Card, Select, Spinner } from "flowbite-react";
-import { ReactNode } from "react";
+import { Alert, Label, Select, TextInput } from "flowbite-react";
 import {
   createEnumParam,
   DateParam,
@@ -9,38 +8,21 @@ import {
 } from "use-query-params";
 import { PeriodTypeLabelMap, PERIOD_TYPE } from "../../utils/periodTypes";
 import { trpc } from "../../utils/trpc";
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts";
-import distinctColors from "distinct-colors";
+import { withPageAuthRequired } from "@auth0/nextjs-auth0/client";
+import { StatCard } from "../../modules/Dashboard/StatCard";
+import CoalTypeChart from "../../modules/Dashboard/CoalTypeChart";
+import DistributionCentersChart from "../../modules/Dashboard/DistributionCentersChart";
+import dayjs from "dayjs";
+import spaceEvery3Chars from "../../utils/spaceEvery3Chars";
 
-const StatCard = ({
-  children,
-  label,
-  isLoading,
-}: {
-  children: ReactNode;
-  label: string;
-  isLoading: boolean;
-}) => (
-  <Card className="flex flex-col gap-4">
-    <Text className="font-xl font-bold tracking-tight text-gray-900 dark:text-white">
-      {label}
-    </Text>
-    {isLoading ? (
-      <Spinner color="success" />
-    ) : (
-      <Text className="text-gray-700 dark:text-gray-400">{children}</Text>
-    )}
-  </Card>
-);
-
-export default function DashboardPage() {
+function DashboardPage() {
   const [query, setQuery] = useQueryParams({
     period: withDefault(
       createEnumParam(Object.values(PERIOD_TYPE)),
-      PERIOD_TYPE.THIS_MONTH,
+      PERIOD_TYPE.THIS_WEEK,
     ),
-    after: DateParam,
-    before: DateParam,
+    after: withDefault(DateParam, new Date()),
+    before: withDefault(DateParam, new Date()),
   });
 
   const { data, isLoading, isError } = trpc.stats.get.useQuery(
@@ -52,33 +34,13 @@ export default function DashboardPage() {
     {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
-      staleTime: Infinity
+      staleTime: Infinity,
     },
   );
 
   if (isError) {
     return <Alert color="failure">Błąd wczytywania statystyk</Alert>;
   }
-
-  const coalPieChartData =
-    data?.coalByType &&
-    Object.entries(data.coalByType).map(([type, total]) => ({
-      name: type,
-      value: total,
-    }));
-  const coalColors = distinctColors({
-    count: coalPieChartData?.length,
-  });
-
-  const distributionCenterPieChartData =
-    data?.issuesByDistributionCenter &&
-    Object.entries(data.issuesByDistributionCenter).map(([type, total]) => ({
-      name: type,
-      value: total,
-    }));
-  const centersColors = distinctColors({
-    count: distributionCenterPieChartData?.length,
-  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -101,77 +63,70 @@ export default function DashboardPage() {
           ))}
         </Select>
       </div>
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {query.period === PERIOD_TYPE.CUSTOM && (
+        <div className="flex gap-4">
+          <div>
+            <Label htmlFor="after">Po</Label>
+            <TextInput
+              id="after"
+              className="w-full md:w-32"
+              type="date"
+              value={dayjs(query.after).format("YYYY-MM-DD")}
+              max={dayjs(query.before).format("YYYY-MM-DD")}
+              // onChange={(e) => setAfter(e.currentTarget.value)}
+              onChange={(e) =>
+                setQuery({
+                  after: dayjs(e.currentTarget.value).toDate(),
+                })
+              }
+            />
+          </div>
+          <div>
+            <Label htmlFor="before">Przed</Label>
+            <TextInput
+              id="before"
+              className="w-full md:w-32"
+              type="date"
+              value={dayjs(query.before).format("YYYY-MM-DD")}
+              min={dayjs(query.after).format("YYYY-MM-DD")}
+              // onChange={(e) => setBefore(e.currentTarget.value)}
+              onChange={(e) =>
+                setQuery({
+                  before: dayjs(e.currentTarget.value).toDate(),
+                })
+              }
+            />
+          </div>
+        </div>
+      )}
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
         <StatCard label="Wystawiono faktur" isLoading={isLoading}>
-          {data?.invoiceCount}
+          {data?.invoiceCount && spaceEvery3Chars(data.invoiceCount.toString())}
         </StatCard>
         <StatCard label="Wystawiono węgla" isLoading={isLoading}>
-          {data?.totalCoalInInvoices} kg
+          {data?.totalCoalInInvoices &&
+            spaceEvery3Chars(data.totalCoalInInvoices.toString())}{" "}
+          kg
+        </StatCard>
+        <StatCard label="Liczba wydań węgla" isLoading={isLoading}>
+          {data?.stockIssuesCount &&
+            spaceEvery3Chars(data.stockIssuesCount.toString())}
         </StatCard>
         <StatCard label="Wydano węgla" isLoading={isLoading}>
-          {data?.totalCoalInIssues} kg
+          {data?.totalCoalInIssues &&
+            spaceEvery3Chars(data.totalCoalInIssues.toString())}{" "}
+          kg
         </StatCard>
       </div>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Card className="flex flex-col gap-4">
-          <Text className="font-xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Rodzaje węgla
-          </Text>
-          {isLoading ? (
-            <Spinner color="success" />
-          ) : (
-            <ResponsiveContainer height={500} width="100%">
-              <PieChart>
-                <Pie
-                  dataKey="value"
-                  nameKey="name"
-                  data={coalPieChartData}
-                  label
-                  labelLine
-                  outerRadius={80}
-                >
-                  {coalPieChartData!.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={coalColors![index]!.hex()}
-                    />
-                  ))}
-                </Pie>
-                <Legend verticalAlign="top" height={36} />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </Card>
-        <Card className="flex flex-col gap-4">
-          <Text className="font-xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Składy
-          </Text>
-          {isLoading ? (
-            <Spinner color="success" />
-          ) : (
-            <ResponsiveContainer height={500} width="100%">
-              <PieChart>
-                <Pie
-                  dataKey="value"
-                  nameKey="name"
-                  data={distributionCenterPieChartData}
-                  label
-                  labelLine
-                  outerRadius={80}
-                >
-                  {distributionCenterPieChartData!.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={centersColors![index]!.hex()}
-                    />
-                  ))}
-                </Pie>
-                <Legend verticalAlign="top" height={36} />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </Card>
+        <CoalTypeChart isLoading={isLoading} coalByType={data?.coalByType} />
+        <DistributionCentersChart
+          isLoading={isLoading}
+          issuesByDistributionCenter={data?.issuesByDistributionCenter}
+        />
       </div>
     </div>
   );
 }
+
+export default withPageAuthRequired(DashboardPage);

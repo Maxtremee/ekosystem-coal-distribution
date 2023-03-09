@@ -1,9 +1,11 @@
-import { CoalIssue, StockIssue } from "@ekosystem/db";
+import { CoalIssue } from "@ekosystem/db";
 import dayjs from "dayjs";
 import { statsSchema } from "../../../schemas/statsSchema";
 import { PERIOD_TYPE } from "../../../utils/periodTypes";
 import { protectedProcedure, router } from "../trpc";
 import * as R from "remeda";
+import isoWeek from "dayjs/plugin/isoWeek";
+dayjs.extend(isoWeek);
 
 const getPeriod = ({
   period,
@@ -22,6 +24,17 @@ const getPeriod = ({
       return {
         after: undefined,
         before: undefined,
+      };
+    case PERIOD_TYPE.THIS_WEEK:
+      return {
+        after: dayjs().startOf("week").toDate(),
+        before: undefined,
+      };
+    case PERIOD_TYPE.LAST_WEEK:
+      const lastWeek = dayjs().subtract(1, "week");
+      return {
+        after: lastWeek.startOf("isoWeek").toDate(),
+        before: lastWeek.endOf("isoWeek").toDate(),
       };
     case PERIOD_TYPE.THIS_MONTH:
       return {
@@ -47,8 +60,8 @@ const getPeriod = ({
       };
     case PERIOD_TYPE.CUSTOM:
       return {
-        after,
-        before,
+        after: dayjs(after).startOf("day").toDate(),
+        before: dayjs(before).endOf("day").toDate(),
       };
   }
 };
@@ -113,6 +126,7 @@ export const statsRouter = router({
 
     return {
       invoiceCount: invoices.length,
+      stockIssuesCount: stockIssues.length,
       totalCoalInInvoices: invoices.reduce<number>(
         (acc, invoice) => acc + Number(invoice.amount.toString()),
         0,
