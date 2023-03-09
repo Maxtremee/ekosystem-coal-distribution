@@ -1,9 +1,11 @@
-import { CoalIssue, StockIssue } from "@ekosystem/db";
+import { CoalIssue } from "@ekosystem/db";
 import dayjs from "dayjs";
 import { statsSchema } from "../../../schemas/statsSchema";
 import { PERIOD_TYPE } from "../../../utils/periodTypes";
 import { protectedProcedure, router } from "../trpc";
 import * as R from "remeda";
+import isoWeek from "dayjs/plugin/isoWeek";
+dayjs.extend(isoWeek);
 
 const getPeriod = ({
   period,
@@ -22,6 +24,17 @@ const getPeriod = ({
       return {
         after: undefined,
         before: undefined,
+      };
+    case PERIOD_TYPE.THIS_WEEK:
+      return {
+        after: dayjs().startOf("week").toDate(),
+        before: undefined,
+      };
+    case PERIOD_TYPE.LAST_WEEK:
+      const lastWeek = dayjs().subtract(1, "week");
+      return {
+        after: lastWeek.startOf("isoWeek").toDate(),
+        before: lastWeek.endOf("isoWeek").toDate(),
       };
     case PERIOD_TYPE.THIS_MONTH:
       return {
@@ -47,8 +60,8 @@ const getPeriod = ({
       };
     case PERIOD_TYPE.CUSTOM:
       return {
-        after,
-        before,
+        after: dayjs(after).startOf("day").toDate(),
+        before: dayjs(before).endOf("day").toDate(),
       };
   }
 };
@@ -76,6 +89,46 @@ const getIssuesByDistributionCenter = (
   );
 };
 
+function intoNChunks<T>(arr: T[], groups: number) {
+  const size = Math.ceil(arr.length / groups);
+  return Array.from({ length: groups }, (v, i) =>
+    arr.slice(i * size, i * size + size),
+  );
+}
+
+function stockIssuesMean(
+  issues: Array<{ items: CoalIssue[]; createdAt: Date }>,
+) {
+  const sortedDates = [...issues]
+    .map(({ createdAt }) => createdAt)
+    .sort((a, b) => a.getTime() - b.getTime());
+  const meanDate =
+    sortedDates.length > 1
+      ? new Date(
+          (sortedDates.at(0)!.getTime() + sortedDates.at(-1)!.getTime()) / 2,
+        )
+      : sortedDates.at(0);
+  const meanAmount = R.pipe(
+    issues,
+    R.map((x) => x.items),
+    R.flatten(),
+    R.meanBy((x) => Number(x.amount.toString())),
+  );
+  return {
+    meanDate,
+    meanAmount: Math.round(meanAmount),
+  };
+}
+
+const getDistributedCoalTimeline = (
+  stockIssues: Array<{ items: CoalIssue[]; createdAt: Date }>,
+) => {
+  return R.pipe(
+    intoNChunks(stockIssues, 20),
+    R.map((x) => stockIssuesMean(x)),
+  );
+};
+
 export const statsRouter = router({
   get: protectedProcedure.input(statsSchema).query(async ({ ctx, input }) => {
     const period = getPeriod({ ...input });
@@ -94,6 +147,9 @@ export const statsRouter = router({
         },
       }),
       ctx.prisma.stockIssue.findMany({
+        orderBy: {
+          createdAt: "asc",
+        },
         where: {
           createdAt: {
             gte: period.after,
@@ -101,6 +157,7 @@ export const statsRouter = router({
           },
         },
         select: {
+          createdAt: true,
           DistributionCenter: {
             select: {
               name: true,
@@ -113,6 +170,7 @@ export const statsRouter = router({
 
     return {
       invoiceCount: invoices.length,
+      stockIssuesCount: stockIssues.length,
       totalCoalInInvoices: invoices.reduce<number>(
         (acc, invoice) => acc + Number(invoice.amount.toString()),
         0,
@@ -133,6 +191,7 @@ export const statsRouter = router({
         ),
       ),
       issuesByDistributionCenter: getIssuesByDistributionCenter(stockIssues),
+      distributedCoalTimelineData: getDistributedCoalTimeline(stockIssues),
     };
   }),
 });
