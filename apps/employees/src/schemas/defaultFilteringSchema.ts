@@ -7,7 +7,10 @@ export const defaultFilteringSchema = z.object({
   search: z.string().optional().default(""),
   sortDir: z.enum(["asc", "desc"]).optional().default("desc"),
   sortBy: z.string().optional().default("createdAt"),
-  after: z.coerce.date().optional(),
+  after: z.coerce
+    .date()
+    .optional()
+    .transform((val) => (val ? dayjs(val).startOf("day").toDate() : undefined)),
   before: z.coerce
     .date()
     .optional()
