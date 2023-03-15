@@ -4,17 +4,23 @@ import { statsSchema } from "../../../schemas/statsSchema";
 import { PERIOD_TYPE } from "../../../utils/periodTypes";
 import { protectedProcedure, router } from "../trpc";
 import * as R from "remeda";
+import timezone from "dayjs/plugin/timezone";
 import isoWeek from "dayjs/plugin/isoWeek";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(timezone);
 dayjs.extend(isoWeek);
+dayjs.extend(utc);
 
 const getPeriod = ({
   period,
   after,
   before,
+  timezone,
 }: {
   period: PERIOD_TYPE;
   after?: Date | undefined;
   before?: Date | undefined;
+  timezone: string;
 }): {
   after: Date | undefined;
   before: Date | undefined;
@@ -27,41 +33,41 @@ const getPeriod = ({
       };
     case PERIOD_TYPE.THIS_WEEK:
       return {
-        after: dayjs().startOf("week").toDate(),
+        after: dayjs().tz(timezone).startOf("isoWeek").toDate(),
         before: undefined,
       };
     case PERIOD_TYPE.LAST_WEEK:
-      const lastWeek = dayjs().subtract(1, "week");
+      const lastWeek = dayjs().tz(timezone).subtract(1, "week");
       return {
         after: lastWeek.startOf("isoWeek").toDate(),
         before: lastWeek.endOf("isoWeek").toDate(),
       };
     case PERIOD_TYPE.THIS_MONTH:
       return {
-        after: dayjs().startOf("month").toDate(),
+        after: dayjs().tz(timezone).startOf("month").toDate(),
         before: undefined,
       };
     case PERIOD_TYPE.THIS_YEAR:
       return {
-        after: dayjs().startOf("year").toDate(),
+        after: dayjs().tz(timezone).startOf("year").toDate(),
         before: undefined,
       };
     case PERIOD_TYPE.LAST_MONTH:
-      const lastMonth = dayjs().subtract(1, "month");
+      const lastMonth = dayjs().tz(timezone).subtract(1, "month");
       return {
         after: lastMonth.startOf("month").toDate(),
         before: lastMonth.endOf("month").toDate(),
       };
     case PERIOD_TYPE.LAST_YEAR:
-      const lastYear = dayjs().subtract(1, "year");
+      const lastYear = dayjs().tz(timezone).subtract(1, "year");
       return {
         after: lastYear.startOf("year").toDate(),
         before: lastYear.endOf("year").toDate(),
       };
     case PERIOD_TYPE.CUSTOM:
       return {
-        after: dayjs(after).startOf("day").toDate(),
-        before: dayjs(before).endOf("day").toDate(),
+        after,
+        before,
       };
   }
 };
@@ -137,8 +143,8 @@ export const statsRouter = router({
       ctx.prisma.invoice.findMany({
         where: {
           issueDate: {
-            gte: period.after,
             lte: period.before,
+            gte: period.after,
           },
         },
         select: {
@@ -152,8 +158,8 @@ export const statsRouter = router({
         },
         where: {
           createdAt: {
-            gte: period.after,
             lte: period.before,
+            gte: period.after,
           },
         },
         select: {

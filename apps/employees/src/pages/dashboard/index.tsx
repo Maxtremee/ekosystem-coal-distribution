@@ -31,6 +31,7 @@ function DashboardPage() {
       period: query.period,
       after: query.after || undefined,
       before: query.before || undefined,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
     {
       refetchOnMount: false,
