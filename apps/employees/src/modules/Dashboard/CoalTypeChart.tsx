@@ -22,14 +22,14 @@ export default function CoalTypeChart({
   });
 
   return (
-    <Card className="flex flex-col gap-4">
+    <Card className="flex flex-col gap-4 justify-start">
       <Text className="font-xl font-bold tracking-tight text-gray-900 dark:text-white">
         Rodzaje węgla
       </Text>
       {isLoading ? (
         <Spinner color="success" />
       ) : (
-        <ResponsiveContainer height={500} width="100%">
+        <ResponsiveContainer height={450} width="100%">
           <PieChart>
             <Pie
               dataKey="value"

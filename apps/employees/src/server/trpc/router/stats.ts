@@ -7,6 +7,7 @@ import * as R from "remeda";
 import timezone from "dayjs/plugin/timezone";
 import isoWeek from "dayjs/plugin/isoWeek";
 import utc from "dayjs/plugin/utc";
+import { z } from "zod";
 dayjs.extend(timezone);
 dayjs.extend(isoWeek);
 dayjs.extend(utc);
@@ -200,4 +201,33 @@ export const statsRouter = router({
       distributedCoalTimelineData: getDistributedCoalTimeline(stockIssues),
     };
   }),
+  getCoalTypeByDistributionCenter: protectedProcedure
+    .input(
+      statsSchema.extend({
+        distributionCenterId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const period = getPeriod({ ...input });
+      const stockIssues = await ctx.prisma.stockIssue.findMany({
+        where: {
+          distributionCenterId: input.distributionCenterId,
+          createdAt: {
+            lte: period.before,
+            gte: period.after,
+          },
+        },
+        select: {
+          items: true,
+        },
+      });
+      return {
+        coalByType: getCoalByType(
+          stockIssues.reduce<CoalIssue[]>(
+            (acc, issue) => [...acc, ...issue.items],
+            [],
+          ),
+        ),
+      };
+    }),
 });

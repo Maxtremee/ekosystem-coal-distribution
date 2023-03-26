@@ -15,6 +15,7 @@ import DistributionCentersChart from "../../modules/Dashboard/DistributionCenter
 import dayjs from "dayjs";
 import spaceEvery3Chars from "../../utils/spaceEvery3Chars";
 import DistributedCoalTimeline from "../../modules/Dashboard/DistributedCoalTimeline";
+import CoalTypeByDistributionCenterChart from "../../modules/Dashboard/CoalTypeByDistibutionCenterChart";
 
 function DashboardPage() {
   const [query, setQuery] = useQueryParams({
@@ -25,13 +26,14 @@ function DashboardPage() {
     after: withDefault(DateParam, new Date()),
     before: withDefault(DateParam, new Date()),
   });
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const { data, isLoading, isError } = trpc.stats.get.useQuery(
     {
       period: query.period,
       after: query.after || undefined,
       before: query.before || undefined,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      timezone,
     },
     {
       refetchOnMount: false,
@@ -124,11 +126,14 @@ function DashboardPage() {
       />
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <CoalTypeChart isLoading={isLoading} coalByType={data?.coalByType} />
-        <DistributionCentersChart
-          isLoading={isLoading}
-          issuesByDistributionCenter={data?.issuesByDistributionCenter}
+        <CoalTypeByDistributionCenterChart
+          statsSchemaValues={{ ...query, timezone }}
         />
       </div>
+      <DistributionCentersChart
+        isLoading={isLoading}
+        issuesByDistributionCenter={data?.issuesByDistributionCenter}
+      />
     </div>
   );
 }

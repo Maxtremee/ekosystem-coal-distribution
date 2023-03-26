@@ -21,7 +21,6 @@ export default function DistributedCoalTimeline({
     | RouterOutputs["stats"]["get"]["distributedCoalTimelineData"]
     | undefined;
 }) {
-  console.log(distributedCoalTimelineData);
   return (
     <Card className="flex flex-col gap-4">
       <Text className="font-xl font-bold tracking-tight text-gray-900 dark:text-white">
