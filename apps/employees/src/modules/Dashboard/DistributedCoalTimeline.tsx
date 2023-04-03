@@ -44,7 +44,9 @@ export default function DistributedCoalTimeline({
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
-                dataKey={({ meanDate }) => dayjs(meanDate).format("DD-MM-YYYY")}
+                dataKey={({ meanDate }) =>
+                  dayjs(meanDate).toDate().toLocaleDateString()
+                }
               />
               <YAxis />
               <Tooltip formatter={(value) => [`${value} kg`, "Węgiel"]} />
